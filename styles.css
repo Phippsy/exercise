@@ -477,6 +477,100 @@ button {
   margin-bottom: var(--spacing-md);
 }
 
+.card-subtitle {
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+  margin: 0;
+}
+
+.card-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+}
+
+.compact-card {
+  padding: var(--spacing-md);
+}
+
+.insight-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--gutter-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.mini-bar-chart {
+  display: grid;
+  grid-auto-flow: column;
+  align-items: flex-end;
+  gap: var(--spacing-xs);
+  min-height: 80px;
+  padding-top: var(--spacing-sm);
+}
+
+.mini-bar {
+  background: linear-gradient(180deg, var(--color-accent) 0%, var(--color-primary) 100%);
+  border-radius: var(--radius-sm);
+  width: 100%;
+  min-width: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.mini-bar::after {
+  content: attr(data-label);
+  position: absolute;
+  bottom: -1.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+.chart-caption {
+  margin-top: var(--spacing-sm);
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.pill {
+  padding: 6px 10px;
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.pill-soft {
+  background-color: var(--state-hover);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+}
+
+.insight-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--spacing-sm);
+  margin: var(--spacing-sm) 0 var(--spacing-md);
+}
+
+.insight-label {
+  color: var(--text-muted);
+  font-size: var(--font-size-xs);
+  margin-bottom: 4px;
+}
+
+.insight-value {
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-md);
+}
+
+.exercise-insight-card {
+  border: 1px dashed var(--border-subtle);
+  background-color: var(--bg-surface);
+}
+
 /* ============================================
    Workout Grid
    ============================================ */
@@ -1802,6 +1896,72 @@ input[type="number"]::-webkit-outer-spin-button {
   textarea {
     font-size: 16px !important;
   }
+}
+
+/* ============================================
+   Onboarding
+   ============================================ */
+
+.onboarding-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-lg);
+  z-index: 1000;
+}
+
+.onboarding-overlay.hidden {
+  display: none;
+}
+
+.onboarding-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  max-width: 520px;
+  width: 100%;
+  padding: var(--spacing-lg);
+  box-shadow: var(--elevation-high);
+}
+
+.onboarding-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-sm);
+}
+
+.onboarding-body {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: var(--spacing-md);
+}
+
+.onboarding-progress {
+  display: flex;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-md);
+}
+
+.onboarding-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--border-subtle);
+  transition: background 0.2s ease;
+}
+
+.onboarding-dot.active {
+  background: var(--color-accent);
+}
+
+.onboarding-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
 }
 
 /* ============================================

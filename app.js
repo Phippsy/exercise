@@ -12,6 +12,8 @@ class WorkoutTracker {
     this.pairMode = false;
     this.selectedExercises = [];
     this.pairedExercises = null;
+    this.onboardingStep = 0;
+    this.onboardingSteps = [];
 
     this.init();
   }
@@ -23,6 +25,9 @@ class WorkoutTracker {
     this.loadTheme();
     this.setupEventListeners();
     this.renderWorkoutList();
+    this.renderActivityOverview();
+    this.renderWorkoutOverview();
+    this.setupOnboarding();
     this.updateCurrentDate();
   }
 
@@ -341,6 +346,19 @@ class WorkoutTracker {
         workoutNameElement.blur();
       }
     });
+
+    // Onboarding wizard controls
+    document.getElementById("onboardingNext").addEventListener("click", () => {
+      this.advanceOnboarding();
+    });
+
+    document.getElementById("onboardingBack").addEventListener("click", () => {
+      this.rewindOnboarding();
+    });
+
+    document.getElementById("onboardingSkip").addEventListener("click", () => {
+      this.dismissOnboarding();
+    });
   }
 
   setupExerciseFiltering(searchInputId, selectorId) {
@@ -575,6 +593,9 @@ class WorkoutTracker {
       notesDisplay.style.display = "none";
     }
 
+    this.renderWorkoutInsights(workout);
+    this.renderActivityOverview();
+
     this.renderExerciseList();
     this.showView("exerciseListView");
   }
@@ -714,6 +735,7 @@ class WorkoutTracker {
     this.renderPreviousSession(exercise);
     this.renderSessionForm(exercise);
     this.renderSessionHistory(exercise);
+    this.renderExerciseInsights(exercise);
 
     this.showView("exerciseDetailView");
   }
@@ -943,6 +965,8 @@ class WorkoutTracker {
     this.sessions.push(...sessions);
     this.saveSessions();
 
+    this.refreshInsights();
+
     this.showSuccessMessage("Both sessions saved successfully!");
 
     // Refresh the paired view
@@ -1153,6 +1177,7 @@ class WorkoutTracker {
 
     this.sessions.push(session);
     this.saveSessions();
+    this.refreshInsights();
 
     // Refresh the view
     this.showExerciseDetail(this.currentExercise);
@@ -1206,6 +1231,388 @@ class WorkoutTracker {
       item.appendChild(setsDiv);
       container.appendChild(item);
     });
+  }
+
+  // ============================================
+  // Insights and Visualizations
+  // ============================================
+
+  refreshInsights() {
+    this.renderActivityOverview();
+    this.renderWorkoutOverview();
+    if (this.currentWorkout) {
+      this.renderWorkoutInsights(this.currentWorkout);
+    }
+    if (this.currentExercise) {
+      this.renderExerciseInsights(this.currentExercise);
+    }
+  }
+
+  renderActivityOverview() {
+    const days = 14;
+    const dailyCounts = this.getDailyExerciseCounts(days);
+    const total = dailyCounts.reduce((sum, day) => sum + day.value, 0);
+
+    const trendText = this.describeTrend(
+      dailyCounts.slice(-7),
+      dailyCounts.slice(0, dailyCounts.length - 7)
+    );
+
+    const totalEl = document.getElementById("activityTotal");
+    const trendEl = document.getElementById("activityTrend");
+
+    if (!totalEl || !trendEl) return;
+
+    totalEl.textContent = `${total} entries`;
+    trendEl.textContent = trendText;
+
+    this.renderMiniBarChart(
+      "activityChart",
+      dailyCounts.map((day) => ({
+        label: day.label,
+        value: day.value,
+      }))
+    );
+  }
+
+  renderWorkoutOverview() {
+    const days = 14;
+    const dailyCounts = this.getOverallWorkoutCounts(days);
+    const total = dailyCounts.reduce((sum, day) => sum + day.value, 0);
+    const trendText = this.describeTrend(
+      dailyCounts.slice(-7),
+      dailyCounts.slice(0, dailyCounts.length - 7)
+    );
+
+    const frequency = document.getElementById("workoutFrequency");
+    const trend = document.getElementById("workoutTrend");
+
+    if (!frequency || !trend) return;
+
+    frequency.textContent = `${total} workouts`;
+    trend.textContent = trendText;
+
+    this.renderMiniBarChart(
+      "workoutChart",
+      dailyCounts.map((day) => ({
+        label: day.label,
+        value: day.value,
+      }))
+    );
+  }
+
+  renderWorkoutInsights(workout) {
+    const days = 14;
+    const history = this.sessions.filter((s) => s.workoutId === workout.id);
+    const lastSession = history.length > 0 ? history.slice().sort((a, b) => new Date(b.date) - new Date(a.date))[0] : null;
+    const recencyEl = document.getElementById("workoutRecency");
+    const trendEl = document.getElementById("currentWorkoutTrend");
+
+    if (!recencyEl || !trendEl) return;
+
+    if (!lastSession) {
+      recencyEl.textContent = "Not logged yet";
+      trendEl.textContent = "Log a workout to see momentum";
+      this.renderMiniBarChart("currentWorkoutChart", []);
+      return;
+    }
+
+    const dailyCounts = this.getWorkoutDailyCounts(workout.id, days);
+    const total = dailyCounts.reduce((sum, day) => sum + day.value, 0);
+    recencyEl.textContent = `${total} in ${days} days`;
+
+    trendEl.textContent = this.describeTrend(
+      dailyCounts.slice(-7),
+      dailyCounts.slice(0, dailyCounts.length - 7)
+    );
+
+    this.renderMiniBarChart(
+      "currentWorkoutChart",
+      dailyCounts.map((day) => ({
+        label: day.label,
+        value: day.value,
+      }))
+    );
+  }
+
+  renderExerciseInsights(exercise) {
+    const history = this.getSessionHistory(exercise.name);
+    const recencyEl = document.getElementById("exerciseRecency");
+    const lastPerformedEl = document.getElementById("exerciseLastPerformed");
+    const countEl = document.getElementById("exerciseSessionCount");
+    const averageEl = document.getElementById("exerciseAverage");
+    const trendEl = document.getElementById("exerciseTrend");
+
+    if (!recencyEl) return;
+
+    if (history.length === 0) {
+      recencyEl.textContent = "Not logged yet";
+      lastPerformedEl.textContent = "—";
+      countEl.textContent = "0 sessions";
+      averageEl.textContent = "—";
+      trendEl.textContent = "Log your first sets to see trends";
+      this.renderMiniBarChart("exerciseChart", []);
+      return;
+    }
+
+    const last = history[0];
+    const totalSessions = history.length;
+    const volumes = history.map((session) =>
+      session.sets.reduce(
+        (sum, set) => sum + (set.weight_kg || 0) * (set.reps || 0),
+        0
+      )
+    );
+
+    const averageVolume =
+      volumes.length > 0
+        ? Math.round((volumes.reduce((a, b) => a + b, 0) / volumes.length) * 10) /
+          10
+        : 0;
+
+    recencyEl.textContent = this.formatDate(new Date(last.date));
+    lastPerformedEl.textContent = this.formatDate(new Date(last.date));
+    countEl.textContent = `${totalSessions} session${totalSessions === 1 ? "" : "s"}`;
+    averageEl.textContent = averageVolume
+      ? `${averageVolume} kg-reps per session`
+      : "—";
+
+    const recentSessions = history.slice(0, 10).reverse();
+
+    this.renderMiniBarChart(
+      "exerciseChart",
+      recentSessions.map((session) => ({
+        label: this.formatShortDate(new Date(session.date)),
+        value: session.sets.reduce(
+          (sum, set) => sum + (set.weight_kg || 0) * (set.reps || 0),
+          0
+        ),
+      }))
+    );
+
+    trendEl.textContent = this.describeTrend(
+      recentSessions.slice(-5),
+      recentSessions.slice(0, Math.max(0, recentSessions.length - 5))
+    );
+  }
+
+  renderMiniBarChart(containerId, data) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    if (!data || data.length === 0) {
+      const empty = document.createElement("p");
+      empty.className = "chart-caption";
+      empty.textContent = "No data yet";
+      container.appendChild(empty);
+      return;
+    }
+
+    const maxValue = Math.max(...data.map((d) => d.value), 1);
+
+    data.forEach((entry) => {
+      const bar = document.createElement("div");
+      bar.className = "mini-bar";
+      bar.style.height = `${(entry.value / maxValue) * 100}%`;
+      bar.setAttribute("data-label", entry.label);
+      bar.title = `${entry.label}: ${entry.value}`;
+      container.appendChild(bar);
+    });
+  }
+
+  getDailyExerciseCounts(days = 14) {
+    const today = new Date();
+    const counts = new Map();
+
+    this.sessions.forEach((session) => {
+      const key = session.date.split("T")[0];
+      counts.set(key, (counts.get(key) || 0) + 1);
+    });
+
+    const results = [];
+    for (let i = days - 1; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(today.getDate() - i);
+      const key = date.toISOString().split("T")[0];
+      results.push({
+        label: this.formatShortDate(date),
+        value: counts.get(key) || 0,
+      });
+    }
+
+    return results;
+  }
+
+  getWorkoutDailyCounts(workoutId, days = 14) {
+    const today = new Date();
+    const counts = new Map();
+
+    this.sessions
+      .filter((s) => s.workoutId === workoutId)
+      .forEach((session) => {
+        const key = session.date.split("T")[0];
+        counts.set(key, (counts.get(key) || 0) + 1);
+      });
+
+    const results = [];
+    for (let i = days - 1; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(today.getDate() - i);
+      const key = date.toISOString().split("T")[0];
+      results.push({
+        label: this.formatShortDate(date),
+        value: counts.get(key) || 0,
+      });
+    }
+    return results;
+  }
+
+  getOverallWorkoutCounts(days = 14) {
+    const today = new Date();
+    const counts = new Map();
+
+    this.sessions.forEach((session) => {
+      const key = session.date.split("T")[0];
+      if (!counts.has(key)) {
+        counts.set(key, new Set());
+      }
+      counts.get(key).add(session.workoutId || session.workoutName);
+    });
+
+    const results = [];
+    for (let i = days - 1; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(today.getDate() - i);
+      const key = date.toISOString().split("T")[0];
+      const set = counts.get(key);
+      results.push({
+        label: this.formatShortDate(date),
+        value: set ? set.size : 0,
+      });
+    }
+    return results;
+  }
+
+  describeTrend(recentSlice, previousSlice) {
+    const recentTotal = recentSlice.reduce((sum, day) => sum + day.value, 0);
+    const previousTotal = previousSlice.reduce((sum, day) => sum + day.value, 0);
+
+    if (recentTotal === 0 && previousTotal === 0) {
+      return "No activity yet";
+    }
+
+    if (previousTotal === 0) {
+      return "Great start — keep going!";
+    }
+
+    const delta = recentTotal - previousTotal;
+    const pct = Math.round((delta / previousTotal) * 100);
+
+    if (delta > 0) {
+      return `Up ${pct}% vs last period`;
+    }
+
+    if (delta < 0) {
+      return `Down ${Math.abs(pct)}% vs last period`;
+    }
+
+    return "Holding steady";
+  }
+
+  // ============================================
+  // Onboarding
+  // ============================================
+
+  setupOnboarding() {
+    this.onboardingSteps = [
+      {
+        title: "Welcome to Workout Tracker",
+        body:
+          "Track workouts, log sets, and keep your routine consistent. Let's take a 30-second tour.",
+      },
+      {
+        title: "Pick a workout",
+        body:
+          "Start on the home screen, tap a workout, and you'll see the exercises inside. Add your own anytime via Manage.",
+      },
+      {
+        title: "Log sets with ease",
+        body:
+          "Open an exercise to see your last session, add sets with reps and weight, and save to build history.",
+      },
+      {
+        title: "Review insights",
+        body:
+          "Mini charts highlight recent activity and frequency so you stay on pace. You can dismiss this tour anytime.",
+      },
+    ];
+
+    const seenTour = localStorage.getItem("onboardingSeen");
+    if (!seenTour) {
+      this.onboardingStep = 0;
+      this.showOnboarding();
+    } else {
+      this.hideOnboarding();
+    }
+  }
+
+  showOnboarding() {
+    const overlay = document.getElementById("onboardingOverlay");
+    overlay.classList.remove("hidden");
+    this.syncOnboardingContent();
+  }
+
+  hideOnboarding() {
+    const overlay = document.getElementById("onboardingOverlay");
+    overlay.classList.add("hidden");
+  }
+
+  syncOnboardingContent() {
+    const step = this.onboardingSteps[this.onboardingStep];
+    const titleEl = document.getElementById("onboardingTitle");
+    const bodyEl = document.getElementById("onboardingBody");
+    const backBtn = document.getElementById("onboardingBack");
+    const nextBtn = document.getElementById("onboardingNext");
+
+    if (!step) return;
+
+    titleEl.textContent = step.title;
+    bodyEl.textContent = step.body;
+
+    backBtn.disabled = this.onboardingStep === 0;
+    nextBtn.textContent =
+      this.onboardingStep === this.onboardingSteps.length - 1
+        ? "Finish"
+        : "Next";
+
+    document.querySelectorAll(".onboarding-dot").forEach((dot) => {
+      dot.classList.toggle(
+        "active",
+        parseInt(dot.dataset.step) === this.onboardingStep
+      );
+    });
+  }
+
+  advanceOnboarding() {
+    if (this.onboardingStep < this.onboardingSteps.length - 1) {
+      this.onboardingStep += 1;
+      this.syncOnboardingContent();
+      return;
+    }
+    this.dismissOnboarding();
+  }
+
+  rewindOnboarding() {
+    if (this.onboardingStep === 0) return;
+    this.onboardingStep -= 1;
+    this.syncOnboardingContent();
+  }
+
+  dismissOnboarding() {
+    localStorage.setItem("onboardingSeen", "true");
+    this.hideOnboarding();
   }
 
   // ============================================
@@ -1901,6 +2308,8 @@ class WorkoutTracker {
           this.renderExerciseSelector();
         }
 
+        this.refreshInsights();
+
         // Build success message
         let message = "Import complete!\n\n";
         message += `Sessions: ${results.sessions.added} added`;
@@ -1956,6 +2365,13 @@ class WorkoutTracker {
       minute: "2-digit",
     };
     return date.toLocaleDateString("en-US", options);
+  }
+
+  formatShortDate(date) {
+    return date.toLocaleDateString("en-US", {
+      month: "numeric",
+      day: "numeric",
+    });
   }
 
   updateCurrentDate() {
