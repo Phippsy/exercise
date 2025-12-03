@@ -434,6 +434,17 @@ button {
   font-size: var(--font-size-sm);
 }
 
+.header-action-btn {
+  padding: var(--spacing-sm);
+  min-width: 44px;
+  justify-content: center;
+  gap: var(--spacing-2xs);
+}
+
+.header-action-label {
+  white-space: nowrap;
+}
+
 .btn-sm {
   padding: var(--spacing-sm) var(--spacing-md);
   font-size: var(--font-size-sm);
@@ -1647,6 +1658,11 @@ input[type="number"]::-webkit-outer-spin-button {
     align-items: flex-start;
   }
 
+  .app-header {
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+  }
+
   .app-title {
     font-size: 18px;
     white-space: normal;
@@ -1659,9 +1675,26 @@ input[type="number"]::-webkit-outer-spin-button {
 
   .header-actions {
     display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacing-xs);
+    align-items: center;
+    gap: var(--spacing-2xs);
     width: 100%;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 4px 0;
+  }
+
+  .header-actions::-webkit-scrollbar {
+    display: none;
+  }
+
+  .header-action-btn {
+    min-height: 40px;
+    padding: var(--spacing-2xs);
+    border-radius: 12px;
+  }
+
+  .header-action-label {
+    display: none;
   }
 
   .btn-icon {

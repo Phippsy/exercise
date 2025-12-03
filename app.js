@@ -2611,11 +2611,13 @@ class WorkoutTracker {
 
       const editBtn = document.createElement("button");
       editBtn.className = "btn-secondary btn-sm";
+      editBtn.type = "button"; // Prevent form submission/navigation
       editBtn.textContent = "Edit";
       editBtn.addEventListener("click", () => this.editWorkout(workout.id));
 
       const deleteBtn = document.createElement("button");
       deleteBtn.className = "btn-delete";
+      deleteBtn.type = "button"; // Prevent form submission/navigation
       deleteBtn.textContent = "Delete";
       deleteBtn.addEventListener("click", () => this.deleteWorkout(workout.id));
 
