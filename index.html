@@ -138,16 +138,42 @@
             <h2 class="section-title">Your Workouts</h2>
             <p class="section-subtitle">Select a workout to begin tracking</p>
           </div>
-          <div id="dailyQuoteCard" class="card quote-card">
-            <div class="card-header-row">
+          <div
+            id="dailyQuoteCard"
+            class="card quote-card collapsed"
+            aria-live="polite">
+            <div class="quote-card-top">
               <div>
                 <h3 class="card-title-sm">Daily motivation</h3>
-                <p class="card-subtitle">One quote for today's training</p>
+                <p class="card-subtitle">Tap to reveal today's quote</p>
               </div>
-              <span id="quoteDate" class="pill pill-soft"></span>
+              <div class="quote-controls">
+                <span id="quoteDate" class="pill pill-soft"></span>
+                <button
+                  id="quoteToggle"
+                  class="quote-toggle"
+                  type="button"
+                  aria-expanded="false"
+                  aria-controls="quoteBody">
+                  <span id="quoteToggleLabel">Show</span>
+                  <svg
+                    class="icon icon-sm"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M6 9l6 6 6-6" />
+                  </svg>
+                </button>
+              </div>
             </div>
-            <blockquote id="quoteText" class="quote-text"></blockquote>
-            <p id="quoteAuthor" class="quote-author"></p>
+            <div id="quoteBody" class="quote-body hidden">
+              <blockquote id="quoteText" class="quote-text"></blockquote>
+              <p id="quoteAuthor" class="quote-author"></p>
+            </div>
           </div>
           <div class="insight-grid">
             <div class="card compact-card">
@@ -1084,7 +1110,10 @@
       <div class="onboarding-card">
         <div class="onboarding-header">
           <h3 id="onboardingTitle">Welcome to Workout Tracker</h3>
-          <button id="onboardingSkip" class="btn-icon" aria-label="Skip tour">
+          <button
+            id="onboardingSkip"
+            class="btn-icon onboarding-dismiss"
+            aria-label="Skip tour">
             <svg
               class="icon icon-sm"
               viewBox="0 0 24 24"
