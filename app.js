@@ -206,12 +206,15 @@ class WorkoutTracker {
         const workoutList = document.getElementById("workoutList");
         const firstWorkout = workoutList.querySelector(".workout-card");
         if (firstWorkout) {
-          // Scroll with offset to account for fixed header on mobile
-          const yOffset = window.innerWidth <= 768 ? -70 : -20;
+          const header = document.querySelector(".app-header");
+          const headerOffset =
+            window.innerWidth <= 768
+              ? (header?.offsetHeight || 0) + 12
+              : 20;
           const y =
             firstWorkout.getBoundingClientRect().top +
-            window.pageYOffset +
-            yOffset;
+            window.pageYOffset -
+            headerOffset;
           window.scrollTo({ top: y, behavior: "smooth" });
         } else {
           workoutList.scrollIntoView({ behavior: "smooth", block: "start" });
