@@ -16,6 +16,7 @@ class WorkoutTracker {
     this.onboardingStep = 0;
     this.onboardingSteps = [];
     this.onboardingFocusElement = null;
+    this.dailyQuoteExpanded = false;
     this.exerciseLibraryFilters = { search: "", muscles: new Set() };
     this.quoteStartDate = new Date("2024-01-01T00:00:00");
 
@@ -35,7 +36,7 @@ class WorkoutTracker {
     this.renderWorkoutOverview();
     this.setupOnboarding();
     this.updateCurrentDate();
-    this.renderDailyQuote();
+    this.initializeDailyQuoteCard();
   }
 
   // ============================================
@@ -195,6 +196,26 @@ class WorkoutTracker {
     document.getElementById("themeToggleBtn").addEventListener("click", () => {
       this.toggleTheme();
     });
+
+    // Daily quote
+    const quoteToggle = document.getElementById("quoteToggle");
+    const quoteCard = document.getElementById("dailyQuoteCard");
+    if (quoteToggle) {
+      quoteToggle.addEventListener("click", () => {
+        this.toggleDailyQuote();
+      });
+    }
+    if (quoteCard) {
+      quoteCard.addEventListener("click", (event) => {
+        if (
+          event.target.closest("#quoteToggle") ||
+          event.target.closest(".quote-body")
+        ) {
+          return;
+        }
+        this.toggleDailyQuote();
+      });
+    }
 
     // Navigation buttons
     document.getElementById("backToWorkouts").addEventListener("click", () => {
@@ -415,6 +436,12 @@ class WorkoutTracker {
     document.getElementById("onboardingSkip").addEventListener("click", () => {
       this.dismissOnboarding();
     });
+  }
+
+  initializeDailyQuoteCard() {
+    this.dailyQuoteExpanded = false;
+    this.renderDailyQuote();
+    this.updateDailyQuoteState();
   }
 
   setupExerciseFiltering(searchInputId, selectorId) {
@@ -1706,29 +1733,34 @@ class WorkoutTracker {
         viewId: "workoutListView",
       },
       {
-        title: "Get inspired",
-        body:
-          "Your dashboard shows a daily training quote to keep momentum going when you log in.",
-        viewId: "workoutListView",
-        focusId: "dailyQuoteCard",
-      },
-      {
         title: "Pick a workout",
         body:
           "Start on the home screen, tap a workout, and you'll see the exercises inside. Add your own anytime via Manage.",
         viewId: "workoutListView",
+        focusSelector: "#workoutList .workout-card",
+        prepare: () => {
+          this.showView("workoutListView");
+        },
       },
       {
         title: "Log sets with ease",
         body:
           "Open an exercise to see your last session, add sets with reps and weight, and save to build history.",
-        viewId: "exerciseListView",
+        viewId: "exerciseDetailView",
+        focusId: "sessionForm",
+        prepare: () => {
+          this.openFirstExerciseDetailForOnboarding();
+        },
       },
       {
-        title: "Review insights",
+        title: "Click 'Manage' to add and edit exercises and workouts",
         body:
-          "Mini charts highlight recent activity and frequency so you stay on pace. You can dismiss this tour anytime.",
+          "Use the Manage menu to create workouts, tweak exercises, and keep your library organized.",
         viewId: "workoutListView",
+        focusId: "manageBtn",
+        prepare: () => {
+          this.showView("workoutListView");
+        },
       },
     ];
 
@@ -1819,10 +1851,30 @@ class WorkoutTracker {
     });
   }
 
+  openFirstWorkoutForOnboarding() {
+    const workout = this.workouts[0];
+    if (!workout) return null;
+
+    this.currentWorkout = workout;
+    this.showExerciseList(workout);
+    return workout;
+  }
+
+  openFirstExerciseDetailForOnboarding() {
+    const workout = this.openFirstWorkoutForOnboarding();
+    if (!workout || !workout.exercises?.length) return null;
+
+    const exercise = workout.exercises[0];
+    this.showExerciseDetail(exercise);
+    return exercise;
+  }
+
   applyOnboardingStepContext(step) {
     if (!step) return;
 
-    if (step.viewId) {
+    if (typeof step.prepare === "function") {
+      step.prepare();
+    } else if (step.viewId) {
       if (step.viewId === "exerciseListView") {
         const workout = this.currentWorkout || this.workouts[0];
         if (workout) {
@@ -1837,14 +1889,15 @@ class WorkoutTracker {
       this.onboardingFocusElement.classList.remove("tour-highlight");
     }
 
-    if (step.focusId) {
-      const target = document.getElementById(step.focusId);
-      if (target) {
-        target.classList.add("tour-highlight");
-        target.scrollIntoView({ behavior: "smooth", block: "center" });
-        this.onboardingFocusElement = target;
-        return;
-      }
+    const target =
+      (step.focusId && document.getElementById(step.focusId)) ||
+      (step.focusSelector && document.querySelector(step.focusSelector));
+
+    if (target) {
+      target.classList.add("tour-highlight");
+      target.scrollIntoView({ behavior: "smooth", block: "center" });
+      this.onboardingFocusElement = target;
+      return;
     }
 
     this.onboardingFocusElement = null;
@@ -2797,6 +2850,9 @@ class WorkoutTracker {
     const quoteText = document.getElementById("quoteText");
     const quoteAuthor = document.getElementById("quoteAuthor");
     const quoteDate = document.getElementById("quoteDate");
+    const toggle = document.getElementById("quoteToggle");
+    const toggleLabel = document.getElementById("quoteToggleLabel");
+    const quoteBody = document.getElementById("quoteBody");
 
     if (!this.quotes.length) {
       card.classList.add("hidden");
@@ -2811,6 +2867,9 @@ class WorkoutTracker {
     }
 
     card.classList.remove("hidden");
+    if (quoteBody) {
+      quoteBody.classList.remove("hidden");
+    }
     quoteText.textContent = `“${quote.text}”`;
     quoteAuthor.textContent = quote.author;
 
@@ -2820,6 +2879,31 @@ class WorkoutTracker {
       day: "numeric",
       year: "numeric",
     });
+
+    if (toggleLabel && toggle) {
+      toggleLabel.textContent = this.dailyQuoteExpanded ? "Hide" : "Show";
+      toggle.setAttribute("aria-expanded", this.dailyQuoteExpanded.toString());
+    }
+  }
+
+  toggleDailyQuote() {
+    this.dailyQuoteExpanded = !this.dailyQuoteExpanded;
+    this.updateDailyQuoteState();
+  }
+
+  updateDailyQuoteState() {
+    const card = document.getElementById("dailyQuoteCard");
+    const quoteBody = document.getElementById("quoteBody");
+    const toggle = document.getElementById("quoteToggle");
+    const toggleLabel = document.getElementById("quoteToggleLabel");
+
+    if (!card || !quoteBody || !toggle || !toggleLabel) return;
+
+    card.classList.toggle("expanded", this.dailyQuoteExpanded);
+    card.classList.toggle("collapsed", !this.dailyQuoteExpanded);
+    quoteBody.classList.toggle("hidden", !this.dailyQuoteExpanded);
+    toggle.setAttribute("aria-expanded", this.dailyQuoteExpanded.toString());
+    toggleLabel.textContent = this.dailyQuoteExpanded ? "Hide" : "Show";
   }
 
   scrollToTop() {
