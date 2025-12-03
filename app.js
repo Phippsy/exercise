@@ -316,6 +316,31 @@ class WorkoutTracker {
         nameDisplay.blur();
       }
     });
+
+    // Workout name editing
+    const workoutNameElement = document.getElementById("currentWorkoutName");
+    workoutNameElement.addEventListener("blur", () => {
+      const newName = workoutNameElement.textContent.trim();
+      const workoutId = parseInt(workoutNameElement.dataset.workoutId);
+      if (newName && workoutId) {
+        const workout = this.workouts.find((w) => w.id === workoutId);
+        if (workout && workout.name !== newName) {
+          workout.name = newName;
+          this.saveWorkouts();
+          this.renderWorkoutList();
+        }
+      } else if (!newName && this.currentWorkout) {
+        // Restore original name if empty
+        workoutNameElement.textContent = this.currentWorkout.name;
+      }
+    });
+
+    workoutNameElement.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        workoutNameElement.blur();
+      }
+    });
   }
 
   setupExerciseFiltering(searchInputId, selectorId) {
@@ -536,7 +561,9 @@ class WorkoutTracker {
     toggleText.textContent = "Pair Exercises";
     notice.classList.add("hidden");
 
-    document.getElementById("currentWorkoutName").textContent = workout.name;
+    const workoutNameElement = document.getElementById("currentWorkoutName");
+    workoutNameElement.textContent = workout.name;
+    workoutNameElement.dataset.workoutId = workout.id;
 
     // Display workout notes if they exist
     const notesDisplay = document.getElementById("workoutNotesDisplay");

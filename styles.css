@@ -218,6 +218,32 @@ body {
   color: var(--text-primary);
 }
 
+.workout-name-editable {
+  outline: none;
+  border-radius: var(--radius-sm);
+  padding: 2px 4px;
+  margin: -2px -4px;
+  transition: all 0.15s ease;
+  cursor: text;
+  border-bottom: 1px dashed transparent;
+}
+
+.workout-name-editable:not(:focus) {
+  border-bottom-color: var(--text-muted);
+  opacity: 0.9;
+}
+
+.workout-name-editable:hover {
+  background-color: var(--state-hover);
+}
+
+.workout-name-editable:focus {
+  background-color: var(--bg-surface);
+  outline: 2px solid var(--state-focus);
+  outline-offset: 2px;
+  border-bottom-color: transparent;
+}
+
 .header-meta {
   font-size: var(--font-size-sm);
   color: var(--text-muted);
@@ -572,11 +598,16 @@ button {
   gap: var(--spacing-sm);
   padding: var(--spacing-md);
   background-color: var(--color-info);
-  color: #ffffff;
+  color: #ffffff !important;
   border-radius: var(--radius-sm);
   margin-bottom: var(--spacing-lg);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
+}
+
+.pair-mode-notice svg {
+  color: #ffffff;
+  stroke: #ffffff;
 }
 
 .pair-mode-notice.hidden {
