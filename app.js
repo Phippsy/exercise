@@ -7,6 +7,7 @@ class WorkoutTracker {
     this.workouts = [];
     this.sessions = [];
     this.exerciseLibrary = []; // Master list of all available exercises
+    this.quotes = [];
     this.currentWorkout = null;
     this.currentExercise = null;
     this.pairMode = false;
@@ -15,22 +16,26 @@ class WorkoutTracker {
     this.onboardingStep = 0;
     this.onboardingSteps = [];
     this.onboardingFocusElement = null;
+    this.exerciseLibraryFilters = { search: "", muscles: new Set() };
+    this.quoteStartDate = new Date("2024-01-01T00:00:00");
 
     this.init();
   }
 
   async init() {
     await this.loadWorkouts();
+    await this.loadQuotes();
     this.loadSessions();
     this.loadUserName();
     this.loadTheme();
-    this.setupScreeningQuestion();
     this.setupEventListeners();
+    this.setupExerciseLibraryFilters();
     this.renderWorkoutList();
     this.renderActivityOverview();
     this.renderWorkoutOverview();
     this.setupOnboarding();
     this.updateCurrentDate();
+    this.renderDailyQuote();
   }
 
   // ============================================
@@ -62,6 +67,17 @@ class WorkoutTracker {
       console.error("Error loading workouts:", error);
       this.workouts = [];
       this.exerciseLibrary = [];
+    }
+  }
+
+  async loadQuotes() {
+    try {
+      const response = await fetch("data/quotes.json");
+      const data = await response.json();
+      this.quotes = data.quotes || [];
+    } catch (error) {
+      console.error("Error loading quotes:", error);
+      this.quotes = [];
     }
   }
 
@@ -167,70 +183,6 @@ class WorkoutTracker {
       darkIcon.classList.remove("hidden");
       lightIcon.classList.add("hidden");
       toggleText.textContent = "Light";
-    }
-  }
-
-  setupScreeningQuestion() {
-    const card = document.getElementById("screeningQuestionCard");
-    if (!card) return;
-
-    card.querySelectorAll("[data-screening-answer]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const answer = btn.getAttribute("data-screening-answer");
-        this.saveScreeningResponse(answer);
-        this.updateScreeningStatus();
-        this.showSuccessMessage("Thanks for checking in!");
-      });
-    });
-
-    this.updateScreeningStatus();
-  }
-
-  saveScreeningResponse(answer) {
-    const response = {
-      answer,
-      date: this.getLocalDateKey(),
-    };
-    localStorage.setItem("screeningResponse", JSON.stringify(response));
-  }
-
-  getScreeningResponseForToday() {
-    const stored = localStorage.getItem("screeningResponse");
-    if (!stored) return null;
-    try {
-      const parsed = JSON.parse(stored);
-      return parsed.date === this.getLocalDateKey() ? parsed : null;
-    } catch (error) {
-      console.error("Error parsing screening response", error);
-      return null;
-    }
-  }
-
-  updateScreeningStatus() {
-    const status = document.getElementById("screeningStatus");
-    const buttons = document.querySelectorAll("[data-screening-answer]");
-    const response = this.getScreeningResponseForToday();
-
-    buttons.forEach((btn) => btn.classList.remove("active"));
-
-    if (!status) return;
-
-    if (!response) {
-      status.textContent = "Not answered";
-      status.classList.remove("pill-success");
-      status.classList.add("pill-soft");
-      return;
-    }
-
-    status.textContent = `Logged: ${response.answer}`;
-    status.classList.remove("pill-soft");
-    status.classList.add("pill-success");
-
-    const activeButton = Array.from(buttons).find(
-      (btn) => btn.getAttribute("data-screening-answer") === response.answer
-    );
-    if (activeButton) {
-      activeButton.classList.add("active");
     }
   }
 
@@ -370,6 +322,32 @@ class WorkoutTracker {
         this.saveWorkoutEdit();
       });
 
+    // Exercise editing
+    document
+      .getElementById("closeEditExerciseBtn")
+      .addEventListener("click", () => {
+        this.hideEditExerciseModal();
+      });
+
+    document
+      .getElementById("cancelEditExerciseBtn")
+      .addEventListener("click", () => {
+        this.hideEditExerciseModal();
+      });
+
+    document
+      .querySelector("#editExerciseModal .management-overlay")
+      .addEventListener("click", () => {
+        this.hideEditExerciseModal();
+      });
+
+    document
+      .getElementById("editExerciseForm")
+      .addEventListener("submit", (e) => {
+        e.preventDefault();
+        this.saveExerciseEdit();
+      });
+
     // Exercise filtering for edit workout
     this.setupExerciseFiltering(
       "editExerciseSearchInput",
@@ -489,6 +467,63 @@ class WorkoutTracker {
         this.filterExercises(searchInputId, selectorId);
       });
     });
+  }
+
+  setupExerciseLibraryFilters() {
+    const searchInput = document.getElementById("exerciseLibrarySearch");
+    const filterContainer = document.getElementById("exerciseLibraryFilters");
+
+    if (!searchInput || !filterContainer) return;
+
+    searchInput.addEventListener("input", (e) => {
+      this.exerciseLibraryFilters.search = e.target.value
+        .toLowerCase()
+        .trim();
+      this.renderExerciseLibrary();
+    });
+
+    const filterButtons = filterContainer.querySelectorAll(".muscle-filter-btn");
+
+    filterButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const muscle = btn.dataset.muscle;
+
+        if (muscle === "all") {
+          const allActive = btn.classList.contains("active");
+          filterButtons.forEach((button) =>
+            button.classList.toggle("active", !allActive)
+          );
+        } else {
+          btn.classList.toggle("active");
+          const allBtn = filterContainer.querySelector('[data-muscle="all"]');
+          const otherBtns = Array.from(filterButtons).filter(
+            (b) => b.dataset.muscle !== "all"
+          );
+          const allOthersActive = otherBtns.every((b) =>
+            b.classList.contains("active")
+          );
+
+          if (allOthersActive) {
+            allBtn.classList.add("active");
+          } else {
+            allBtn.classList.remove("active");
+          }
+        }
+
+        this.updateExerciseLibraryFilters(filterContainer);
+      });
+    });
+  }
+
+  updateExerciseLibraryFilters(filterContainer) {
+    const activeMuscles = Array.from(
+      filterContainer.querySelectorAll(".muscle-filter-btn.active")
+    )
+      .filter((btn) => btn.dataset.muscle !== "all")
+      .map((btn) => btn.dataset.muscle);
+
+    this.exerciseLibraryFilters.muscles = new Set(activeMuscles);
+    this.renderExerciseLibrary();
   }
 
   filterExercises(searchInputId, selectorId) {
@@ -1671,11 +1706,11 @@ class WorkoutTracker {
         viewId: "workoutListView",
       },
       {
-        title: "Start with a quick check-in",
+        title: "Get inspired",
         body:
-          "Answer today's screening question so you note how you're feeling before training.",
+          "Your dashboard shows a daily training quote to keep momentum going when you log in.",
         viewId: "workoutListView",
-        focusId: "screeningQuestionCard",
+        focusId: "dailyQuoteCard",
       },
       {
         title: "Pick a workout",
@@ -1903,6 +1938,124 @@ class WorkoutTracker {
     this.showSuccessMessage(`Exercise "${name}" created!`);
   }
 
+  openEditExercise(exerciseName) {
+    const exercise = this.exerciseLibrary.find((e) => e.name === exerciseName);
+    if (!exercise) return;
+
+    document.getElementById("editExerciseOriginalName").value = exercise.name;
+    document.getElementById("editExerciseName").value = exercise.name;
+    document.getElementById("editMuscleGroup").value = exercise.muscle_group;
+    document.getElementById("editDefaultSets").value = exercise.sets || "";
+    document.getElementById("editDefaultReps").value = exercise.reps || "";
+    document.getElementById("editDefaultWeight").value =
+      exercise.weight_kg || "";
+    document.getElementById("editExerciseFormNotes").value =
+      exercise.form_notes || "";
+    document.getElementById("editExerciseFormVideo").value =
+      exercise.form_video || "";
+
+    document.getElementById("editExerciseModal").classList.remove("hidden");
+  }
+
+  hideEditExerciseModal() {
+    document.getElementById("editExerciseModal").classList.add("hidden");
+    document.getElementById("editExerciseForm").reset();
+  }
+
+  saveExerciseEdit() {
+    const originalName =
+      document.getElementById("editExerciseOriginalName").value;
+    const newName = document.getElementById("editExerciseName").value.trim();
+    const muscleGroup = document.getElementById("editMuscleGroup").value;
+    const sets = parseInt(document.getElementById("editDefaultSets").value) || null;
+    const reps = parseInt(document.getElementById("editDefaultReps").value) || null;
+    const weight =
+      parseFloat(document.getElementById("editDefaultWeight").value) || null;
+    const formNotes =
+      document.getElementById("editExerciseFormNotes").value.trim() || null;
+    const formVideo =
+      document.getElementById("editExerciseFormVideo").value.trim() || null;
+
+    if (!newName || !muscleGroup) {
+      alert("Please fill in required fields");
+      return;
+    }
+
+    const duplicateName = this.exerciseLibrary.some(
+      (exercise) =>
+        exercise.name.toLowerCase() === newName.toLowerCase() &&
+        exercise.name !== originalName
+    );
+
+    if (duplicateName) {
+      alert("An exercise with this name already exists");
+      return;
+    }
+
+    const exercise = this.exerciseLibrary.find((e) => e.name === originalName);
+    if (!exercise) return;
+
+    exercise.name = newName;
+    exercise.muscle_group = muscleGroup;
+    exercise.sets = sets;
+    exercise.reps = reps;
+    exercise.weight_kg = weight;
+    exercise.form_notes = formNotes;
+    exercise.form_video = formVideo;
+
+    this.updateExerciseInWorkouts(originalName, exercise);
+    this.updateSessionsForExercise(originalName, exercise);
+
+    this.saveExerciseLibrary();
+    this.saveWorkouts();
+    this.saveSessions();
+
+    if (this.currentExercise && this.currentExercise.name === originalName) {
+      const updated = this.currentWorkout?.exercises.find(
+        (ex) => ex.name === exercise.name
+      );
+      this.currentExercise = updated || exercise;
+      this.showExerciseDetail(this.currentExercise);
+    }
+
+    this.renderExerciseLibrary();
+    this.renderExerciseSelector();
+    this.renderWorkoutManager();
+    this.renderWorkoutList();
+    if (this.currentWorkout) {
+      this.renderExerciseList();
+    }
+
+    this.hideEditExerciseModal();
+    this.refreshInsights();
+    this.showSuccessMessage(`Exercise "${newName}" updated`);
+  }
+
+  updateExerciseInWorkouts(originalName, updatedExercise) {
+    this.workouts.forEach((workout) => {
+      workout.exercises.forEach((exercise) => {
+        if (exercise.name === originalName) {
+          exercise.name = updatedExercise.name;
+          exercise.muscle_group = updatedExercise.muscle_group;
+          exercise.sets = updatedExercise.sets;
+          exercise.reps = updatedExercise.reps;
+          exercise.weight_kg = updatedExercise.weight_kg;
+          exercise.form_notes = updatedExercise.form_notes;
+          exercise.form_video = updatedExercise.form_video;
+        }
+      });
+    });
+  }
+
+  updateSessionsForExercise(originalName, updatedExercise) {
+    this.sessions.forEach((session) => {
+      if (session.exerciseName === originalName) {
+        session.exerciseName = updatedExercise.name;
+        session.muscleGroup = updatedExercise.muscle_group;
+      }
+    });
+  }
+
   deleteExercise(exerciseName) {
     if (
       !confirm(
@@ -1950,9 +2103,20 @@ class WorkoutTracker {
       a.name.localeCompare(b.name)
     );
 
-    sorted.forEach((exercise) => {
+    const filtered = sorted.filter((exercise) =>
+      this.matchesExerciseLibraryFilters(exercise)
+    );
+
+    if (filtered.length === 0) {
+      container.innerHTML =
+        '<p class="exercise-selector-empty">No exercises match your filters.</p>';
+      return;
+    }
+
+    filtered.forEach((exercise) => {
       const item = document.createElement("div");
       item.className = "exercise-library-item";
+      item.dataset.muscleGroup = exercise.muscle_group;
 
       const info = document.createElement("div");
       info.className = "exercise-library-info";
@@ -1975,6 +2139,13 @@ class WorkoutTracker {
       const actions = document.createElement("div");
       actions.className = "exercise-library-actions";
 
+      const editBtn = document.createElement("button");
+      editBtn.className = "btn-secondary";
+      editBtn.textContent = "Edit";
+      editBtn.addEventListener("click", () =>
+        this.openEditExercise(exercise.name)
+      );
+
       const deleteBtn = document.createElement("button");
       deleteBtn.className = "btn-delete";
       deleteBtn.textContent = "Delete";
@@ -1982,12 +2153,26 @@ class WorkoutTracker {
         this.deleteExercise(exercise.name)
       );
 
+      actions.appendChild(editBtn);
       actions.appendChild(deleteBtn);
 
       item.appendChild(info);
       item.appendChild(actions);
       container.appendChild(item);
     });
+  }
+
+  matchesExerciseLibraryFilters(exercise) {
+    const search = this.exerciseLibraryFilters.search;
+    const muscles = this.exerciseLibraryFilters.muscles;
+
+    const matchesSearch =
+      !search || exercise.name.toLowerCase().includes(search);
+
+    const matchesMuscle =
+      muscles.size === 0 || muscles.has(exercise.muscle_group);
+
+    return matchesSearch && matchesMuscle;
   }
 
   renderExerciseSelector() {
@@ -2584,6 +2769,57 @@ class WorkoutTracker {
       day: "numeric",
     };
     dateElement.textContent = now.toLocaleDateString("en-US", options);
+  }
+
+  getQuoteIndexForDate(date = new Date()) {
+    if (this.quotes.length === 0) return null;
+
+    const targetKey = this.getLocalDateKey(date);
+    const normalizedTarget = new Date(`${targetKey}T00:00:00`);
+    const msPerDay = 24 * 60 * 60 * 1000;
+    const diffDays = Math.floor(
+      (normalizedTarget - this.quoteStartDate) / msPerDay
+    );
+
+    return ((diffDays % this.quotes.length) + this.quotes.length) % this.quotes.length;
+  }
+
+  getDailyQuote() {
+    const index = this.getQuoteIndexForDate();
+    if (index === null) return null;
+    return this.quotes[index];
+  }
+
+  renderDailyQuote() {
+    const card = document.getElementById("dailyQuoteCard");
+    if (!card) return;
+
+    const quoteText = document.getElementById("quoteText");
+    const quoteAuthor = document.getElementById("quoteAuthor");
+    const quoteDate = document.getElementById("quoteDate");
+
+    if (!this.quotes.length) {
+      card.classList.add("hidden");
+      return;
+    }
+
+    const quote = this.getDailyQuote();
+
+    if (!quote) {
+      card.classList.add("hidden");
+      return;
+    }
+
+    card.classList.remove("hidden");
+    quoteText.textContent = `“${quote.text}”`;
+    quoteAuthor.textContent = quote.author;
+
+    const today = new Date();
+    quoteDate.textContent = today.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
   }
 
   scrollToTop() {

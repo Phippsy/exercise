@@ -1,0 +1,604 @@
+{
+  "quotes": [
+    {
+      "text": "The only bad workout is the one that didn't happen.",
+      "author": "Unknown"
+    },
+    {
+      "text": "Success starts with self-discipline.",
+      "author": "Dwayne 'The Rock' Johnson"
+    },
+    {
+      "text": "Strength does not come from winning. Your struggles develop your strengths.",
+      "author": "Arnold Schwarzenegger"
+    },
+    {
+      "text": "It never gets easier, you just get stronger.",
+      "author": "Unknown"
+    },
+    {
+      "text": "Discipline is the bridge between goals and accomplishment.",
+      "author": "Jim Rohn"
+    },
+    {
+      "text": "Motivation is what gets you started. Habit is what keeps you going.",
+      "author": "Jim Ryun"
+    },
+    {
+      "text": "If it doesn't challenge you, it won't change you.",
+      "author": "Fred DeVito"
+    },
+    {
+      "text": "Don't limit your challenges. Challenge your limits.",
+      "author": "Jerry Dunn"
+    },
+    {
+      "text": "Push yourself because no one else is going to do it for you.",
+      "author": "Unknown"
+    },
+    {
+      "text": "Your body can stand almost anything. It's your mind you have to convince.",
+      "author": "Unknown"
+    },
+    {
+      "text": "Small progress is still progress.",
+      "author": "Unknown"
+    },
+    {
+      "text": "Good things come to those who sweat.",
+      "author": "Unknown"
+    },
+    {
+      "text": "Sore today, strong tomorrow.",
+      "author": "Unknown"
+    },
+    {
+      "text": "When you feel like quitting, think about why you started.",
+      "author": "Unknown"
+    },
+    {
+      "text": "Wake up with determination. Go to bed with satisfaction.",
+      "author": "George Horace Lorimer"
+    },
+    {
+      "text": "Success is usually the culmination of controlling failure.",
+      "author": "Sylvester Stallone"
+    },
+    {
+      "text": "Pain is temporary. Quitting lasts forever.",
+      "author": "Lance Armstrong"
+    },
+    {
+      "text": "Action is the foundational key to all success.",
+      "author": "Pablo Picasso"
+    },
+    {
+      "text": "Today I will do what others won't, so tomorrow I can accomplish what others can't.",
+      "author": "Jerry Rice"
+    },
+    {
+      "text": "A year from now you may wish you had started today.",
+      "author": "Karen Lamb"
+    },
+    {
+      "text": "Excellence is not a singular act but a habit. You are what you repeatedly do.",
+      "author": "Shaquille O'Neal"
+    },
+    {
+      "text": "Do something today that your future self will thank you for.",
+      "author": "Sean Patrick Flanery"
+    },
+    {
+      "text": "There are no shortcuts to any place worth going.",
+      "author": "Beverly Sills"
+    },
+    {
+      "text": "Success is not for the chosen few but for the few who choose.",
+      "author": "Unknown"
+    },
+    {
+      "text": "Once you see results, it becomes an addiction.",
+      "author": "Unknown"
+    },
+    {
+      "text": "The last three or four reps is what makes the muscle grow.",
+      "author": "Arnold Schwarzenegger"
+    },
+    {
+      "text": "You don't have to be extreme, just consistent.",
+      "author": "Unknown"
+    },
+    {
+      "text": "Champions keep playing until they get it right.",
+      "author": "Billie Jean King"
+    },
+    {
+      "text": "Energy and persistence conquer all things.",
+      "author": "Benjamin Franklin"
+    },
+    {
+      "text": "The pain you feel today will be the strength you feel tomorrow.",
+      "author": "Stephen Richards"
+    },
+    {
+      "text": "A little progress each day adds up to big results.",
+      "author": "Satya Nani"
+    },
+    {
+      "text": "Fall in love with the process and the results will come.",
+      "author": "Unknown"
+    },
+    {
+      "text": "The difference between try and triumph is a little umph.",
+      "author": "Marvin Phillips"
+    },
+    {
+      "text": "What seems impossible today will one day become your warm-up.",
+      "author": "Unknown"
+    },
+    {
+      "text": "You are one workout away from a good mood.",
+      "author": "Unknown"
+    },
+    {
+      "text": "Don't stop when you're tired. Stop when you're done.",
+      "author": "Marilyn Monroe"
+    },
+    {
+      "text": "Be stronger than your excuses.",
+      "author": "Unknown"
+    },
+    {
+      "text": "The body achieves what the mind believes.",
+      "author": "Napoleon Hill"
+    },
+    {
+      "text": "Success is the sum of small efforts, repeated day in and day out.",
+      "author": "Robert Collier"
+    },
+    {
+      "text": "Nothing will work unless you do.",
+      "author": "Maya Angelou"
+    },
+    {
+      "text": "Sweat is fat crying.",
+      "author": "Unknown"
+    },
+    {
+      "text": "Once you learn to quit, it becomes a habit.",
+      "author": "Vince Lombardi"
+    },
+    {
+      "text": "If you think lifting is dangerous, try being weak.",
+      "author": "Paul Coach Carter"
+    },
+    {
+      "text": "Fitness is like a relationship. You can't cheat and expect it to work.",
+      "author": "Unknown"
+    },
+    {
+      "text": "You miss 100% of the shots you don't take.",
+      "author": "Wayne Gretzky"
+    },
+    {
+      "text": "Don't wish for it. Work for it.",
+      "author": "Unknown"
+    },
+    {
+      "text": "Strive for progress, not perfection.",
+      "author": "David Perlmutter"
+    },
+    {
+      "text": "A champion is someone who gets up when they can't.",
+      "author": "Jack Dempsey"
+    },
+    {
+      "text": "You are your only limit.",
+      "author": "Unknown"
+    },
+    {
+      "text": "Hustle for that muscle.",
+      "author": "Unknown"
+    },
+    {
+      "text": "Dreams don't work unless you do.",
+      "author": "John C. Maxwell"
+    },
+    {
+      "text": "Champions train, losers complain.",
+      "author": "Unknown"
+    },
+    {
+      "text": "It's supposed to be hard. If it were easy, everyone would do it.",
+      "author": "Jimmy Dugan"
+    },
+    {
+      "text": "If something stands between you and your success, move it.",
+      "author": "Dwayne 'The Rock' Johnson"
+    },
+    {
+      "text": "The clock is ticking. Are you becoming the person you want to be?",
+      "author": "Greg Plitt"
+    },
+    {
+      "text": "Hard work beats talent when talent doesn't work hard.",
+      "author": "Tim Notke"
+    },
+    {
+      "text": "You have to expect things of yourself before you can do them.",
+      "author": "Michael Jordan"
+    },
+    {
+      "text": "Success is walking from failure to failure with no loss of enthusiasm.",
+      "author": "Winston Churchill"
+    },
+    {
+      "text": "Believe in yourself and all that you are.",
+      "author": "Christian D. Larson"
+    },
+    {
+      "text": "Success at anything will always come down to focus and effort.",
+      "author": "Dwayne 'The Rock' Johnson"
+    },
+    {
+      "text": "There is no substitute for work.",
+      "author": "Thomas Edison"
+    },
+    {
+      "text": "The pain of discipline is far less than the pain of regret.",
+      "author": "Sarah Bombell"
+    },
+    {
+      "text": "Champions are made from something they have deep inside them.",
+      "author": "Muhammad Ali"
+    },
+    {
+      "text": "Your health account, your bank account, they're the same. The more you put in, the more you can take out.",
+      "author": "Jack LaLanne"
+    },
+    {
+      "text": "Success isn't always about greatness. It's about consistency.",
+      "author": "Dwayne 'The Rock' Johnson"
+    },
+    {
+      "text": "When you have a clear vision of your goal, it's easier to take the first step.",
+      "author": "LL Cool J"
+    },
+    {
+      "text": "We are what we repeatedly do. Excellence, then, is not an act, but a habit.",
+      "author": "Aristotle"
+    },
+    {
+      "text": "Intensity builds immensity.",
+      "author": "Kevin Levrone"
+    },
+    {
+      "text": "The resistance you fight physically will build your character.",
+      "author": "Arnold Schwarzenegger"
+    },
+    {
+      "text": "No matter how slow you go, you are still lapping everybody on the couch.",
+      "author": "Unknown"
+    },
+    {
+      "text": "Discipline equals freedom.",
+      "author": "Jocko Willink"
+    },
+    {
+      "text": "You don't have to be great to start, but you have to start to be great.",
+      "author": "Zig Ziglar"
+    },
+    {
+      "text": "Success requires replacement of vague wishes with vivid dreams.",
+      "author": "Stephen Covey"
+    },
+    {
+      "text": "What hurts today makes you stronger tomorrow.",
+      "author": "Jay Cutler"
+    },
+    {
+      "text": "Confidence comes from hours and days and weeks and years of constant work and dedication.",
+      "author": "Roger Staubach"
+    },
+    {
+      "text": "It does not matter how slowly you go as long as you do not stop.",
+      "author": "Confucius"
+    },
+    {
+      "text": "Strong people are harder to kill and more useful in general.",
+      "author": "Mark Rippetoe"
+    },
+    {
+      "text": "Every strike brings me closer to the next home run.",
+      "author": "Babe Ruth"
+    },
+    {
+      "text": "Your success is found in your daily routine.",
+      "author": "John C. Maxwell"
+    },
+    {
+      "text": "Work hard in silence, let success be your noise.",
+      "author": "Frank Ocean"
+    },
+    {
+      "text": "Today is another chance to get better.",
+      "author": "Unknown"
+    },
+    {
+      "text": "It's a slow process, but quitting won't speed it up.",
+      "author": "Unknown"
+    },
+    {
+      "text": "The best way to predict the future is to create it.",
+      "author": "Peter Drucker"
+    },
+    {
+      "text": "Nothing great was ever achieved without enthusiasm.",
+      "author": "Ralph Waldo Emerson"
+    },
+    {
+      "text": "Your body hears everything your mind says.",
+      "author": "Naomi Judd"
+    },
+    {
+      "text": "Success is 10% inspiration and 90% perspiration.",
+      "author": "Thomas Edison"
+    },
+    {
+      "text": "Make your workouts your best meetings of the day.",
+      "author": "Unknown"
+    },
+    {
+      "text": "Be the hardest worker in the room.",
+      "author": "Dwayne 'The Rock' Johnson"
+    },
+    {
+      "text": "Fitness is not about being better than someone else, it's about being better than you used to be.",
+      "author": "Khloe Kardashian"
+    },
+    {
+      "text": "What you lack in talent can be made up with desire and hustle.",
+      "author": "Don Zimmer"
+    },
+    {
+      "text": "Consistency is what turns average into excellence.",
+      "author": "Unknown"
+    },
+    {
+      "text": "Show up, even when you don't want to.",
+      "author": "Unknown"
+    },
+    {
+      "text": "Don't count the days, make the days count.",
+      "author": "Muhammad Ali"
+    },
+    {
+      "text": "Train hard, stay humble.",
+      "author": "Unknown"
+    },
+    {
+      "text": "The future depends on what you do today.",
+      "author": "Mahatma Gandhi"
+    },
+    {
+      "text": "There is no finish line.",
+      "author": "Nike"
+    },
+    {
+      "text": "Quality is not an act, it is a habit.",
+      "author": "Aristotle"
+    },
+    {
+      "text": "Your body hears 'I can't' and shuts down. Tell it 'I can.'",
+      "author": "Unknown"
+    },
+    {
+      "text": "Doubt kills more dreams than failure ever will.",
+      "author": "Suzy Kassem"
+    },
+    {
+      "text": "Repetition is the mother of skill.",
+      "author": "Tony Robbins"
+    },
+    {
+      "text": "Courage is taking those first steps to your dream even if you can\u2019t see the path ahead.",
+      "author": "Mandy Hale"
+    },
+    {
+      "text": "Sweat, smile, and repeat.",
+      "author": "Unknown"
+    },
+    {
+      "text": "Success is little more than dedication to the things others are afraid to do.",
+      "author": "Cory Gregory"
+    },
+    {
+      "text": "Don't let what you cannot do interfere with what you can do.",
+      "author": "John Wooden"
+    },
+    {
+      "text": "Those who think they have not time for bodily exercise will sooner or later have to find time for illness.",
+      "author": "Edward Stanley"
+    },
+    {
+      "text": "The real workout starts when you want to stop.",
+      "author": "Ronnie Coleman"
+    },
+    {
+      "text": "Strength grows in the moments when you think you can\u2019t go on but you keep going anyway.",
+      "author": "Unknown"
+    },
+    {
+      "text": "Consistency rep 108: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 109: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 110: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 111: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 112: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 113: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 114: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 115: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 116: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 117: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 118: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 119: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 120: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 121: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 122: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 123: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 124: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 125: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 126: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 127: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 128: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 129: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 130: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 131: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 132: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 133: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 134: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 135: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 136: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 137: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 138: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 139: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 140: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 141: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 142: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 143: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 144: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 145: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 146: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 147: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 148: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 149: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    },
+    {
+      "text": "Consistency rep 150: small choices stacked together build unstoppable momentum.",
+      "author": "Training Proverb"
+    }
+  ]
+}
