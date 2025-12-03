@@ -2366,7 +2366,9 @@ class WorkoutTracker {
     document.getElementById("editWorkoutNotes").value = workout.notes || "";
 
     // Render exercise selector with current exercises checked
-    this.renderEditExerciseSelector(workout.exercises);
+    // Guard against missing exercise lists so the modal still renders
+    // even if imported data is incomplete.
+    this.renderEditExerciseSelector(workout.exercises || []);
 
     // Show the edit modal
     document.getElementById("editWorkoutModal").classList.remove("hidden");
@@ -2377,7 +2379,7 @@ class WorkoutTracker {
     document.getElementById("editWorkoutForm").reset();
   }
 
-  renderEditExerciseSelector(currentExercises) {
+  renderEditExerciseSelector(currentExercises = []) {
     const container = document.getElementById("editExerciseSelector");
 
     if (this.exerciseLibrary.length === 0) {
