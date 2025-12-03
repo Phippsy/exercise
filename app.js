@@ -199,28 +199,6 @@ class WorkoutTracker {
       this.toggleTheme();
     });
 
-    // Explore workouts button - scroll to workout list
-    document
-      .getElementById("exploreWorkoutsBtn")
-      .addEventListener("click", () => {
-        const workoutList = document.getElementById("workoutList");
-        const firstWorkout = workoutList.querySelector(".workout-card");
-        if (firstWorkout) {
-          const header = document.querySelector(".app-header");
-          const headerOffset =
-            window.innerWidth <= 768
-              ? (header?.offsetHeight || 0) + 12
-              : 20;
-          const y =
-            firstWorkout.getBoundingClientRect().top +
-            window.pageYOffset -
-            headerOffset;
-          window.scrollTo({ top: y, behavior: "smooth" });
-        } else {
-          workoutList.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
-      });
-
     // Daily quote
     const quoteToggle = document.getElementById("quoteToggle");
     const quoteCard = document.getElementById("dailyQuoteCard");
