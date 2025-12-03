@@ -14,6 +14,7 @@ class WorkoutTracker {
     this.pairedExercises = null;
     this.onboardingStep = 0;
     this.onboardingSteps = [];
+    this.onboardingFocusElement = null;
 
     this.init();
   }
@@ -23,6 +24,7 @@ class WorkoutTracker {
     this.loadSessions();
     this.loadUserName();
     this.loadTheme();
+    this.setupScreeningQuestion();
     this.setupEventListeners();
     this.renderWorkoutList();
     this.renderActivityOverview();
@@ -134,6 +136,18 @@ class WorkoutTracker {
     }
   }
 
+  getLocalDateKey(date = new Date()) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+
+  isToday(dateString) {
+    if (!dateString) return false;
+    return this.getLocalDateKey(new Date(dateString)) === this.getLocalDateKey();
+  }
+
   toggleTheme() {
     const isLight = document.body.classList.toggle("light-mode");
     localStorage.setItem("theme", isLight ? "light" : "dark");
@@ -153,6 +167,70 @@ class WorkoutTracker {
       darkIcon.classList.remove("hidden");
       lightIcon.classList.add("hidden");
       toggleText.textContent = "Light";
+    }
+  }
+
+  setupScreeningQuestion() {
+    const card = document.getElementById("screeningQuestionCard");
+    if (!card) return;
+
+    card.querySelectorAll("[data-screening-answer]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const answer = btn.getAttribute("data-screening-answer");
+        this.saveScreeningResponse(answer);
+        this.updateScreeningStatus();
+        this.showSuccessMessage("Thanks for checking in!");
+      });
+    });
+
+    this.updateScreeningStatus();
+  }
+
+  saveScreeningResponse(answer) {
+    const response = {
+      answer,
+      date: this.getLocalDateKey(),
+    };
+    localStorage.setItem("screeningResponse", JSON.stringify(response));
+  }
+
+  getScreeningResponseForToday() {
+    const stored = localStorage.getItem("screeningResponse");
+    if (!stored) return null;
+    try {
+      const parsed = JSON.parse(stored);
+      return parsed.date === this.getLocalDateKey() ? parsed : null;
+    } catch (error) {
+      console.error("Error parsing screening response", error);
+      return null;
+    }
+  }
+
+  updateScreeningStatus() {
+    const status = document.getElementById("screeningStatus");
+    const buttons = document.querySelectorAll("[data-screening-answer]");
+    const response = this.getScreeningResponseForToday();
+
+    buttons.forEach((btn) => btn.classList.remove("active"));
+
+    if (!status) return;
+
+    if (!response) {
+      status.textContent = "Not answered";
+      status.classList.remove("pill-success");
+      status.classList.add("pill-soft");
+      return;
+    }
+
+    status.textContent = `Logged: ${response.answer}`;
+    status.classList.remove("pill-soft");
+    status.classList.add("pill-success");
+
+    const activeButton = Array.from(buttons).find(
+      (btn) => btn.getAttribute("data-screening-answer") === response.answer
+    );
+    if (activeButton) {
+      activeButton.classList.add("active");
     }
   }
 
@@ -485,7 +563,16 @@ class WorkoutTracker {
 
     const meta = document.createElement("div");
     meta.className = "workout-card-meta";
+    const completion = this.getWorkoutCompletion(workout);
     meta.textContent = `${workout.exercises.length} exercises`;
+
+    if (completion.allCompleted) {
+      card.classList.add("workout-completed-today");
+      const badge = document.createElement("span");
+      badge.className = "pill pill-success workout-completion-badge";
+      badge.textContent = "All done today";
+      meta.appendChild(badge);
+    }
 
     card.appendChild(title);
     card.appendChild(meta);
@@ -564,6 +651,28 @@ class WorkoutTracker {
     }
   }
 
+  isExerciseCompletedToday(exercise, workoutId) {
+    return this.sessions.some(
+      (session) =>
+        session.exerciseName === exercise.name &&
+        session.workoutId === workoutId &&
+        this.isToday(session.date)
+    );
+  }
+
+  getWorkoutCompletion(workout) {
+    const total = workout.exercises.length;
+    const completed = workout.exercises.filter((exercise) =>
+      this.isExerciseCompletedToday(exercise, workout.id)
+    ).length;
+
+    return {
+      total,
+      completed,
+      allCompleted: total > 0 && completed === total,
+    };
+  }
+
   showExerciseList(workout) {
     this.currentWorkout = workout;
     this.pairMode = false;
@@ -634,6 +743,9 @@ class WorkoutTracker {
     const content = document.createElement("div");
     content.className = "exercise-item-content";
 
+    const details = document.createElement("div");
+    details.className = "exercise-item-details";
+
     const name = document.createElement("div");
     name.className = "exercise-item-name";
     name.textContent = exercise.name;
@@ -651,8 +763,25 @@ class WorkoutTracker {
       meta.textContent = exercise.muscle_group;
     }
 
-    content.appendChild(name);
-    content.appendChild(meta);
+    details.appendChild(name);
+    details.appendChild(meta);
+    content.appendChild(details);
+
+    const status = document.createElement("div");
+    status.className = "exercise-item-status";
+    const completedToday = this.isExerciseCompletedToday(
+      exercise,
+      this.currentWorkout.id
+    );
+
+    if (completedToday) {
+      item.classList.add("exercise-completed-today");
+      const badge = document.createElement("span");
+      badge.className = "pill pill-success";
+      badge.textContent = "Completed today";
+      status.appendChild(badge);
+      content.appendChild(status);
+    }
 
     const chevron = document.createElement("div");
     chevron.className = "exercise-item-chevron";
@@ -974,6 +1103,8 @@ class WorkoutTracker {
       this.pairedExercises[0],
       this.pairedExercises[1]
     );
+
+    this.scrollToTop();
   }
 
   getPairedSets(exerciseNum) {
@@ -1182,6 +1313,8 @@ class WorkoutTracker {
     // Refresh the view
     this.showExerciseDetail(this.currentExercise);
 
+    this.scrollToTop();
+
     // Show success feedback
     this.showSuccessMessage("Session saved successfully!");
   }
@@ -1238,6 +1371,10 @@ class WorkoutTracker {
   // ============================================
 
   refreshInsights() {
+    this.renderWorkoutList();
+    if (this.currentWorkout) {
+      this.renderExerciseList();
+    }
     this.renderActivityOverview();
     this.renderWorkoutOverview();
     if (this.currentWorkout) {
@@ -1531,23 +1668,36 @@ class WorkoutTracker {
         title: "Welcome to Workout Tracker",
         body:
           "Track workouts, log sets, and keep your routine consistent. Let's take a 30-second tour.",
+        viewId: "workoutListView",
+      },
+      {
+        title: "Start with a quick check-in",
+        body:
+          "Answer today's screening question so you note how you're feeling before training.",
+        viewId: "workoutListView",
+        focusId: "screeningQuestionCard",
       },
       {
         title: "Pick a workout",
         body:
           "Start on the home screen, tap a workout, and you'll see the exercises inside. Add your own anytime via Manage.",
+        viewId: "workoutListView",
       },
       {
         title: "Log sets with ease",
         body:
           "Open an exercise to see your last session, add sets with reps and weight, and save to build history.",
+        viewId: "exerciseListView",
       },
       {
         title: "Review insights",
         body:
           "Mini charts highlight recent activity and frequency so you stay on pace. You can dismiss this tour anytime.",
+        viewId: "workoutListView",
       },
     ];
+
+    this.renderOnboardingDots();
 
     const seenTour = localStorage.getItem("onboardingSeen");
     if (!seenTour) {
@@ -1593,6 +1743,8 @@ class WorkoutTracker {
         parseInt(dot.dataset.step) === this.onboardingStep
       );
     });
+
+    this.applyOnboardingStepContext(step);
   }
 
   advanceOnboarding() {
@@ -1613,6 +1765,54 @@ class WorkoutTracker {
   dismissOnboarding() {
     localStorage.setItem("onboardingSeen", "true");
     this.hideOnboarding();
+    if (this.onboardingFocusElement) {
+      this.onboardingFocusElement.classList.remove("tour-highlight");
+      this.onboardingFocusElement = null;
+    }
+  }
+
+  renderOnboardingDots() {
+    const container = document.querySelector(".onboarding-progress");
+    if (!container) return;
+
+    container.innerHTML = "";
+    this.onboardingSteps.forEach((_, index) => {
+      const dot = document.createElement("span");
+      dot.className = "onboarding-dot";
+      dot.dataset.step = index;
+      container.appendChild(dot);
+    });
+  }
+
+  applyOnboardingStepContext(step) {
+    if (!step) return;
+
+    if (step.viewId) {
+      if (step.viewId === "exerciseListView") {
+        const workout = this.currentWorkout || this.workouts[0];
+        if (workout) {
+          this.showExerciseList(workout);
+        }
+      } else {
+        this.showView(step.viewId);
+      }
+    }
+
+    if (this.onboardingFocusElement) {
+      this.onboardingFocusElement.classList.remove("tour-highlight");
+    }
+
+    if (step.focusId) {
+      const target = document.getElementById(step.focusId);
+      if (target) {
+        target.classList.add("tour-highlight");
+        target.scrollIntoView({ behavior: "smooth", block: "center" });
+        this.onboardingFocusElement = target;
+        return;
+      }
+    }
+
+    this.onboardingFocusElement = null;
   }
 
   // ============================================
@@ -2384,6 +2584,10 @@ class WorkoutTracker {
       day: "numeric",
     };
     dateElement.textContent = now.toLocaleDateString("en-US", options);
+  }
+
+  scrollToTop() {
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   showSuccessMessage(message) {
