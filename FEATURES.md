@@ -3,6 +3,7 @@
 ## 🎨 Application Views
 
 ### 1. Workout Selection Screen
+
 ```
 ┌─────────────────────────────────────────────────┐
 │  Workout Tracker                                │
@@ -31,6 +32,7 @@
 ```
 
 ### 2. Exercise List Screen
+
 ```
 ┌─────────────────────────────────────────────────┐
 │  ← Back to Workouts                             │
@@ -57,6 +59,7 @@
 ```
 
 ### 3. Exercise Detail & Session Logging
+
 ```
 ┌─────────────────────────────────────────────────┐
 │  ← Back to Exercises                            │
@@ -97,6 +100,7 @@
 ## 🎯 Key Features Illustrated
 
 ### Auto-Population from Previous Session
+
 ```
 You did this last time:      →    Today's form starts with:
 ┌─────────────────┐          →    ┌─────────────────┐
@@ -108,6 +112,7 @@ You did this last time:      →    Today's form starts with:
 ```
 
 ### Easy Increment/Decrement
+
 ```
 Current Weight: 22.5 kg
 
@@ -118,6 +123,7 @@ Quick adjustments without typing!
 ```
 
 ### Flexible Set Management
+
 ```
 Starting with:              After changes:
 ┌─────────────┐            ┌─────────────┐
@@ -137,16 +143,19 @@ Starting with:              After changes:
 The app works on all screen sizes:
 
 ### Desktop (1200px+)
+
 - 2-column workout grid
 - Spacious form layout
 - All features visible
 
 ### Tablet (768px - 1199px)
+
 - 2-column workout grid
 - Compact form layout
 - Easy touch targets
 
 ### Mobile (< 768px)
+
 - 1-column workout grid
 - Stacked form controls
 - Large touch-friendly buttons

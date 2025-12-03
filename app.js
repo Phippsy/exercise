@@ -3,527 +3,571 @@
 // ============================================
 
 class WorkoutTracker {
-    constructor() {
-        this.workouts = [];
-        this.sessions = [];
-        this.exerciseLibrary = []; // Master list of all available exercises
-        this.currentWorkout = null;
-        this.currentExercise = null;
-        this.pairMode = false;
-        this.selectedExercises = [];
-        this.pairedExercises = null;
-        
-        this.init();
+  constructor() {
+    this.workouts = [];
+    this.sessions = [];
+    this.exerciseLibrary = []; // Master list of all available exercises
+    this.currentWorkout = null;
+    this.currentExercise = null;
+    this.pairMode = false;
+    this.selectedExercises = [];
+    this.pairedExercises = null;
+
+    this.init();
+  }
+
+  async init() {
+    await this.loadWorkouts();
+    this.loadSessions();
+    this.setupEventListeners();
+    this.renderWorkoutList();
+    this.updateCurrentDate();
+  }
+
+  // ============================================
+  // Data Loading
+  // ============================================
+
+  async loadWorkouts() {
+    try {
+      const response = await fetch("data/exercises.json");
+      const data = await response.json();
+
+      // Load from localStorage if available
+      const storedWorkouts = localStorage.getItem("workouts");
+      if (storedWorkouts) {
+        this.workouts = JSON.parse(storedWorkouts);
+      } else {
+        this.workouts = data.workouts;
+        this.saveWorkouts();
+      }
+
+      // Build exercise library from all exercises
+      this.buildExerciseLibrary();
+    } catch (error) {
+      console.error("Error loading workouts:", error);
+      this.workouts = [];
     }
-    
-    async init() {
-        await this.loadWorkouts();
-        this.loadSessions();
-        this.setupEventListeners();
-        this.renderWorkoutList();
-        this.updateCurrentDate();
-    }
-    
-    // ============================================
-    // Data Loading
-    // ============================================
-    
-    async loadWorkouts() {
-        try {
-            const response = await fetch('data/exercises.json');
-            const data = await response.json();
-            
-            // Load from localStorage if available
-            const storedWorkouts = localStorage.getItem('workouts');
-            if (storedWorkouts) {
-                this.workouts = JSON.parse(storedWorkouts);
-            } else {
-                this.workouts = data.workouts;
-                this.saveWorkouts();
-            }
-            
-            // Build exercise library from all exercises
-            this.buildExerciseLibrary();
-        } catch (error) {
-            console.error('Error loading workouts:', error);
-            this.workouts = [];
+  }
+
+  buildExerciseLibrary() {
+    const exerciseMap = new Map();
+
+    // Collect all unique exercises from all workouts
+    this.workouts.forEach((workout) => {
+      workout.exercises.forEach((exercise) => {
+        if (!exerciseMap.has(exercise.name)) {
+          exerciseMap.set(exercise.name, {
+            name: exercise.name,
+            muscle_group: exercise.muscle_group,
+            sets: exercise.sets,
+            reps: exercise.reps,
+            weight_kg: exercise.weight_kg,
+            notes: exercise.notes,
+          });
         }
+      });
+    });
+
+    this.exerciseLibrary = Array.from(exerciseMap.values());
+    this.saveExerciseLibrary();
+  }
+
+  saveWorkouts() {
+    localStorage.setItem("workouts", JSON.stringify(this.workouts));
+  }
+
+  saveExerciseLibrary() {
+    localStorage.setItem(
+      "exerciseLibrary",
+      JSON.stringify(this.exerciseLibrary)
+    );
+  }
+
+  loadSessions() {
+    const stored = localStorage.getItem("workoutSessions");
+    this.sessions = stored ? JSON.parse(stored) : [];
+  }
+
+  saveSessions() {
+    localStorage.setItem("workoutSessions", JSON.stringify(this.sessions));
+  }
+
+  // ============================================
+  // Event Listeners
+  // ============================================
+
+  setupEventListeners() {
+    // Navigation buttons
+    document.getElementById("backToWorkouts").addEventListener("click", () => {
+      this.showView("workoutListView");
+    });
+
+    document.getElementById("backToExercises").addEventListener("click", () => {
+      this.pairedExercises = null;
+      this.showExerciseList(this.currentWorkout);
+    });
+
+    // Session form
+    document.getElementById("sessionForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      this.saveSession();
+    });
+
+    document.getElementById("addSetBtn").addEventListener("click", () => {
+      this.addSetRow();
+    });
+
+    // Pair mode
+    document.getElementById("pairModeToggle").addEventListener("click", () => {
+      this.togglePairMode();
+    });
+
+    // Paired exercise controls
+    document
+      .getElementById("pairedAddSetBtn1")
+      .addEventListener("click", () => {
+        this.addPairedSetRow(1);
+      });
+
+    document
+      .getElementById("pairedAddSetBtn2")
+      .addEventListener("click", () => {
+        this.addPairedSetRow(2);
+      });
+
+    document
+      .getElementById("savePairedSessionBtn")
+      .addEventListener("click", () => {
+        this.savePairedSession();
+      });
+
+    // Export/Import functionality
+    document.getElementById("exportDataBtn").addEventListener("click", () => {
+      this.exportData();
+    });
+
+    document.getElementById("importDataBtn").addEventListener("click", () => {
+      document.getElementById("fileInput").click();
+    });
+
+    document.getElementById("fileInput").addEventListener("change", (e) => {
+      this.importData(e);
+    });
+
+    // Management view
+    document.getElementById("manageBtn").addEventListener("click", () => {
+      this.showManagementView();
+    });
+
+    document
+      .getElementById("closeManagementBtn")
+      .addEventListener("click", () => {
+        this.hideManagementView();
+      });
+
+    document
+      .querySelector(".management-overlay")
+      .addEventListener("click", () => {
+        this.hideManagementView();
+      });
+
+    // Management tabs
+    document.querySelectorAll(".management-tab").forEach((tab) => {
+      tab.addEventListener("click", (e) => {
+        this.switchManagementTab(e.target.dataset.tab);
+      });
+    });
+
+    // Exercise creation
+    document
+      .getElementById("createExerciseForm")
+      .addEventListener("submit", (e) => {
+        e.preventDefault();
+        this.createExercise();
+      });
+
+    // Workout creation
+    document
+      .getElementById("createWorkoutForm")
+      .addEventListener("submit", (e) => {
+        e.preventDefault();
+        this.createWorkout();
+      });
+
+    // Workout editing
+    document
+      .getElementById("closeEditWorkoutBtn")
+      .addEventListener("click", () => {
+        this.hideEditWorkoutModal();
+      });
+
+    document
+      .getElementById("cancelEditWorkoutBtn")
+      .addEventListener("click", () => {
+        this.hideEditWorkoutModal();
+      });
+
+    document
+      .querySelector("#editWorkoutModal .management-overlay")
+      .addEventListener("click", () => {
+        this.hideEditWorkoutModal();
+      });
+
+    document
+      .getElementById("editWorkoutForm")
+      .addEventListener("submit", (e) => {
+        e.preventDefault();
+        this.saveWorkoutEdit();
+      });
+  }
+
+  // ============================================
+  // View Management
+  // ============================================
+
+  showView(viewId) {
+    const views = document.querySelectorAll(".view");
+    views.forEach((view) => view.classList.add("hidden"));
+    document.getElementById(viewId).classList.remove("hidden");
+  }
+
+  // ============================================
+  // Workout List View
+  // ============================================
+
+  renderWorkoutList() {
+    const container = document.getElementById("workoutList");
+    container.innerHTML = "";
+
+    this.workouts.forEach((workout) => {
+      const card = this.createWorkoutCard(workout);
+      container.appendChild(card);
+    });
+  }
+
+  createWorkoutCard(workout) {
+    const card = document.createElement("div");
+    card.className = "workout-card";
+    card.setAttribute("tabindex", "0");
+    card.setAttribute("role", "button");
+
+    const title = document.createElement("h3");
+    title.className = "workout-card-title";
+    title.textContent = workout.name;
+
+    const meta = document.createElement("div");
+    meta.className = "workout-card-meta";
+    meta.textContent = `${workout.exercises.length} exercises`;
+
+    card.appendChild(title);
+    card.appendChild(meta);
+
+    card.addEventListener("click", () => this.showExerciseList(workout));
+    card.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        this.showExerciseList(workout);
+      }
+    });
+
+    return card;
+  }
+
+  // ============================================
+  // Exercise List View
+  // ============================================
+
+  togglePairMode() {
+    this.pairMode = !this.pairMode;
+    this.selectedExercises = [];
+
+    const toggleBtn = document.getElementById("pairModeToggle");
+    const toggleText = document.getElementById("pairModeText");
+    const notice = document.getElementById("pairModeNotice");
+
+    if (this.pairMode) {
+      toggleBtn.classList.add("btn-primary");
+      toggleBtn.classList.remove("btn-secondary");
+      toggleText.textContent = "Cancel Pairing";
+      notice.classList.remove("hidden");
+    } else {
+      toggleBtn.classList.remove("btn-primary");
+      toggleBtn.classList.add("btn-secondary");
+      toggleText.textContent = "Pair Exercises";
+      notice.classList.add("hidden");
     }
-    
-    buildExerciseLibrary() {
-        const exerciseMap = new Map();
-        
-        // Collect all unique exercises from all workouts
-        this.workouts.forEach(workout => {
-            workout.exercises.forEach(exercise => {
-                if (!exerciseMap.has(exercise.name)) {
-                    exerciseMap.set(exercise.name, {
-                        name: exercise.name,
-                        muscle_group: exercise.muscle_group,
-                        sets: exercise.sets,
-                        reps: exercise.reps,
-                        weight_kg: exercise.weight_kg,
-                        notes: exercise.notes
-                    });
-                }
-            });
-        });
-        
-        this.exerciseLibrary = Array.from(exerciseMap.values());
-        this.saveExerciseLibrary();
+
+    this.renderExerciseList();
+  }
+
+  handleExerciseSelection(exercise, checkbox) {
+    if (checkbox.checked) {
+      this.selectedExercises.push(exercise);
+    } else {
+      this.selectedExercises = this.selectedExercises.filter(
+        (e) => e.name !== exercise.name
+      );
     }
-    
-    saveWorkouts() {
-        localStorage.setItem('workouts', JSON.stringify(this.workouts));
+
+    const noticeText = document.getElementById("pairModeNoticeText");
+
+    if (this.selectedExercises.length === 0) {
+      noticeText.textContent = "Select 2 exercises to pair";
+    } else if (this.selectedExercises.length === 1) {
+      noticeText.textContent = `Selected: ${this.selectedExercises[0].name} - Select 1 more`;
+    } else if (this.selectedExercises.length === 2) {
+      noticeText.textContent = "Opening paired view...";
+      // Show paired view
+      setTimeout(() => {
+        this.showPairedExerciseDetail(
+          this.selectedExercises[0],
+          this.selectedExercises[1]
+        );
+      }, 300);
     }
-    
-    saveExerciseLibrary() {
-        localStorage.setItem('exerciseLibrary', JSON.stringify(this.exerciseLibrary));
-    }
-    
-    loadSessions() {
-        const stored = localStorage.getItem('workoutSessions');
-        this.sessions = stored ? JSON.parse(stored) : [];
-    }
-    
-    saveSessions() {
-        localStorage.setItem('workoutSessions', JSON.stringify(this.sessions));
-    }
-    
-    // ============================================
-    // Event Listeners
-    // ============================================
-    
-    setupEventListeners() {
-        // Navigation buttons
-        document.getElementById('backToWorkouts').addEventListener('click', () => {
-            this.showView('workoutListView');
-        });
-        
-        document.getElementById('backToExercises').addEventListener('click', () => {
-            this.pairedExercises = null;
-            this.showExerciseList(this.currentWorkout);
-        });
-        
-        // Session form
-        document.getElementById('sessionForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.saveSession();
-        });
-        
-        document.getElementById('addSetBtn').addEventListener('click', () => {
-            this.addSetRow();
-        });
-        
-        // Pair mode
-        document.getElementById('pairModeToggle').addEventListener('click', () => {
-            this.togglePairMode();
-        });
-        
-        // Paired exercise controls
-        document.getElementById('pairedAddSetBtn1').addEventListener('click', () => {
-            this.addPairedSetRow(1);
-        });
-        
-        document.getElementById('pairedAddSetBtn2').addEventListener('click', () => {
-            this.addPairedSetRow(2);
-        });
-        
-        document.getElementById('savePairedSessionBtn').addEventListener('click', () => {
-            this.savePairedSession();
-        });
-        
-        // Export/Import functionality
-        document.getElementById('exportDataBtn').addEventListener('click', () => {
-            this.exportData();
-        });
-        
-        document.getElementById('importDataBtn').addEventListener('click', () => {
-            document.getElementById('fileInput').click();
-        });
-        
-        document.getElementById('fileInput').addEventListener('change', (e) => {
-            this.importData(e);
-        });
-        
-        // Management view
-        document.getElementById('manageBtn').addEventListener('click', () => {
-            this.showManagementView();
-        });
-        
-        document.getElementById('closeManagementBtn').addEventListener('click', () => {
-            this.hideManagementView();
-        });
-        
-        document.querySelector('.management-overlay').addEventListener('click', () => {
-            this.hideManagementView();
-        });
-        
-        // Management tabs
-        document.querySelectorAll('.management-tab').forEach(tab => {
-            tab.addEventListener('click', (e) => {
-                this.switchManagementTab(e.target.dataset.tab);
-            });
-        });
-        
-        // Exercise creation
-        document.getElementById('createExerciseForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.createExercise();
-        });
-        
-        // Workout creation
-        document.getElementById('createWorkoutForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.createWorkout();
-        });
-        
-        // Workout editing
-        document.getElementById('closeEditWorkoutBtn').addEventListener('click', () => {
-            this.hideEditWorkoutModal();
-        });
-        
-        document.getElementById('cancelEditWorkoutBtn').addEventListener('click', () => {
-            this.hideEditWorkoutModal();
-        });
-        
-        document.querySelector('#editWorkoutModal .management-overlay').addEventListener('click', () => {
-            this.hideEditWorkoutModal();
-        });
-        
-        document.getElementById('editWorkoutForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.saveWorkoutEdit();
-        });
-    }
-    
-    // ============================================
-    // View Management
-    // ============================================
-    
-    showView(viewId) {
-        const views = document.querySelectorAll('.view');
-        views.forEach(view => view.classList.add('hidden'));
-        document.getElementById(viewId).classList.remove('hidden');
-    }
-    
-    // ============================================
-    // Workout List View
-    // ============================================
-    
-    renderWorkoutList() {
-        const container = document.getElementById('workoutList');
-        container.innerHTML = '';
-        
-        this.workouts.forEach(workout => {
-            const card = this.createWorkoutCard(workout);
-            container.appendChild(card);
-        });
-    }
-    
-    createWorkoutCard(workout) {
-        const card = document.createElement('div');
-        card.className = 'workout-card';
-        card.setAttribute('tabindex', '0');
-        card.setAttribute('role', 'button');
-        
-        const title = document.createElement('h3');
-        title.className = 'workout-card-title';
-        title.textContent = workout.name;
-        
-        const meta = document.createElement('div');
-        meta.className = 'workout-card-meta';
-        meta.textContent = `${workout.exercises.length} exercises`;
-        
-        card.appendChild(title);
-        card.appendChild(meta);
-        
-        card.addEventListener('click', () => this.showExerciseList(workout));
-        card.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                this.showExerciseList(workout);
-            }
-        });
-        
-        return card;
-    }
-    
-    // ============================================
-    // Exercise List View
-    // ============================================
-    
-    togglePairMode() {
-        this.pairMode = !this.pairMode;
-        this.selectedExercises = [];
-        
-        const toggleBtn = document.getElementById('pairModeToggle');
-        const toggleText = document.getElementById('pairModeText');
-        const notice = document.getElementById('pairModeNotice');
-        
-        if (this.pairMode) {
-            toggleBtn.classList.add('btn-primary');
-            toggleBtn.classList.remove('btn-secondary');
-            toggleText.textContent = 'Cancel Pairing';
-            notice.classList.remove('hidden');
-        } else {
-            toggleBtn.classList.remove('btn-primary');
-            toggleBtn.classList.add('btn-secondary');
-            toggleText.textContent = 'Pair Exercises';
-            notice.classList.add('hidden');
+
+    // Disable other checkboxes if 2 are selected
+    if (this.selectedExercises.length === 2) {
+      document.querySelectorAll(".exercise-item-checkbox").forEach((cb) => {
+        if (!cb.checked) {
+          cb.disabled = true;
         }
-        
-        this.renderExerciseList();
+      });
     }
-    
-    handleExerciseSelection(exercise, checkbox) {
-        if (checkbox.checked) {
-            this.selectedExercises.push(exercise);
-        } else {
-            this.selectedExercises = this.selectedExercises.filter(e => e.name !== exercise.name);
-        }
-        
-        const noticeText = document.getElementById('pairModeNoticeText');
-        
-        if (this.selectedExercises.length === 0) {
-            noticeText.textContent = 'Select 2 exercises to pair';
-        } else if (this.selectedExercises.length === 1) {
-            noticeText.textContent = `Selected: ${this.selectedExercises[0].name} - Select 1 more`;
-        } else if (this.selectedExercises.length === 2) {
-            noticeText.textContent = 'Opening paired view...';
-            // Show paired view
-            setTimeout(() => {
-                this.showPairedExerciseDetail(this.selectedExercises[0], this.selectedExercises[1]);
-            }, 300);
-        }
-        
-        // Disable other checkboxes if 2 are selected
-        if (this.selectedExercises.length === 2) {
-            document.querySelectorAll('.exercise-item-checkbox').forEach(cb => {
-                if (!cb.checked) {
-                    cb.disabled = true;
-                }
-            });
-        }
+  }
+
+  showExerciseList(workout) {
+    this.currentWorkout = workout;
+    this.pairMode = false;
+    this.selectedExercises = [];
+
+    // Reset pair mode UI
+    const toggleBtn = document.getElementById("pairModeToggle");
+    const toggleText = document.getElementById("pairModeText");
+    const notice = document.getElementById("pairModeNotice");
+
+    toggleBtn.classList.remove("btn-primary");
+    toggleBtn.classList.add("btn-secondary");
+    toggleText.textContent = "Pair Exercises";
+    notice.classList.add("hidden");
+
+    document.getElementById("currentWorkoutName").textContent = workout.name;
+    this.renderExerciseList();
+    this.showView("exerciseListView");
+  }
+
+  renderExerciseList() {
+    const container = document.getElementById("exerciseList");
+    container.innerHTML = "";
+
+    this.currentWorkout.exercises.forEach((exercise) => {
+      const item = this.createExerciseItem(exercise);
+      container.appendChild(item);
+    });
+  }
+
+  createExerciseItem(exercise) {
+    const item = document.createElement("div");
+    item.className = "exercise-item";
+
+    if (this.pairMode) {
+      item.classList.add("pair-mode");
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.className = "exercise-item-checkbox";
+      checkbox.addEventListener("change", (e) => {
+        e.stopPropagation();
+        this.handleExerciseSelection(exercise, checkbox);
+        item.classList.toggle("selected", checkbox.checked);
+      });
+      item.appendChild(checkbox);
+    } else {
+      item.setAttribute("tabindex", "0");
+      item.setAttribute("role", "button");
     }
-    
-    showExerciseList(workout) {
-        this.currentWorkout = workout;
-        this.pairMode = false;
-        this.selectedExercises = [];
-        
-        // Reset pair mode UI
-        const toggleBtn = document.getElementById('pairModeToggle');
-        const toggleText = document.getElementById('pairModeText');
-        const notice = document.getElementById('pairModeNotice');
-        
-        toggleBtn.classList.remove('btn-primary');
-        toggleBtn.classList.add('btn-secondary');
-        toggleText.textContent = 'Pair Exercises';
-        notice.classList.add('hidden');
-        
-        document.getElementById('currentWorkoutName').textContent = workout.name;
-        this.renderExerciseList();
-        this.showView('exerciseListView');
+
+    const content = document.createElement("div");
+    content.className = "exercise-item-content";
+
+    const name = document.createElement("div");
+    name.className = "exercise-item-name";
+    name.textContent = exercise.name;
+
+    const meta = document.createElement("div");
+    meta.className = "exercise-item-meta";
+
+    const lastSession = this.getLastSession(exercise.name);
+    if (lastSession) {
+      const date = new Date(lastSession.date);
+      meta.textContent = `Last: ${this.formatDate(date)} • ${
+        lastSession.sets.length
+      } sets`;
+    } else {
+      meta.textContent = exercise.muscle_group;
     }
-    
-    renderExerciseList() {
-        const container = document.getElementById('exerciseList');
-        container.innerHTML = '';
-        
-        this.currentWorkout.exercises.forEach(exercise => {
-            const item = this.createExerciseItem(exercise);
-            container.appendChild(item);
-        });
-    }
-    
-    createExerciseItem(exercise) {
-        const item = document.createElement('div');
-        item.className = 'exercise-item';
-        
-        if (this.pairMode) {
-            item.classList.add('pair-mode');
-            
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.className = 'exercise-item-checkbox';
-            checkbox.addEventListener('change', (e) => {
-                e.stopPropagation();
-                this.handleExerciseSelection(exercise, checkbox);
-                item.classList.toggle('selected', checkbox.checked);
-            });
-            item.appendChild(checkbox);
-        } else {
-            item.setAttribute('tabindex', '0');
-            item.setAttribute('role', 'button');
-        }
-        
-        const content = document.createElement('div');
-        content.className = 'exercise-item-content';
-        
-        const name = document.createElement('div');
-        name.className = 'exercise-item-name';
-        name.textContent = exercise.name;
-        
-        const meta = document.createElement('div');
-        meta.className = 'exercise-item-meta';
-        
-        const lastSession = this.getLastSession(exercise.name);
-        if (lastSession) {
-            const date = new Date(lastSession.date);
-            meta.textContent = `Last: ${this.formatDate(date)} • ${lastSession.sets.length} sets`;
-        } else {
-            meta.textContent = exercise.muscle_group;
-        }
-        
-        content.appendChild(name);
-        content.appendChild(meta);
-        
-        const chevron = document.createElement('div');
-        chevron.className = 'exercise-item-chevron';
-        chevron.innerHTML = `
+
+    content.appendChild(name);
+    content.appendChild(meta);
+
+    const chevron = document.createElement("div");
+    chevron.className = "exercise-item-chevron";
+    chevron.innerHTML = `
             <svg class="icon icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
             </svg>
         `;
-        
-        item.appendChild(content);
-        if (!this.pairMode) {
-            item.appendChild(chevron);
+
+    item.appendChild(content);
+    if (!this.pairMode) {
+      item.appendChild(chevron);
+    }
+
+    if (!this.pairMode) {
+      item.addEventListener("click", () => this.showExerciseDetail(exercise));
+      item.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          this.showExerciseDetail(exercise);
         }
-        
-        if (!this.pairMode) {
-            item.addEventListener('click', () => this.showExerciseDetail(exercise));
-            item.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    this.showExerciseDetail(exercise);
-                }
-            });
-        }
-        
-        return item;
+      });
     }
-    
-    // ============================================
-    // Exercise Detail View
-    // ============================================
-    
-    showExerciseDetail(exercise) {
-        this.currentExercise = exercise;
-        this.pairedExercises = null;
-        
-        document.getElementById('exerciseName').textContent = exercise.name;
-        document.getElementById('muscleGroup').textContent = exercise.muscle_group;
-        
-        // Show single exercise view, hide paired view
-        document.getElementById('singleExerciseView').classList.remove('hidden');
-        document.getElementById('pairedExerciseView').classList.add('hidden');
-        
-        this.renderPreviousSession(exercise);
-        this.renderSessionForm(exercise);
-        this.renderSessionHistory(exercise);
-        
-        this.showView('exerciseDetailView');
+
+    return item;
+  }
+
+  // ============================================
+  // Exercise Detail View
+  // ============================================
+
+  showExerciseDetail(exercise) {
+    this.currentExercise = exercise;
+    this.pairedExercises = null;
+
+    document.getElementById("exerciseName").textContent = exercise.name;
+    document.getElementById("muscleGroup").textContent = exercise.muscle_group;
+
+    // Show single exercise view, hide paired view
+    document.getElementById("singleExerciseView").classList.remove("hidden");
+    document.getElementById("pairedExerciseView").classList.add("hidden");
+
+    this.renderPreviousSession(exercise);
+    this.renderSessionForm(exercise);
+    this.renderSessionHistory(exercise);
+
+    this.showView("exerciseDetailView");
+  }
+
+  showPairedExerciseDetail(exercise1, exercise2) {
+    this.pairedExercises = [exercise1, exercise2];
+    this.pairMode = false;
+    this.selectedExercises = [];
+
+    document.getElementById(
+      "exerciseName"
+    ).textContent = `${exercise1.name} + ${exercise2.name}`;
+    document.getElementById("muscleGroup").textContent = "Paired Exercises";
+
+    // Hide single exercise view, show paired view
+    document.getElementById("singleExerciseView").classList.add("hidden");
+    document.getElementById("pairedExerciseView").classList.remove("hidden");
+
+    // Set up exercise 1
+    document.getElementById("pairedExercise1Name").textContent = exercise1.name;
+    document.getElementById("pairedExercise1MuscleGroup").textContent =
+      exercise1.muscle_group;
+    this.renderPairedPreviousSession(exercise1, "pairedPreviousSession1");
+    this.renderPairedSessionForm(exercise1, "pairedSetsContainer1", 1);
+
+    // Set up exercise 2
+    document.getElementById("pairedExercise2Name").textContent = exercise2.name;
+    document.getElementById("pairedExercise2MuscleGroup").textContent =
+      exercise2.muscle_group;
+    this.renderPairedPreviousSession(exercise2, "pairedPreviousSession2");
+    this.renderPairedSessionForm(exercise2, "pairedSetsContainer2", 2);
+
+    this.showView("exerciseDetailView");
+  }
+
+  renderPairedPreviousSession(exercise, containerId) {
+    const container = document.getElementById(containerId);
+    const lastSession = this.getLastSession(exercise.name);
+
+    if (!lastSession) {
+      container.innerHTML =
+        '<p class="previous-session-empty">No previous session</p>';
+      return;
     }
-    
-    showPairedExerciseDetail(exercise1, exercise2) {
-        this.pairedExercises = [exercise1, exercise2];
-        this.pairMode = false;
-        this.selectedExercises = [];
-        
-        document.getElementById('exerciseName').textContent = `${exercise1.name} + ${exercise2.name}`;
-        document.getElementById('muscleGroup').textContent = 'Paired Exercises';
-        
-        // Hide single exercise view, show paired view
-        document.getElementById('singleExerciseView').classList.add('hidden');
-        document.getElementById('pairedExerciseView').classList.remove('hidden');
-        
-        // Set up exercise 1
-        document.getElementById('pairedExercise1Name').textContent = exercise1.name;
-        document.getElementById('pairedExercise1MuscleGroup').textContent = exercise1.muscle_group;
-        this.renderPairedPreviousSession(exercise1, 'pairedPreviousSession1');
-        this.renderPairedSessionForm(exercise1, 'pairedSetsContainer1', 1);
-        
-        // Set up exercise 2
-        document.getElementById('pairedExercise2Name').textContent = exercise2.name;
-        document.getElementById('pairedExercise2MuscleGroup').textContent = exercise2.muscle_group;
-        this.renderPairedPreviousSession(exercise2, 'pairedPreviousSession2');
-        this.renderPairedSessionForm(exercise2, 'pairedSetsContainer2', 2);
-        
-        this.showView('exerciseDetailView');
+
+    const sessionDiv = document.createElement("div");
+
+    lastSession.sets.forEach((set, index) => {
+      const setDiv = document.createElement("div");
+      setDiv.className = "previous-set";
+
+      const label = document.createElement("span");
+      label.className = "previous-set-label";
+      label.textContent = `Set ${index + 1}`;
+
+      const values = document.createElement("span");
+      values.className = "previous-set-values";
+      values.textContent = `${set.reps} reps × ${set.weight_kg} kg`;
+
+      setDiv.appendChild(label);
+      setDiv.appendChild(values);
+      sessionDiv.appendChild(setDiv);
+    });
+
+    const meta = document.createElement("div");
+    meta.className = "session-meta";
+    const date = new Date(lastSession.date);
+    meta.textContent = `${this.formatDate(date)}`;
+    sessionDiv.appendChild(meta);
+
+    container.innerHTML = "";
+    container.appendChild(sessionDiv);
+  }
+
+  renderPairedSessionForm(exercise, containerId, exerciseNum) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = "";
+
+    const lastSession = this.getLastSession(exercise.name);
+    const defaultSets = lastSession
+      ? lastSession.sets.length
+      : exercise.sets || 3;
+
+    for (let i = 0; i < defaultSets; i++) {
+      let defaultReps = exercise.reps;
+      let defaultWeight = exercise.weight_kg;
+
+      if (lastSession && lastSession.sets[i]) {
+        defaultReps = lastSession.sets[i].reps;
+        defaultWeight = lastSession.sets[i].weight_kg;
+      }
+
+      this.addPairedSetRow(exerciseNum, i + 1, defaultReps, defaultWeight);
     }
-    
-    renderPairedPreviousSession(exercise, containerId) {
-        const container = document.getElementById(containerId);
-        const lastSession = this.getLastSession(exercise.name);
-        
-        if (!lastSession) {
-            container.innerHTML = '<p class="previous-session-empty">No previous session</p>';
-            return;
-        }
-        
-        const sessionDiv = document.createElement('div');
-        
-        lastSession.sets.forEach((set, index) => {
-            const setDiv = document.createElement('div');
-            setDiv.className = 'previous-set';
-            
-            const label = document.createElement('span');
-            label.className = 'previous-set-label';
-            label.textContent = `Set ${index + 1}`;
-            
-            const values = document.createElement('span');
-            values.className = 'previous-set-values';
-            values.textContent = `${set.reps} reps × ${set.weight_kg} kg`;
-            
-            setDiv.appendChild(label);
-            setDiv.appendChild(values);
-            sessionDiv.appendChild(setDiv);
-        });
-        
-        const meta = document.createElement('div');
-        meta.className = 'session-meta';
-        const date = new Date(lastSession.date);
-        meta.textContent = `${this.formatDate(date)}`;
-        sessionDiv.appendChild(meta);
-        
-        container.innerHTML = '';
-        container.appendChild(sessionDiv);
-    }
-    
-    renderPairedSessionForm(exercise, containerId, exerciseNum) {
-        const container = document.getElementById(containerId);
-        container.innerHTML = '';
-        
-        const lastSession = this.getLastSession(exercise.name);
-        const defaultSets = lastSession ? lastSession.sets.length : (exercise.sets || 3);
-        
-        for (let i = 0; i < defaultSets; i++) {
-            let defaultReps = exercise.reps;
-            let defaultWeight = exercise.weight_kg;
-            
-            if (lastSession && lastSession.sets[i]) {
-                defaultReps = lastSession.sets[i].reps;
-                defaultWeight = lastSession.sets[i].weight_kg;
-            }
-            
-            this.addPairedSetRow(exerciseNum, i + 1, defaultReps, defaultWeight);
-        }
-    }
-    
-    addPairedSetRow(exerciseNum, setNumber = null, defaultReps = '', defaultWeight = '') {
-        const containerId = `pairedSetsContainer${exerciseNum}`;
-        const container = document.getElementById(containerId);
-        const currentSetCount = container.children.length;
-        const setNum = setNumber || currentSetCount + 1;
-        
-        const row = document.createElement('div');
-        row.className = 'set-row';
-        row.setAttribute('data-set-number', setNum);
-        row.setAttribute('data-exercise', exerciseNum);
-        
-        row.innerHTML = `
+  }
+
+  addPairedSetRow(
+    exerciseNum,
+    setNumber = null,
+    defaultReps = "",
+    defaultWeight = ""
+  ) {
+    const containerId = `pairedSetsContainer${exerciseNum}`;
+    const container = document.getElementById(containerId);
+    const currentSetCount = container.children.length;
+    const setNum = setNumber || currentSetCount + 1;
+
+    const row = document.createElement("div");
+    row.className = "set-row";
+    row.setAttribute("data-set-number", setNum);
+    row.setAttribute("data-exercise", exerciseNum);
+
+    row.innerHTML = `
             <div class="set-label">Set ${setNum}</div>
             <div class="input-group">
                 <label for="paired${exerciseNum}-reps-${setNum}">Reps</label>
@@ -563,174 +607,188 @@ class WorkoutTracker {
                 </svg>
             </button>
         `;
-        
-        container.appendChild(row);
-        
-        // Add event listeners
-        row.querySelectorAll('.btn-increment, .btn-decrement').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const targetId = e.currentTarget.getAttribute('data-target');
-                const input = document.getElementById(targetId);
-                const step = parseFloat(input.step) || 1;
-                const currentValue = parseFloat(input.value) || 0;
-                
-                if (e.currentTarget.classList.contains('btn-increment')) {
-                    input.value = currentValue + step;
-                } else {
-                    input.value = Math.max(0, currentValue - step);
-                }
-            });
-        });
-        
-        row.querySelector('.btn-remove').addEventListener('click', () => {
-            row.remove();
-            this.renumberPairedSets(exerciseNum);
-        });
-    }
-    
-    renumberPairedSets(exerciseNum) {
-        const container = document.getElementById(`pairedSetsContainer${exerciseNum}`);
-        Array.from(container.children).forEach((row, index) => {
-            const setNum = index + 1;
-            row.setAttribute('data-set-number', setNum);
-            row.querySelector('.set-label').textContent = `Set ${setNum}`;
-        });
-    }
-    
-    savePairedSession() {
-        if (!this.pairedExercises || this.pairedExercises.length !== 2) return;
-        
-        const sessions = [];
-        
-        // Save session for exercise 1
-        const sets1 = this.getPairedSets(1);
-        if (sets1.length > 0) {
-            sessions.push({
-                id: Date.now(),
-                workoutId: this.currentWorkout.id,
-                workoutName: this.currentWorkout.name,
-                exerciseName: this.pairedExercises[0].name,
-                muscleGroup: this.pairedExercises[0].muscle_group,
-                date: new Date().toISOString(),
-                sets: sets1
-            });
+
+    container.appendChild(row);
+
+    // Add event listeners
+    row.querySelectorAll(".btn-increment, .btn-decrement").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const targetId = e.currentTarget.getAttribute("data-target");
+        const input = document.getElementById(targetId);
+        const step = parseFloat(input.step) || 1;
+        const currentValue = parseFloat(input.value) || 0;
+
+        if (e.currentTarget.classList.contains("btn-increment")) {
+          input.value = currentValue + step;
+        } else {
+          input.value = Math.max(0, currentValue - step);
         }
-        
-        // Save session for exercise 2 (add 1ms to ensure unique ID)
-        const sets2 = this.getPairedSets(2);
-        if (sets2.length > 0) {
-            sessions.push({
-                id: Date.now() + 1,
-                workoutId: this.currentWorkout.id,
-                workoutName: this.currentWorkout.name,
-                exerciseName: this.pairedExercises[1].name,
-                muscleGroup: this.pairedExercises[1].muscle_group,
-                date: new Date().toISOString(),
-                sets: sets2
-            });
-        }
-        
-        if (sessions.length === 0) {
-            alert('Please add at least one set to each exercise');
-            return;
-        }
-        
-        this.sessions.push(...sessions);
-        this.saveSessions();
-        
-        this.showSuccessMessage('Both sessions saved successfully!');
-        
-        // Refresh the paired view
-        this.showPairedExerciseDetail(this.pairedExercises[0], this.pairedExercises[1]);
+      });
+    });
+
+    row.querySelector(".btn-remove").addEventListener("click", () => {
+      row.remove();
+      this.renumberPairedSets(exerciseNum);
+    });
+  }
+
+  renumberPairedSets(exerciseNum) {
+    const container = document.getElementById(
+      `pairedSetsContainer${exerciseNum}`
+    );
+    Array.from(container.children).forEach((row, index) => {
+      const setNum = index + 1;
+      row.setAttribute("data-set-number", setNum);
+      row.querySelector(".set-label").textContent = `Set ${setNum}`;
+    });
+  }
+
+  savePairedSession() {
+    if (!this.pairedExercises || this.pairedExercises.length !== 2) return;
+
+    const sessions = [];
+
+    // Save session for exercise 1
+    const sets1 = this.getPairedSets(1);
+    if (sets1.length > 0) {
+      sessions.push({
+        id: Date.now(),
+        workoutId: this.currentWorkout.id,
+        workoutName: this.currentWorkout.name,
+        exerciseName: this.pairedExercises[0].name,
+        muscleGroup: this.pairedExercises[0].muscle_group,
+        date: new Date().toISOString(),
+        sets: sets1,
+      });
     }
-    
-    getPairedSets(exerciseNum) {
-        const container = document.getElementById(`pairedSetsContainer${exerciseNum}`);
-        const sets = [];
-        
-        Array.from(container.children).forEach(row => {
-            const setNum = row.getAttribute('data-set-number');
-            const reps = parseInt(document.getElementById(`paired${exerciseNum}-reps-${setNum}`).value);
-            const weight = parseFloat(document.getElementById(`paired${exerciseNum}-weight-${setNum}`).value);
-            
-            if (!isNaN(reps) && !isNaN(weight)) {
-                sets.push({ reps, weight_kg: weight });
-            }
-        });
-        
-        return sets;
+
+    // Save session for exercise 2 (add 1ms to ensure unique ID)
+    const sets2 = this.getPairedSets(2);
+    if (sets2.length > 0) {
+      sessions.push({
+        id: Date.now() + 1,
+        workoutId: this.currentWorkout.id,
+        workoutName: this.currentWorkout.name,
+        exerciseName: this.pairedExercises[1].name,
+        muscleGroup: this.pairedExercises[1].muscle_group,
+        date: new Date().toISOString(),
+        sets: sets2,
+      });
     }
-    
-    renderPreviousSession(exercise) {
-        const container = document.getElementById('previousSession');
-        const lastSession = this.getLastSession(exercise.name);
-        
-        if (!lastSession) {
-            container.innerHTML = '<p class="previous-session-empty">No previous session recorded</p>';
-            return;
-        }
-        
-        const sessionDiv = document.createElement('div');
-        
-        lastSession.sets.forEach((set, index) => {
-            const setDiv = document.createElement('div');
-            setDiv.className = 'previous-set';
-            
-            const label = document.createElement('span');
-            label.className = 'previous-set-label';
-            label.textContent = `Set ${index + 1}`;
-            
-            const values = document.createElement('span');
-            values.className = 'previous-set-values';
-            values.textContent = `${set.reps} reps × ${set.weight_kg} kg`;
-            
-            setDiv.appendChild(label);
-            setDiv.appendChild(values);
-            sessionDiv.appendChild(setDiv);
-        });
-        
-        const meta = document.createElement('div');
-        meta.className = 'session-meta';
-        const date = new Date(lastSession.date);
-        meta.textContent = `Completed on ${this.formatDate(date)}`;
-        sessionDiv.appendChild(meta);
-        
-        container.innerHTML = '';
-        container.appendChild(sessionDiv);
+
+    if (sessions.length === 0) {
+      alert("Please add at least one set to each exercise");
+      return;
     }
-    
-    renderSessionForm(exercise) {
-        const container = document.getElementById('setsContainer');
-        container.innerHTML = '';
-        
-        const lastSession = this.getLastSession(exercise.name);
-        const defaultSets = lastSession ? lastSession.sets.length : (exercise.sets || 3);
-        
-        // Create initial sets based on previous session or default
-        for (let i = 0; i < defaultSets; i++) {
-            let defaultReps = exercise.reps;
-            let defaultWeight = exercise.weight_kg;
-            
-            // Inherit from last session if available
-            if (lastSession && lastSession.sets[i]) {
-                defaultReps = lastSession.sets[i].reps;
-                defaultWeight = lastSession.sets[i].weight_kg;
-            }
-            
-            this.addSetRow(i + 1, defaultReps, defaultWeight);
-        }
+
+    this.sessions.push(...sessions);
+    this.saveSessions();
+
+    this.showSuccessMessage("Both sessions saved successfully!");
+
+    // Refresh the paired view
+    this.showPairedExerciseDetail(
+      this.pairedExercises[0],
+      this.pairedExercises[1]
+    );
+  }
+
+  getPairedSets(exerciseNum) {
+    const container = document.getElementById(
+      `pairedSetsContainer${exerciseNum}`
+    );
+    const sets = [];
+
+    Array.from(container.children).forEach((row) => {
+      const setNum = row.getAttribute("data-set-number");
+      const reps = parseInt(
+        document.getElementById(`paired${exerciseNum}-reps-${setNum}`).value
+      );
+      const weight = parseFloat(
+        document.getElementById(`paired${exerciseNum}-weight-${setNum}`).value
+      );
+
+      if (!isNaN(reps) && !isNaN(weight)) {
+        sets.push({ reps, weight_kg: weight });
+      }
+    });
+
+    return sets;
+  }
+
+  renderPreviousSession(exercise) {
+    const container = document.getElementById("previousSession");
+    const lastSession = this.getLastSession(exercise.name);
+
+    if (!lastSession) {
+      container.innerHTML =
+        '<p class="previous-session-empty">No previous session recorded</p>';
+      return;
     }
-    
-    addSetRow(setNumber = null, defaultReps = '', defaultWeight = '') {
-        const container = document.getElementById('setsContainer');
-        const currentSetCount = container.children.length;
-        const setNum = setNumber || currentSetCount + 1;
-        
-        const row = document.createElement('div');
-        row.className = 'set-row';
-        row.setAttribute('data-set-number', setNum);
-        
-        row.innerHTML = `
+
+    const sessionDiv = document.createElement("div");
+
+    lastSession.sets.forEach((set, index) => {
+      const setDiv = document.createElement("div");
+      setDiv.className = "previous-set";
+
+      const label = document.createElement("span");
+      label.className = "previous-set-label";
+      label.textContent = `Set ${index + 1}`;
+
+      const values = document.createElement("span");
+      values.className = "previous-set-values";
+      values.textContent = `${set.reps} reps × ${set.weight_kg} kg`;
+
+      setDiv.appendChild(label);
+      setDiv.appendChild(values);
+      sessionDiv.appendChild(setDiv);
+    });
+
+    const meta = document.createElement("div");
+    meta.className = "session-meta";
+    const date = new Date(lastSession.date);
+    meta.textContent = `Completed on ${this.formatDate(date)}`;
+    sessionDiv.appendChild(meta);
+
+    container.innerHTML = "";
+    container.appendChild(sessionDiv);
+  }
+
+  renderSessionForm(exercise) {
+    const container = document.getElementById("setsContainer");
+    container.innerHTML = "";
+
+    const lastSession = this.getLastSession(exercise.name);
+    const defaultSets = lastSession
+      ? lastSession.sets.length
+      : exercise.sets || 3;
+
+    // Create initial sets based on previous session or default
+    for (let i = 0; i < defaultSets; i++) {
+      let defaultReps = exercise.reps;
+      let defaultWeight = exercise.weight_kg;
+
+      // Inherit from last session if available
+      if (lastSession && lastSession.sets[i]) {
+        defaultReps = lastSession.sets[i].reps;
+        defaultWeight = lastSession.sets[i].weight_kg;
+      }
+
+      this.addSetRow(i + 1, defaultReps, defaultWeight);
+    }
+  }
+
+  addSetRow(setNumber = null, defaultReps = "", defaultWeight = "") {
+    const container = document.getElementById("setsContainer");
+    const currentSetCount = container.children.length;
+    const setNum = setNumber || currentSetCount + 1;
+
+    const row = document.createElement("div");
+    row.className = "set-row";
+    row.setAttribute("data-set-number", setNum);
+
+    row.innerHTML = `
             <div class="set-label">Set ${setNum}</div>
             <div class="input-group">
                 <label for="reps-${setNum}">Reps</label>
@@ -770,721 +828,774 @@ class WorkoutTracker {
                 </svg>
             </button>
         `;
-        
-        container.appendChild(row);
-        
-        // Add event listeners for increment/decrement buttons
-        row.querySelectorAll('.btn-increment, .btn-decrement').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const targetId = e.currentTarget.getAttribute('data-target');
-                const input = document.getElementById(targetId);
-                const step = parseFloat(input.step) || 1;
-                const currentValue = parseFloat(input.value) || 0;
-                
-                if (e.currentTarget.classList.contains('btn-increment')) {
-                    input.value = currentValue + step;
-                } else {
-                    input.value = Math.max(0, currentValue - step);
-                }
-            });
-        });
-        
-        // Add event listener for remove button
-        row.querySelector('.btn-remove').addEventListener('click', () => {
-            row.remove();
-            this.renumberSets();
-        });
-    }
-    
-    renumberSets() {
-        const container = document.getElementById('setsContainer');
-        Array.from(container.children).forEach((row, index) => {
-            const setNum = index + 1;
-            row.setAttribute('data-set-number', setNum);
-            row.querySelector('.set-label').textContent = `Set ${setNum}`;
-        });
-    }
-    
-    saveSession() {
-        const container = document.getElementById('setsContainer');
-        const sets = [];
-        
-        Array.from(container.children).forEach(row => {
-            const setNum = row.getAttribute('data-set-number');
-            const reps = parseInt(document.getElementById(`reps-${setNum}`).value);
-            const weight = parseFloat(document.getElementById(`weight-${setNum}`).value);
-            
-            sets.push({ reps, weight_kg: weight });
-        });
-        
-        if (sets.length === 0) {
-            alert('Please add at least one set');
-            return;
+
+    container.appendChild(row);
+
+    // Add event listeners for increment/decrement buttons
+    row.querySelectorAll(".btn-increment, .btn-decrement").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const targetId = e.currentTarget.getAttribute("data-target");
+        const input = document.getElementById(targetId);
+        const step = parseFloat(input.step) || 1;
+        const currentValue = parseFloat(input.value) || 0;
+
+        if (e.currentTarget.classList.contains("btn-increment")) {
+          input.value = currentValue + step;
+        } else {
+          input.value = Math.max(0, currentValue - step);
         }
-        
-        const session = {
-            id: Date.now(),
-            workoutId: this.currentWorkout.id,
-            workoutName: this.currentWorkout.name,
-            exerciseName: this.currentExercise.name,
-            muscleGroup: this.currentExercise.muscle_group,
-            date: new Date().toISOString(),
-            sets: sets
+      });
+    });
+
+    // Add event listener for remove button
+    row.querySelector(".btn-remove").addEventListener("click", () => {
+      row.remove();
+      this.renumberSets();
+    });
+  }
+
+  renumberSets() {
+    const container = document.getElementById("setsContainer");
+    Array.from(container.children).forEach((row, index) => {
+      const setNum = index + 1;
+      row.setAttribute("data-set-number", setNum);
+      row.querySelector(".set-label").textContent = `Set ${setNum}`;
+    });
+  }
+
+  saveSession() {
+    const container = document.getElementById("setsContainer");
+    const sets = [];
+
+    Array.from(container.children).forEach((row) => {
+      const setNum = row.getAttribute("data-set-number");
+      const reps = parseInt(document.getElementById(`reps-${setNum}`).value);
+      const weight = parseFloat(
+        document.getElementById(`weight-${setNum}`).value
+      );
+
+      sets.push({ reps, weight_kg: weight });
+    });
+
+    if (sets.length === 0) {
+      alert("Please add at least one set");
+      return;
+    }
+
+    const session = {
+      id: Date.now(),
+      workoutId: this.currentWorkout.id,
+      workoutName: this.currentWorkout.name,
+      exerciseName: this.currentExercise.name,
+      muscleGroup: this.currentExercise.muscle_group,
+      date: new Date().toISOString(),
+      sets: sets,
+    };
+
+    this.sessions.push(session);
+    this.saveSessions();
+
+    // Refresh the view
+    this.showExerciseDetail(this.currentExercise);
+
+    // Show success feedback
+    this.showSuccessMessage("Session saved successfully!");
+  }
+
+  renderSessionHistory(exercise) {
+    const container = document.getElementById("sessionHistory");
+    const history = this.getSessionHistory(exercise.name);
+
+    if (history.length === 0) {
+      container.innerHTML =
+        '<p class="session-history-empty">No session history yet</p>';
+      return;
+    }
+
+    container.innerHTML = "";
+
+    // Show last 5 sessions
+    history.slice(0, 5).forEach((session) => {
+      const item = document.createElement("div");
+      item.className = "history-item";
+
+      const date = document.createElement("div");
+      date.className = "history-item-date";
+      date.textContent = this.formatDate(new Date(session.date));
+
+      const setsDiv = document.createElement("div");
+      setsDiv.className = "history-item-sets";
+
+      session.sets.forEach((set, index) => {
+        const setDiv = document.createElement("div");
+        setDiv.className = "history-set";
+
+        const label = document.createElement("span");
+        label.className = "history-set-label";
+        label.textContent = `Set ${index + 1}`;
+
+        const values = document.createElement("span");
+        values.className = "history-set-values";
+        values.textContent = `${set.reps} reps × ${set.weight_kg} kg`;
+
+        setDiv.appendChild(label);
+        setDiv.appendChild(values);
+        setsDiv.appendChild(setDiv);
+      });
+
+      item.appendChild(date);
+      item.appendChild(setsDiv);
+      container.appendChild(item);
+    });
+  }
+
+  // ============================================
+  // Management View
+  // ============================================
+
+  showManagementView() {
+    document.getElementById("managementView").classList.remove("hidden");
+    this.renderExerciseLibrary();
+    this.renderWorkoutManager();
+    this.renderExerciseSelector();
+  }
+
+  hideManagementView() {
+    document.getElementById("managementView").classList.add("hidden");
+  }
+
+  switchManagementTab(tabName) {
+    // Update tab buttons
+    document.querySelectorAll(".management-tab").forEach((tab) => {
+      tab.classList.remove("active");
+      if (tab.dataset.tab === tabName) {
+        tab.classList.add("active");
+      }
+    });
+
+    // Update tab content
+    document.querySelectorAll(".management-tab-content").forEach((content) => {
+      content.classList.remove("active");
+    });
+
+    if (tabName === "exercises") {
+      document.getElementById("exercisesTab").classList.add("active");
+    } else if (tabName === "workouts") {
+      document.getElementById("workoutsTab").classList.add("active");
+      this.renderExerciseSelector();
+    }
+  }
+
+  createExercise() {
+    const name = document.getElementById("exerciseName").value.trim();
+    const muscleGroup = document.getElementById("muscleGroup").value;
+    const sets = parseInt(document.getElementById("defaultSets").value) || null;
+    const reps = parseInt(document.getElementById("defaultReps").value) || null;
+    const weight =
+      parseFloat(document.getElementById("defaultWeight").value) || null;
+
+    if (!name || !muscleGroup) {
+      alert("Please fill in required fields");
+      return;
+    }
+
+    // Check if exercise already exists
+    if (
+      this.exerciseLibrary.find(
+        (e) => e.name.toLowerCase() === name.toLowerCase()
+      )
+    ) {
+      alert("An exercise with this name already exists");
+      return;
+    }
+
+    const exercise = {
+      name,
+      muscle_group: muscleGroup,
+      sets,
+      reps,
+      weight_kg: weight,
+      notes: null,
+    };
+
+    this.exerciseLibrary.push(exercise);
+    this.saveExerciseLibrary();
+
+    // Reset form
+    document.getElementById("createExerciseForm").reset();
+
+    // Refresh library display
+    this.renderExerciseLibrary();
+    this.renderExerciseSelector();
+
+    this.showSuccessMessage(`Exercise "${name}" created!`);
+  }
+
+  deleteExercise(exerciseName) {
+    if (
+      !confirm(
+        `Delete "${exerciseName}"? This will remove it from all workouts.`
+      )
+    ) {
+      return;
+    }
+
+    // Remove from library
+    this.exerciseLibrary = this.exerciseLibrary.filter(
+      (e) => e.name !== exerciseName
+    );
+    this.saveExerciseLibrary();
+
+    // Remove from all workouts
+    this.workouts.forEach((workout) => {
+      workout.exercises = workout.exercises.filter(
+        (e) => e.name !== exerciseName
+      );
+    });
+    this.saveWorkouts();
+
+    // Refresh displays
+    this.renderExerciseLibrary();
+    this.renderWorkoutManager();
+    this.renderWorkoutList();
+
+    this.showSuccessMessage(`Exercise "${exerciseName}" deleted`);
+  }
+
+  renderExerciseLibrary() {
+    const container = document.getElementById("exerciseLibrary");
+
+    if (this.exerciseLibrary.length === 0) {
+      container.innerHTML =
+        '<p class="exercise-selector-empty">No exercises yet. Create one above!</p>';
+      return;
+    }
+
+    container.innerHTML = "";
+
+    // Sort alphabetically
+    const sorted = [...this.exerciseLibrary].sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
+
+    sorted.forEach((exercise) => {
+      const item = document.createElement("div");
+      item.className = "exercise-library-item";
+
+      const info = document.createElement("div");
+      info.className = "exercise-library-info";
+
+      const name = document.createElement("div");
+      name.className = "exercise-library-name";
+      name.textContent = exercise.name;
+
+      const meta = document.createElement("div");
+      meta.className = "exercise-library-meta";
+      const parts = [exercise.muscle_group];
+      if (exercise.sets) parts.push(`${exercise.sets} sets`);
+      if (exercise.reps) parts.push(`${exercise.reps} reps`);
+      if (exercise.weight_kg) parts.push(`${exercise.weight_kg} kg`);
+      meta.textContent = parts.join(" • ");
+
+      info.appendChild(name);
+      info.appendChild(meta);
+
+      const actions = document.createElement("div");
+      actions.className = "exercise-library-actions";
+
+      const deleteBtn = document.createElement("button");
+      deleteBtn.className = "btn-delete";
+      deleteBtn.textContent = "Delete";
+      deleteBtn.addEventListener("click", () =>
+        this.deleteExercise(exercise.name)
+      );
+
+      actions.appendChild(deleteBtn);
+
+      item.appendChild(info);
+      item.appendChild(actions);
+      container.appendChild(item);
+    });
+  }
+
+  renderExerciseSelector() {
+    const container = document.getElementById("exerciseSelector");
+
+    if (this.exerciseLibrary.length === 0) {
+      container.innerHTML =
+        '<p class="exercise-selector-empty">No exercises available. Create some in the Exercises tab first.</p>';
+      return;
+    }
+
+    container.innerHTML = "";
+
+    // Sort alphabetically
+    const sorted = [...this.exerciseLibrary].sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
+
+    sorted.forEach((exercise) => {
+      const item = document.createElement("div");
+      item.className = "exercise-selector-item";
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.id = `select-${exercise.name}`;
+      checkbox.value = exercise.name;
+
+      const label = document.createElement("label");
+      label.htmlFor = `select-${exercise.name}`;
+      label.textContent = `${exercise.name} (${exercise.muscle_group})`;
+
+      item.appendChild(checkbox);
+      item.appendChild(label);
+      container.appendChild(item);
+    });
+  }
+
+  createWorkout() {
+    const name = document.getElementById("workoutName").value.trim();
+    const selectedCheckboxes = document.querySelectorAll(
+      '#exerciseSelector input[type="checkbox"]:checked'
+    );
+
+    if (!name) {
+      alert("Please enter a workout name");
+      return;
+    }
+
+    if (selectedCheckboxes.length === 0) {
+      alert("Please select at least one exercise");
+      return;
+    }
+
+    const exerciseNames = Array.from(selectedCheckboxes).map((cb) => cb.value);
+    const exercises = exerciseNames.map((name) => {
+      const exercise = this.exerciseLibrary.find((e) => e.name === name);
+      return { ...exercise };
+    });
+
+    const workout = {
+      id: Date.now(),
+      name,
+      date: null,
+      exercises,
+    };
+
+    this.workouts.push(workout);
+    this.saveWorkouts();
+
+    // Reset form
+    document.getElementById("createWorkoutForm").reset();
+    selectedCheckboxes.forEach((cb) => (cb.checked = false));
+
+    // Refresh displays
+    this.renderWorkoutManager();
+    this.renderWorkoutList();
+
+    this.showSuccessMessage(
+      `Workout "${name}" created with ${exercises.length} exercises!`
+    );
+  }
+
+  deleteWorkout(workoutId) {
+    const workout = this.workouts.find((w) => w.id === workoutId);
+    if (!workout) return;
+
+    if (!confirm(`Delete workout "${workout.name}"?`)) {
+      return;
+    }
+
+    this.workouts = this.workouts.filter((w) => w.id !== workoutId);
+    this.saveWorkouts();
+
+    this.renderWorkoutManager();
+    this.renderWorkoutList();
+
+    this.showSuccessMessage(`Workout "${workout.name}" deleted`);
+  }
+
+  editWorkout(workoutId) {
+    const workout = this.workouts.find((w) => w.id === workoutId);
+    if (!workout) return;
+
+    // Populate the edit form
+    document.getElementById("editWorkoutId").value = workout.id;
+    document.getElementById("editWorkoutName").value = workout.name;
+
+    // Render exercise selector with current exercises checked
+    this.renderEditExerciseSelector(workout.exercises);
+
+    // Show the edit modal
+    document.getElementById("editWorkoutModal").classList.remove("hidden");
+  }
+
+  hideEditWorkoutModal() {
+    document.getElementById("editWorkoutModal").classList.add("hidden");
+    document.getElementById("editWorkoutForm").reset();
+  }
+
+  renderEditExerciseSelector(currentExercises) {
+    const container = document.getElementById("editExerciseSelector");
+
+    if (this.exerciseLibrary.length === 0) {
+      container.innerHTML =
+        '<p class="exercise-selector-empty">No exercises available.</p>';
+      return;
+    }
+
+    container.innerHTML = "";
+
+    // Create a set of current exercise names for quick lookup
+    const currentExerciseNames = new Set(currentExercises.map((e) => e.name));
+
+    // Sort alphabetically
+    const sorted = [...this.exerciseLibrary].sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
+
+    sorted.forEach((exercise) => {
+      const item = document.createElement("div");
+      item.className = "exercise-selector-item";
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.id = `edit-select-${exercise.name}`;
+      checkbox.value = exercise.name;
+      checkbox.checked = currentExerciseNames.has(exercise.name);
+
+      const label = document.createElement("label");
+      label.htmlFor = `edit-select-${exercise.name}`;
+      label.textContent = `${exercise.name} (${exercise.muscle_group})`;
+
+      item.appendChild(checkbox);
+      item.appendChild(label);
+      container.appendChild(item);
+    });
+  }
+
+  saveWorkoutEdit() {
+    const workoutId = parseInt(document.getElementById("editWorkoutId").value);
+    const name = document.getElementById("editWorkoutName").value.trim();
+    const selectedCheckboxes = document.querySelectorAll(
+      '#editExerciseSelector input[type="checkbox"]:checked'
+    );
+
+    if (!name) {
+      alert("Please enter a workout name");
+      return;
+    }
+
+    if (selectedCheckboxes.length === 0) {
+      alert("Please select at least one exercise");
+      return;
+    }
+
+    const exerciseNames = Array.from(selectedCheckboxes).map((cb) => cb.value);
+    const exercises = exerciseNames.map((name) => {
+      const exercise = this.exerciseLibrary.find((e) => e.name === name);
+      return { ...exercise };
+    });
+
+    // Find and update the workout
+    const workoutIndex = this.workouts.findIndex((w) => w.id === workoutId);
+    if (workoutIndex === -1) {
+      alert("Workout not found");
+      return;
+    }
+
+    this.workouts[workoutIndex] = {
+      ...this.workouts[workoutIndex],
+      name,
+      exercises,
+    };
+
+    this.saveWorkouts();
+
+    // Close modal
+    this.hideEditWorkoutModal();
+
+    // Refresh displays
+    this.renderWorkoutManager();
+    this.renderWorkoutList();
+
+    this.showSuccessMessage(`Workout "${name}" updated!`);
+  }
+
+  renderWorkoutManager() {
+    const container = document.getElementById("workoutManager");
+
+    if (this.workouts.length === 0) {
+      container.innerHTML =
+        '<p class="exercise-selector-empty">No workouts yet. Create one above!</p>';
+      return;
+    }
+
+    container.innerHTML = "";
+
+    this.workouts.forEach((workout) => {
+      const item = document.createElement("div");
+      item.className = "workout-manager-item";
+
+      const header = document.createElement("div");
+      header.className = "workout-manager-header";
+
+      const name = document.createElement("div");
+      name.className = "workout-manager-name";
+      name.textContent = workout.name;
+
+      const actions = document.createElement("div");
+      actions.className = "workout-manager-actions";
+
+      const editBtn = document.createElement("button");
+      editBtn.className = "btn-secondary btn-sm";
+      editBtn.textContent = "Edit";
+      editBtn.addEventListener("click", () => this.editWorkout(workout.id));
+
+      const deleteBtn = document.createElement("button");
+      deleteBtn.className = "btn-delete";
+      deleteBtn.textContent = "Delete";
+      deleteBtn.addEventListener("click", () => this.deleteWorkout(workout.id));
+
+      actions.appendChild(editBtn);
+      actions.appendChild(deleteBtn);
+
+      header.appendChild(name);
+      header.appendChild(actions);
+
+      const exercises = document.createElement("ul");
+      exercises.className = "workout-manager-exercises";
+      workout.exercises.forEach((exercise) => {
+        const li = document.createElement("li");
+        li.textContent = `${exercise.name} (${exercise.muscle_group})`;
+        exercises.appendChild(li);
+      });
+
+      item.appendChild(header);
+      item.appendChild(exercises);
+      container.appendChild(item);
+    });
+  }
+
+  // ============================================
+  // Helper Functions
+  // ============================================
+
+  exportData() {
+    const exportData = {
+      version: "2.0",
+      exportDate: new Date().toISOString(),
+      sessions: this.sessions,
+      workouts: this.workouts,
+      exerciseLibrary: this.exerciseLibrary,
+    };
+
+    const dataStr = JSON.stringify(exportData, null, 2);
+    const dataBlob = new Blob([dataStr], { type: "application/json" });
+
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement("a");
+    link.href = url;
+
+    const dateStr = new Date().toISOString().split("T")[0];
+    link.download = `workout-tracker-backup-${dateStr}.json`;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    const totalItems =
+      this.sessions.length + this.workouts.length + this.exerciseLibrary.length;
+    this.showSuccessMessage(
+      `Data exported! ${this.sessions.length} sessions, ${this.workouts.length} workouts, ${this.exerciseLibrary.length} exercises`
+    );
+  }
+
+  importData(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const importedData = JSON.parse(e.target.result);
+
+        // Validate the data structure
+        if (!importedData.sessions || !Array.isArray(importedData.sessions)) {
+          throw new Error("Invalid data format - sessions missing or invalid");
+        }
+
+        // Build confirmation message
+        let confirmMsg = "Import Data:\n\n";
+        confirmMsg += `• ${importedData.sessions.length} sessions\n`;
+
+        if (importedData.workouts) {
+          confirmMsg += `• ${importedData.workouts.length} workouts\n`;
+        }
+
+        if (importedData.exerciseLibrary) {
+          confirmMsg += `• ${importedData.exerciseLibrary.length} exercises\n`;
+        }
+
+        confirmMsg +=
+          "\nExisting data will be merged (duplicates skipped).\n\nContinue?";
+
+        if (!confirm(confirmMsg)) {
+          event.target.value = "";
+          return;
+        }
+
+        let results = {
+          sessions: { added: 0, skipped: 0 },
+          workouts: { added: 0, skipped: 0 },
+          exercises: { added: 0, skipped: 0 },
         };
-        
-        this.sessions.push(session);
+
+        // Import sessions
+        const existingSessionIds = new Set(this.sessions.map((s) => s.id));
+        importedData.sessions.forEach((session) => {
+          if (!existingSessionIds.has(session.id)) {
+            this.sessions.push(session);
+            results.sessions.added++;
+          } else {
+            results.sessions.skipped++;
+          }
+        });
+
+        // Import workouts (if present)
+        if (importedData.workouts && Array.isArray(importedData.workouts)) {
+          const existingWorkoutIds = new Set(this.workouts.map((w) => w.id));
+          importedData.workouts.forEach((workout) => {
+            if (!existingWorkoutIds.has(workout.id)) {
+              this.workouts.push(workout);
+              results.workouts.added++;
+            } else {
+              results.workouts.skipped++;
+            }
+          });
+        }
+
+        // Import exercise library (if present)
+        if (
+          importedData.exerciseLibrary &&
+          Array.isArray(importedData.exerciseLibrary)
+        ) {
+          const existingExerciseNames = new Set(
+            this.exerciseLibrary.map((e) => e.name.toLowerCase())
+          );
+          importedData.exerciseLibrary.forEach((exercise) => {
+            if (!existingExerciseNames.has(exercise.name.toLowerCase())) {
+              this.exerciseLibrary.push(exercise);
+              results.exercises.added++;
+            } else {
+              results.exercises.skipped++;
+            }
+          });
+        }
+
+        // Sort sessions by date (newest first)
+        this.sessions.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        // Save everything
         this.saveSessions();
-        
-        // Refresh the view
-        this.showExerciseDetail(this.currentExercise);
-        
-        // Show success feedback
-        this.showSuccessMessage('Session saved successfully!');
-    }
-    
-    renderSessionHistory(exercise) {
-        const container = document.getElementById('sessionHistory');
-        const history = this.getSessionHistory(exercise.name);
-        
-        if (history.length === 0) {
-            container.innerHTML = '<p class="session-history-empty">No session history yet</p>';
-            return;
-        }
-        
-        container.innerHTML = '';
-        
-        // Show last 5 sessions
-        history.slice(0, 5).forEach(session => {
-            const item = document.createElement('div');
-            item.className = 'history-item';
-            
-            const date = document.createElement('div');
-            date.className = 'history-item-date';
-            date.textContent = this.formatDate(new Date(session.date));
-            
-            const setsDiv = document.createElement('div');
-            setsDiv.className = 'history-item-sets';
-            
-            session.sets.forEach((set, index) => {
-                const setDiv = document.createElement('div');
-                setDiv.className = 'history-set';
-                
-                const label = document.createElement('span');
-                label.className = 'history-set-label';
-                label.textContent = `Set ${index + 1}`;
-                
-                const values = document.createElement('span');
-                values.className = 'history-set-values';
-                values.textContent = `${set.reps} reps × ${set.weight_kg} kg`;
-                
-                setDiv.appendChild(label);
-                setDiv.appendChild(values);
-                setsDiv.appendChild(setDiv);
-            });
-            
-            item.appendChild(date);
-            item.appendChild(setsDiv);
-            container.appendChild(item);
-        });
-    }
-    
-    // ============================================
-    // Management View
-    // ============================================
-    
-    showManagementView() {
-        document.getElementById('managementView').classList.remove('hidden');
-        this.renderExerciseLibrary();
-        this.renderWorkoutManager();
-        this.renderExerciseSelector();
-    }
-    
-    hideManagementView() {
-        document.getElementById('managementView').classList.add('hidden');
-    }
-    
-    switchManagementTab(tabName) {
-        // Update tab buttons
-        document.querySelectorAll('.management-tab').forEach(tab => {
-            tab.classList.remove('active');
-            if (tab.dataset.tab === tabName) {
-                tab.classList.add('active');
-            }
-        });
-        
-        // Update tab content
-        document.querySelectorAll('.management-tab-content').forEach(content => {
-            content.classList.remove('active');
-        });
-        
-        if (tabName === 'exercises') {
-            document.getElementById('exercisesTab').classList.add('active');
-        } else if (tabName === 'workouts') {
-            document.getElementById('workoutsTab').classList.add('active');
-            this.renderExerciseSelector();
-        }
-    }
-    
-    createExercise() {
-        const name = document.getElementById('exerciseName').value.trim();
-        const muscleGroup = document.getElementById('muscleGroup').value;
-        const sets = parseInt(document.getElementById('defaultSets').value) || null;
-        const reps = parseInt(document.getElementById('defaultReps').value) || null;
-        const weight = parseFloat(document.getElementById('defaultWeight').value) || null;
-        
-        if (!name || !muscleGroup) {
-            alert('Please fill in required fields');
-            return;
-        }
-        
-        // Check if exercise already exists
-        if (this.exerciseLibrary.find(e => e.name.toLowerCase() === name.toLowerCase())) {
-            alert('An exercise with this name already exists');
-            return;
-        }
-        
-        const exercise = {
-            name,
-            muscle_group: muscleGroup,
-            sets,
-            reps,
-            weight_kg: weight,
-            notes: null
-        };
-        
-        this.exerciseLibrary.push(exercise);
+        this.saveWorkouts();
         this.saveExerciseLibrary();
-        
-        // Reset form
-        document.getElementById('createExerciseForm').reset();
-        
-        // Refresh library display
-        this.renderExerciseLibrary();
-        this.renderExerciseSelector();
-        
-        this.showSuccessMessage(`Exercise "${name}" created!`);
-    }
-    
-    deleteExercise(exerciseName) {
-        if (!confirm(`Delete "${exerciseName}"? This will remove it from all workouts.`)) {
-            return;
-        }
-        
-        // Remove from library
-        this.exerciseLibrary = this.exerciseLibrary.filter(e => e.name !== exerciseName);
-        this.saveExerciseLibrary();
-        
-        // Remove from all workouts
-        this.workouts.forEach(workout => {
-            workout.exercises = workout.exercises.filter(e => e.name !== exerciseName);
-        });
-        this.saveWorkouts();
-        
-        // Refresh displays
-        this.renderExerciseLibrary();
-        this.renderWorkoutManager();
+
+        // Refresh all views
         this.renderWorkoutList();
-        
-        this.showSuccessMessage(`Exercise "${exerciseName}" deleted`);
-    }
-    
-    renderExerciseLibrary() {
-        const container = document.getElementById('exerciseLibrary');
-        
-        if (this.exerciseLibrary.length === 0) {
-            container.innerHTML = '<p class="exercise-selector-empty">No exercises yet. Create one above!</p>';
-            return;
+        if (this.currentExercise) {
+          this.showExerciseDetail(this.currentExercise);
         }
-        
-        container.innerHTML = '';
-        
-        // Sort alphabetically
-        const sorted = [...this.exerciseLibrary].sort((a, b) => a.name.localeCompare(b.name));
-        
-        sorted.forEach(exercise => {
-            const item = document.createElement('div');
-            item.className = 'exercise-library-item';
-            
-            const info = document.createElement('div');
-            info.className = 'exercise-library-info';
-            
-            const name = document.createElement('div');
-            name.className = 'exercise-library-name';
-            name.textContent = exercise.name;
-            
-            const meta = document.createElement('div');
-            meta.className = 'exercise-library-meta';
-            const parts = [exercise.muscle_group];
-            if (exercise.sets) parts.push(`${exercise.sets} sets`);
-            if (exercise.reps) parts.push(`${exercise.reps} reps`);
-            if (exercise.weight_kg) parts.push(`${exercise.weight_kg} kg`);
-            meta.textContent = parts.join(' • ');
-            
-            info.appendChild(name);
-            info.appendChild(meta);
-            
-            const actions = document.createElement('div');
-            actions.className = 'exercise-library-actions';
-            
-            const deleteBtn = document.createElement('button');
-            deleteBtn.className = 'btn-delete';
-            deleteBtn.textContent = 'Delete';
-            deleteBtn.addEventListener('click', () => this.deleteExercise(exercise.name));
-            
-            actions.appendChild(deleteBtn);
-            
-            item.appendChild(info);
-            item.appendChild(actions);
-            container.appendChild(item);
-        });
-    }
-    
-    renderExerciseSelector() {
-        const container = document.getElementById('exerciseSelector');
-        
-        if (this.exerciseLibrary.length === 0) {
-            container.innerHTML = '<p class="exercise-selector-empty">No exercises available. Create some in the Exercises tab first.</p>';
-            return;
+        if (
+          document
+            .getElementById("managementView")
+            .classList.contains("hidden") === false
+        ) {
+          this.renderExerciseLibrary();
+          this.renderWorkoutManager();
+          this.renderExerciseSelector();
         }
-        
-        container.innerHTML = '';
-        
-        // Sort alphabetically
-        const sorted = [...this.exerciseLibrary].sort((a, b) => a.name.localeCompare(b.name));
-        
-        sorted.forEach(exercise => {
-            const item = document.createElement('div');
-            item.className = 'exercise-selector-item';
-            
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.id = `select-${exercise.name}`;
-            checkbox.value = exercise.name;
-            
-            const label = document.createElement('label');
-            label.htmlFor = `select-${exercise.name}`;
-            label.textContent = `${exercise.name} (${exercise.muscle_group})`;
-            
-            item.appendChild(checkbox);
-            item.appendChild(label);
-            container.appendChild(item);
-        });
-    }
-    
-    createWorkout() {
-        const name = document.getElementById('workoutName').value.trim();
-        const selectedCheckboxes = document.querySelectorAll('#exerciseSelector input[type="checkbox"]:checked');
-        
-        if (!name) {
-            alert('Please enter a workout name');
-            return;
+
+        // Build success message
+        let message = "Import complete!\n\n";
+        message += `Sessions: ${results.sessions.added} added`;
+        if (results.sessions.skipped > 0)
+          message += `, ${results.sessions.skipped} skipped`;
+
+        if (importedData.workouts) {
+          message += `\nWorkouts: ${results.workouts.added} added`;
+          if (results.workouts.skipped > 0)
+            message += `, ${results.workouts.skipped} skipped`;
         }
-        
-        if (selectedCheckboxes.length === 0) {
-            alert('Please select at least one exercise');
-            return;
+
+        if (importedData.exerciseLibrary) {
+          message += `\nExercises: ${results.exercises.added} added`;
+          if (results.exercises.skipped > 0)
+            message += `, ${results.exercises.skipped} skipped`;
         }
-        
-        const exerciseNames = Array.from(selectedCheckboxes).map(cb => cb.value);
-        const exercises = exerciseNames.map(name => {
-            const exercise = this.exerciseLibrary.find(e => e.name === name);
-            return { ...exercise };
-        });
-        
-        const workout = {
-            id: Date.now(),
-            name,
-            date: null,
-            exercises
-        };
-        
-        this.workouts.push(workout);
-        this.saveWorkouts();
-        
-        // Reset form
-        document.getElementById('createWorkoutForm').reset();
-        selectedCheckboxes.forEach(cb => cb.checked = false);
-        
-        // Refresh displays
-        this.renderWorkoutManager();
-        this.renderWorkoutList();
-        
-        this.showSuccessMessage(`Workout "${name}" created with ${exercises.length} exercises!`);
+
+        this.showSuccessMessage(message);
+      } catch (error) {
+        alert(
+          "Error importing data: " +
+            error.message +
+            "\n\nPlease ensure the file is a valid workout tracker backup."
+        );
+        console.error("Import error:", error);
+      }
+
+      // Reset file input
+      event.target.value = "";
+    };
+
+    reader.readAsText(file);
+  }
+
+  getLastSession(exerciseName) {
+    const history = this.getSessionHistory(exerciseName);
+    return history.length > 0 ? history[0] : null;
+  }
+
+  getSessionHistory(exerciseName) {
+    return this.sessions
+      .filter((s) => s.exerciseName === exerciseName)
+      .sort((a, b) => new Date(b.date) - new Date(a.date));
+  }
+
+  formatDate(date) {
+    const options = {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    };
+    return date.toLocaleDateString("en-US", options);
+  }
+
+  updateCurrentDate() {
+    const dateElement = document.getElementById("currentDate");
+    const now = new Date();
+    const options = {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    };
+    dateElement.textContent = now.toLocaleDateString("en-US", options);
+  }
+
+  showSuccessMessage(message) {
+    // Simple alert for now - could be enhanced with a toast notification
+    const existingMessage = document.querySelector(".success-message");
+    if (existingMessage) {
+      existingMessage.remove();
     }
-    
-    deleteWorkout(workoutId) {
-        const workout = this.workouts.find(w => w.id === workoutId);
-        if (!workout) return;
-        
-        if (!confirm(`Delete workout "${workout.name}"?`)) {
-            return;
-        }
-        
-        this.workouts = this.workouts.filter(w => w.id !== workoutId);
-        this.saveWorkouts();
-        
-        this.renderWorkoutManager();
-        this.renderWorkoutList();
-        
-        this.showSuccessMessage(`Workout "${workout.name}" deleted`);
-    }
-    
-    editWorkout(workoutId) {
-        const workout = this.workouts.find(w => w.id === workoutId);
-        if (!workout) return;
-        
-        // Populate the edit form
-        document.getElementById('editWorkoutId').value = workout.id;
-        document.getElementById('editWorkoutName').value = workout.name;
-        
-        // Render exercise selector with current exercises checked
-        this.renderEditExerciseSelector(workout.exercises);
-        
-        // Show the edit modal
-        document.getElementById('editWorkoutModal').classList.remove('hidden');
-    }
-    
-    hideEditWorkoutModal() {
-        document.getElementById('editWorkoutModal').classList.add('hidden');
-        document.getElementById('editWorkoutForm').reset();
-    }
-    
-    renderEditExerciseSelector(currentExercises) {
-        const container = document.getElementById('editExerciseSelector');
-        
-        if (this.exerciseLibrary.length === 0) {
-            container.innerHTML = '<p class="exercise-selector-empty">No exercises available.</p>';
-            return;
-        }
-        
-        container.innerHTML = '';
-        
-        // Create a set of current exercise names for quick lookup
-        const currentExerciseNames = new Set(currentExercises.map(e => e.name));
-        
-        // Sort alphabetically
-        const sorted = [...this.exerciseLibrary].sort((a, b) => a.name.localeCompare(b.name));
-        
-        sorted.forEach(exercise => {
-            const item = document.createElement('div');
-            item.className = 'exercise-selector-item';
-            
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.id = `edit-select-${exercise.name}`;
-            checkbox.value = exercise.name;
-            checkbox.checked = currentExerciseNames.has(exercise.name);
-            
-            const label = document.createElement('label');
-            label.htmlFor = `edit-select-${exercise.name}`;
-            label.textContent = `${exercise.name} (${exercise.muscle_group})`;
-            
-            item.appendChild(checkbox);
-            item.appendChild(label);
-            container.appendChild(item);
-        });
-    }
-    
-    saveWorkoutEdit() {
-        const workoutId = parseInt(document.getElementById('editWorkoutId').value);
-        const name = document.getElementById('editWorkoutName').value.trim();
-        const selectedCheckboxes = document.querySelectorAll('#editExerciseSelector input[type="checkbox"]:checked');
-        
-        if (!name) {
-            alert('Please enter a workout name');
-            return;
-        }
-        
-        if (selectedCheckboxes.length === 0) {
-            alert('Please select at least one exercise');
-            return;
-        }
-        
-        const exerciseNames = Array.from(selectedCheckboxes).map(cb => cb.value);
-        const exercises = exerciseNames.map(name => {
-            const exercise = this.exerciseLibrary.find(e => e.name === name);
-            return { ...exercise };
-        });
-        
-        // Find and update the workout
-        const workoutIndex = this.workouts.findIndex(w => w.id === workoutId);
-        if (workoutIndex === -1) {
-            alert('Workout not found');
-            return;
-        }
-        
-        this.workouts[workoutIndex] = {
-            ...this.workouts[workoutIndex],
-            name,
-            exercises
-        };
-        
-        this.saveWorkouts();
-        
-        // Close modal
-        this.hideEditWorkoutModal();
-        
-        // Refresh displays
-        this.renderWorkoutManager();
-        this.renderWorkoutList();
-        
-        this.showSuccessMessage(`Workout "${name}" updated!`);
-    }
-    
-    renderWorkoutManager() {
-        const container = document.getElementById('workoutManager');
-        
-        if (this.workouts.length === 0) {
-            container.innerHTML = '<p class="exercise-selector-empty">No workouts yet. Create one above!</p>';
-            return;
-        }
-        
-        container.innerHTML = '';
-        
-        this.workouts.forEach(workout => {
-            const item = document.createElement('div');
-            item.className = 'workout-manager-item';
-            
-            const header = document.createElement('div');
-            header.className = 'workout-manager-header';
-            
-            const name = document.createElement('div');
-            name.className = 'workout-manager-name';
-            name.textContent = workout.name;
-            
-            const actions = document.createElement('div');
-            actions.className = 'workout-manager-actions';
-            
-            const editBtn = document.createElement('button');
-            editBtn.className = 'btn-secondary btn-sm';
-            editBtn.textContent = 'Edit';
-            editBtn.addEventListener('click', () => this.editWorkout(workout.id));
-            
-            const deleteBtn = document.createElement('button');
-            deleteBtn.className = 'btn-delete';
-            deleteBtn.textContent = 'Delete';
-            deleteBtn.addEventListener('click', () => this.deleteWorkout(workout.id));
-            
-            actions.appendChild(editBtn);
-            actions.appendChild(deleteBtn);
-            
-            header.appendChild(name);
-            header.appendChild(actions);
-            
-            const exercises = document.createElement('ul');
-            exercises.className = 'workout-manager-exercises';
-            workout.exercises.forEach(exercise => {
-                const li = document.createElement('li');
-                li.textContent = `${exercise.name} (${exercise.muscle_group})`;
-                exercises.appendChild(li);
-            });
-            
-            item.appendChild(header);
-            item.appendChild(exercises);
-            container.appendChild(item);
-        });
-    }
-    
-    // ============================================
-    // Helper Functions
-    // ============================================
-    
-    exportData() {
-        const exportData = {
-            version: '2.0',
-            exportDate: new Date().toISOString(),
-            sessions: this.sessions,
-            workouts: this.workouts,
-            exerciseLibrary: this.exerciseLibrary
-        };
-        
-        const dataStr = JSON.stringify(exportData, null, 2);
-        const dataBlob = new Blob([dataStr], { type: 'application/json' });
-        
-        const url = URL.createObjectURL(dataBlob);
-        const link = document.createElement('a');
-        link.href = url;
-        
-        const dateStr = new Date().toISOString().split('T')[0];
-        link.download = `workout-tracker-backup-${dateStr}.json`;
-        
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-        
-        const totalItems = this.sessions.length + this.workouts.length + this.exerciseLibrary.length;
-        this.showSuccessMessage(`Data exported! ${this.sessions.length} sessions, ${this.workouts.length} workouts, ${this.exerciseLibrary.length} exercises`);
-    }
-    
-    importData(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            try {
-                const importedData = JSON.parse(e.target.result);
-                
-                // Validate the data structure
-                if (!importedData.sessions || !Array.isArray(importedData.sessions)) {
-                    throw new Error('Invalid data format - sessions missing or invalid');
-                }
-                
-                // Build confirmation message
-                let confirmMsg = 'Import Data:\n\n';
-                confirmMsg += `• ${importedData.sessions.length} sessions\n`;
-                
-                if (importedData.workouts) {
-                    confirmMsg += `• ${importedData.workouts.length} workouts\n`;
-                }
-                
-                if (importedData.exerciseLibrary) {
-                    confirmMsg += `• ${importedData.exerciseLibrary.length} exercises\n`;
-                }
-                
-                confirmMsg += '\nExisting data will be merged (duplicates skipped).\n\nContinue?';
-                
-                if (!confirm(confirmMsg)) {
-                    event.target.value = '';
-                    return;
-                }
-                
-                let results = {
-                    sessions: { added: 0, skipped: 0 },
-                    workouts: { added: 0, skipped: 0 },
-                    exercises: { added: 0, skipped: 0 }
-                };
-                
-                // Import sessions
-                const existingSessionIds = new Set(this.sessions.map(s => s.id));
-                importedData.sessions.forEach(session => {
-                    if (!existingSessionIds.has(session.id)) {
-                        this.sessions.push(session);
-                        results.sessions.added++;
-                    } else {
-                        results.sessions.skipped++;
-                    }
-                });
-                
-                // Import workouts (if present)
-                if (importedData.workouts && Array.isArray(importedData.workouts)) {
-                    const existingWorkoutIds = new Set(this.workouts.map(w => w.id));
-                    importedData.workouts.forEach(workout => {
-                        if (!existingWorkoutIds.has(workout.id)) {
-                            this.workouts.push(workout);
-                            results.workouts.added++;
-                        } else {
-                            results.workouts.skipped++;
-                        }
-                    });
-                }
-                
-                // Import exercise library (if present)
-                if (importedData.exerciseLibrary && Array.isArray(importedData.exerciseLibrary)) {
-                    const existingExerciseNames = new Set(this.exerciseLibrary.map(e => e.name.toLowerCase()));
-                    importedData.exerciseLibrary.forEach(exercise => {
-                        if (!existingExerciseNames.has(exercise.name.toLowerCase())) {
-                            this.exerciseLibrary.push(exercise);
-                            results.exercises.added++;
-                        } else {
-                            results.exercises.skipped++;
-                        }
-                    });
-                }
-                
-                // Sort sessions by date (newest first)
-                this.sessions.sort((a, b) => new Date(b.date) - new Date(a.date));
-                
-                // Save everything
-                this.saveSessions();
-                this.saveWorkouts();
-                this.saveExerciseLibrary();
-                
-                // Refresh all views
-                this.renderWorkoutList();
-                if (this.currentExercise) {
-                    this.showExerciseDetail(this.currentExercise);
-                }
-                if (document.getElementById('managementView').classList.contains('hidden') === false) {
-                    this.renderExerciseLibrary();
-                    this.renderWorkoutManager();
-                    this.renderExerciseSelector();
-                }
-                
-                // Build success message
-                let message = 'Import complete!\n\n';
-                message += `Sessions: ${results.sessions.added} added`;
-                if (results.sessions.skipped > 0) message += `, ${results.sessions.skipped} skipped`;
-                
-                if (importedData.workouts) {
-                    message += `\nWorkouts: ${results.workouts.added} added`;
-                    if (results.workouts.skipped > 0) message += `, ${results.workouts.skipped} skipped`;
-                }
-                
-                if (importedData.exerciseLibrary) {
-                    message += `\nExercises: ${results.exercises.added} added`;
-                    if (results.exercises.skipped > 0) message += `, ${results.exercises.skipped} skipped`;
-                }
-                
-                this.showSuccessMessage(message);
-                
-            } catch (error) {
-                alert('Error importing data: ' + error.message + '\n\nPlease ensure the file is a valid workout tracker backup.');
-                console.error('Import error:', error);
-            }
-            
-            // Reset file input
-            event.target.value = '';
-        };
-        
-        reader.readAsText(file);
-    }
-    
-    getLastSession(exerciseName) {
-        const history = this.getSessionHistory(exerciseName);
-        return history.length > 0 ? history[0] : null;
-    }
-    
-    getSessionHistory(exerciseName) {
-        return this.sessions
-            .filter(s => s.exerciseName === exerciseName)
-            .sort((a, b) => new Date(b.date) - new Date(a.date));
-    }
-    
-    formatDate(date) {
-        const options = { 
-            year: 'numeric', 
-            month: 'short', 
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        };
-        return date.toLocaleDateString('en-US', options);
-    }
-    
-    updateCurrentDate() {
-        const dateElement = document.getElementById('currentDate');
-        const now = new Date();
-        const options = { 
-            weekday: 'long',
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric'
-        };
-        dateElement.textContent = now.toLocaleDateString('en-US', options);
-    }
-    
-    showSuccessMessage(message) {
-        // Simple alert for now - could be enhanced with a toast notification
-        const existingMessage = document.querySelector('.success-message');
-        if (existingMessage) {
-            existingMessage.remove();
-        }
-        
-        const messageDiv = document.createElement('div');
-        messageDiv.className = 'success-message';
-        messageDiv.style.cssText = `
+
+    const messageDiv = document.createElement("div");
+    messageDiv.className = "success-message";
+    messageDiv.style.cssText = `
             position: fixed;
             top: 20px;
             right: 20px;
@@ -1496,27 +1607,27 @@ class WorkoutTracker {
             z-index: 1000;
             animation: slideIn 0.3s ease;
         `;
-        messageDiv.textContent = message;
-        
-        document.body.appendChild(messageDiv);
-        
-        setTimeout(() => {
-            messageDiv.style.animation = 'slideOut 0.3s ease';
-            setTimeout(() => messageDiv.remove(), 300);
-        }, 3000);
-    }
+    messageDiv.textContent = message;
+
+    document.body.appendChild(messageDiv);
+
+    setTimeout(() => {
+      messageDiv.style.animation = "slideOut 0.3s ease";
+      setTimeout(() => messageDiv.remove(), 300);
+    }, 3000);
+  }
 }
 
 // ============================================
 // Initialize Application
 // ============================================
 
-document.addEventListener('DOMContentLoaded', () => {
-    const app = new WorkoutTracker();
+document.addEventListener("DOMContentLoaded", () => {
+  const app = new WorkoutTracker();
 });
 
 // Add CSS for success message animations
-const style = document.createElement('style');
+const style = document.createElement("style");
 style.textContent = `
     @keyframes slideIn {
         from {

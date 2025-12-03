@@ -5,27 +5,32 @@ A clean, minimalist workout tracking application designed to help you monitor yo
 ## Features
 
 ✅ **Workout Management**
+
 - View all your predefined workouts
 - See exercise count for each workout
 - Quick navigation between workouts
 
 ✅ **Exercise Tracking**
+
 - Select exercises from your workout
 - View last session details automatically
 - See when you last performed each exercise
 
 ✅ **Session Logging**
+
 - Auto-populate sets from previous session
 - Easy increment/decrement controls for reps and weights
 - Add or remove sets as needed
 - Save sessions with one click
 
 ✅ **Progress Monitoring**
+
 - View complete session history for each exercise
 - See your last 5 sessions at a glance
 - Track improvements over time
 
 ✅ **Data Persistence**
+
 - All sessions saved to browser localStorage
 - Data persists between sessions
 - No account or server required
@@ -35,6 +40,7 @@ A clean, minimalist workout tracking application designed to help you monitor yo
 ### Installation
 
 1. Ensure all files are in the same directory:
+
    ```
    /exercise
    ├── index.html
@@ -50,15 +56,18 @@ A clean, minimalist workout tracking application designed to help you monitor yo
 ### Usage
 
 #### 1. Select a Workout
+
 - When you open the app, you'll see all your available workouts
 - Click on any workout to view its exercises
 
 #### 2. Choose an Exercise
+
 - Browse the list of exercises in your selected workout
 - Each exercise shows when it was last performed
 - Click on an exercise to open the tracking interface
 
 #### 3. Log Your Session
+
 - The "Previous Session" section shows what you did last time
 - The form auto-populates with your last session's data
 - Use the **+/-** buttons to quickly adjust weights and reps
@@ -67,6 +76,7 @@ A clean, minimalist workout tracking application designed to help you monitor yo
 - Click **Save Session** when done
 
 #### 4. Monitor Progress
+
 - The "Session History" section shows your last 5 sessions
 - Each entry shows the date and all sets performed
 - Use this to track your progress over time
@@ -76,22 +86,26 @@ A clean, minimalist workout tracking application designed to help you monitor yo
 This application follows these core principles:
 
 ### Clarity 🎯
+
 - Clear labels and explicit data context
 - Numeric counts and precise metadata
 - Unambiguous action buttons
 
 ### Simplicity
+
 - Clean, dark interface reduces eye strain
 - Focus on the essential data
 - No unnecessary features or distractions
 
 ### Accessibility ♿
+
 - Full keyboard navigation support
 - High contrast ratios (WCAG 2.1 AA compliant)
 - Visible focus indicators
 - Semantic HTML structure
 
 ### Trust 🛡️
+
 - All data stored locally in your browser
 - Complete session history maintained
 - Easy to review past performance
@@ -108,18 +122,22 @@ The application uses a cohesive design system inspired by modern UI principles:
 ## Technical Details
 
 ### Technologies Used
+
 - **HTML5**: Semantic structure
 - **CSS3**: Modern styling with CSS custom properties
 - **JavaScript (ES6+)**: Vanilla JS, no frameworks
 - **localStorage**: Browser-based data persistence
 
 ### Browser Compatibility
+
 - Chrome/Edge (latest)
 - Firefox (latest)
 - Safari (latest)
 
 ### Data Storage
+
 Sessions are stored in browser localStorage as JSON:
+
 ```javascript
 {
   id: timestamp,
@@ -148,6 +166,7 @@ Sessions are stored in browser localStorage as JSON:
 ## Customization
 
 ### Adding New Workouts
+
 Edit `data/exercises.json` to add new workouts or exercises:
 
 ```json
@@ -169,12 +188,13 @@ Edit `data/exercises.json` to add new workouts or exercises:
 ```
 
 ### Modifying Colors
+
 Edit CSS custom properties in `styles.css`:
 
 ```css
 :root {
-  --color-primary: #633c99;  /* Change to your preferred color */
-  --dark-bg-page: #0a0a0a;   /* Background color */
+  --color-primary: #633c99; /* Change to your preferred color */
+  --dark-bg-page: #0a0a0a; /* Background color */
   /* ... more variables */
 }
 ```
@@ -182,6 +202,7 @@ Edit CSS custom properties in `styles.css`:
 ## Future Enhancements
 
 Potential features for future versions:
+
 - Export/import data functionality
 - Charts and progress graphs
 - Rest timer between sets
@@ -192,16 +213,19 @@ Potential features for future versions:
 ## Troubleshooting
 
 **Q: My sessions aren't saving**
+
 - Check that your browser allows localStorage
 - Try refreshing the page
 - Check browser console for errors
 
 **Q: How do I reset my data?**
+
 - Open browser developer tools (F12)
 - Go to Application/Storage → Local Storage
 - Find and delete `workoutSessions` key
 
 **Q: Can I access this on multiple devices?**
+
 - Currently no - data is stored locally per browser
 - Consider exporting data manually if needed
 
