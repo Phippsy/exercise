@@ -134,8 +134,24 @@
       <main class="main-content">
         <!-- Workout Selection View -->
         <section id="workoutListView" class="view">
-          <div class="section-header">
-            <h2 class="section-title">Your Workouts</h2>
+          <div class="section-header section-header-cta" id="workoutListHeader">
+            <button
+              id="exploreWorkoutsBtn"
+              class="explore-workouts-btn"
+              type="button">
+              <h2 class="section-title">Explore Your Workouts</h2>
+              <svg
+                class="icon icon-md"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
             <p class="section-subtitle">Select a workout to begin tracking</p>
           </div>
           <div
@@ -200,6 +216,7 @@
               <div id="workoutTrend" class="chart-caption"></div>
             </div>
           </div>
+          <h3 class="workouts-section-title">Your Workouts</h3>
           <div id="workoutList" class="workout-grid"></div>
         </section>
 
@@ -270,6 +287,7 @@
             </svg>
             <span id="pairModeNoticeText">Select 2 exercises to pair</span>
           </div>
+          <div id="exerciseList" class="exercise-list"></div>
           <div class="insight-grid">
             <div class="card compact-card">
               <div class="card-header-row">
@@ -283,7 +301,6 @@
               <div id="currentWorkoutTrend" class="chart-caption"></div>
             </div>
           </div>
-          <div id="exerciseList" class="exercise-list"></div>
         </section>
 
         <!-- Exercise Detail & Session Tracking View -->
@@ -320,37 +337,6 @@
           </div>
 
           <div id="singleExerciseView">
-            <div class="card exercise-insight-card">
-              <div class="card-header-row">
-                <div>
-                  <h3 class="card-title-sm">Exercise Insights</h3>
-                  <p class="card-subtitle">Quick glance at your momentum</p>
-                </div>
-                <span id="exerciseRecency" class="pill pill-soft"></span>
-              </div>
-              <div class="insight-meta">
-                <div>
-                  <p class="insight-label">Last performed</p>
-                  <p id="exerciseLastPerformed" class="insight-value"></p>
-                </div>
-                <div>
-                  <p class="insight-label">Lifetime sessions</p>
-                  <p id="exerciseSessionCount" class="insight-value"></p>
-                </div>
-                <div>
-                  <p class="insight-label">Typical volume</p>
-                  <p id="exerciseAverage" class="insight-value"></p>
-                </div>
-              </div>
-              <div id="exerciseChart" class="mini-bar-chart"></div>
-              <div id="exerciseTrend" class="chart-caption"></div>
-            </div>
-            <!-- Previous Session Display -->
-            <div class="card">
-              <h3 class="card-title">Previous Session</h3>
-              <div id="previousSession" class="previous-session"></div>
-            </div>
-
             <!-- Current Session Form -->
             <div class="card">
               <h3 class="card-title">Log Today's Session</h3>
@@ -377,6 +363,38 @@
                   </button>
                 </div>
               </form>
+            </div>
+
+            <div class="card exercise-insight-card">
+              <div class="card-header-row">
+                <div>
+                  <h3 class="card-title-sm">Exercise Insights</h3>
+                  <p class="card-subtitle">Quick glance at your momentum</p>
+                </div>
+                <span id="exerciseRecency" class="pill pill-soft"></span>
+              </div>
+              <div class="insight-meta">
+                <div>
+                  <p class="insight-label">Last performed</p>
+                  <p id="exerciseLastPerformed" class="insight-value"></p>
+                </div>
+                <div>
+                  <p class="insight-label">Lifetime sessions</p>
+                  <p id="exerciseSessionCount" class="insight-value"></p>
+                </div>
+                <div>
+                  <p class="insight-label">Typical volume</p>
+                  <p id="exerciseAverage" class="insight-value"></p>
+                </div>
+              </div>
+              <div id="exerciseChart" class="mini-bar-chart"></div>
+              <div id="exerciseTrend" class="chart-caption"></div>
+            </div>
+
+            <!-- Previous Session Display -->
+            <div class="card">
+              <h3 class="card-title">Previous Session</h3>
+              <div id="previousSession" class="previous-session"></div>
             </div>
 
             <!-- Session History -->
@@ -1004,7 +1022,10 @@
                 fill="none"
                 stroke="currentColor"
                 stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
@@ -1084,7 +1105,9 @@
               </div>
 
               <div class="form-group">
-                <label for="editExerciseFormVideo">Form Video URL (optional)</label>
+                <label for="editExerciseFormVideo"
+                  >Form Video URL (optional)</label
+                >
                 <input
                   type="url"
                   id="editExerciseFormVideo"
@@ -1106,7 +1129,11 @@
       </aside>
     </div>
 
-    <div id="onboardingOverlay" class="onboarding-overlay hidden" role="dialog" aria-modal="true">
+    <div
+      id="onboardingOverlay"
+      class="onboarding-overlay hidden"
+      role="dialog"
+      aria-modal="true">
       <div class="onboarding-card">
         <div class="onboarding-header">
           <h3 id="onboardingTitle">Welcome to Workout Tracker</h3>
@@ -1120,7 +1147,10 @@
               fill="none"
               stroke="currentColor"
               stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
@@ -1132,8 +1162,12 @@
           <span class="onboarding-dot" data-step="3"></span>
         </div>
         <div class="onboarding-actions">
-          <button id="onboardingBack" class="btn-secondary" type="button">Back</button>
-          <button id="onboardingNext" class="btn-primary" type="button">Next</button>
+          <button id="onboardingBack" class="btn-secondary" type="button">
+            Back
+          </button>
+          <button id="onboardingNext" class="btn-primary" type="button">
+            Next
+          </button>
         </div>
       </div>
     </div>

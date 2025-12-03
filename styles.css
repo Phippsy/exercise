@@ -244,6 +244,56 @@ body {
   border-bottom-color: transparent;
 }
 
+.explore-workouts-btn {
+  background: var(--bg-surface);
+  border: 2px solid var(--border-subtle);
+  padding: var(--spacing-md) var(--spacing-lg);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  transition: all 0.2s ease;
+  width: 100%;
+  border-radius: var(--radius-md);
+}
+
+.explore-workouts-btn:hover {
+  border-color: var(--color-primary);
+  background-color: var(--bg-surface-subtle);
+}
+
+.explore-workouts-btn:active {
+  background-color: var(--bg-surface);
+}
+
+.explore-workouts-btn .section-title {
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.explore-workouts-btn .icon {
+  flex-shrink: 0;
+  color: var(--color-primary);
+}
+
+.section-header-cta {
+  margin-bottom: var(--spacing-lg);
+}
+
+.section-header-cta .section-subtitle {
+  text-align: center;
+  margin-top: var(--spacing-sm);
+}
+
+.workouts-section-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-md);
+  margin-top: var(--spacing-xl);
+}
+
 .header-meta {
   font-size: var(--font-size-sm);
   color: var(--text-muted);
@@ -594,7 +644,11 @@ button {
 }
 
 .mini-bar {
-  background: linear-gradient(180deg, var(--color-accent) 0%, var(--color-primary) 100%);
+  background: linear-gradient(
+    180deg,
+    var(--color-accent) 0%,
+    var(--color-primary) 100%
+  );
   border-radius: var(--radius-sm);
   width: 100%;
   min-width: 10px;
@@ -1569,38 +1623,68 @@ input[type="number"]::-webkit-outer-spin-button {
   /* Tighter spacing on mobile */
   .app-container {
     padding: var(--spacing-sm);
+    padding-top: 60px; /* Space for fixed header */
   }
 
-  /* Header optimizations */
+  /* Pin header to top on mobile */
   .app-header {
-    margin-bottom: var(--spacing-lg);
-    padding-bottom: var(--spacing-md);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background-color: var(--bg-page);
+    margin-bottom: 0;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-bottom: 1px solid var(--border-subtle);
+    backdrop-filter: blur(8px);
   }
 
   .header-top {
-    flex-direction: column;
-    gap: var(--spacing-md);
+    flex-direction: row;
+    gap: var(--spacing-sm);
+    align-items: center;
   }
 
   .app-title {
-    font-size: 24px;
+    font-size: 16px;
+    white-space: nowrap;
   }
 
   .header-meta {
-    font-size: 11px;
+    display: none; /* Hide date on mobile for space */
   }
 
   .header-actions {
-    width: 100%;
-    justify-content: space-between;
+    display: flex;
     gap: var(--spacing-xs);
+    margin-left: auto;
   }
 
   .btn-icon {
     padding: var(--spacing-xs) var(--spacing-sm);
-    min-height: 44px; /* Apple touch target */
-    font-size: 11px;
-    white-space: nowrap;
+    min-height: 36px;
+    font-size: 10px;
+    min-width: auto;
+    gap: 4px;
+  }
+
+  .btn-icon .icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* Pin onboarding to bottom on mobile */
+  .onboarding-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .onboarding-card {
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    max-width: 100%;
+    margin: 0;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
   }
 
   .btn-icon .icon {

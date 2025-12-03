@@ -162,7 +162,9 @@ class WorkoutTracker {
 
   isToday(dateString) {
     if (!dateString) return false;
-    return this.getLocalDateKey(new Date(dateString)) === this.getLocalDateKey();
+    return (
+      this.getLocalDateKey(new Date(dateString)) === this.getLocalDateKey()
+    );
   }
 
   toggleTheme() {
@@ -196,6 +198,25 @@ class WorkoutTracker {
     document.getElementById("themeToggleBtn").addEventListener("click", () => {
       this.toggleTheme();
     });
+
+    // Explore workouts button - scroll to workout list
+    document
+      .getElementById("exploreWorkoutsBtn")
+      .addEventListener("click", () => {
+        const workoutList = document.getElementById("workoutList");
+        const firstWorkout = workoutList.querySelector(".workout-card");
+        if (firstWorkout) {
+          // Scroll with offset to account for fixed header on mobile
+          const yOffset = window.innerWidth <= 768 ? -70 : -20;
+          const y =
+            firstWorkout.getBoundingClientRect().top +
+            window.pageYOffset +
+            yOffset;
+          window.scrollTo({ top: y, behavior: "smooth" });
+        } else {
+          workoutList.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
 
     // Daily quote
     const quoteToggle = document.getElementById("quoteToggle");
@@ -503,13 +524,12 @@ class WorkoutTracker {
     if (!searchInput || !filterContainer) return;
 
     searchInput.addEventListener("input", (e) => {
-      this.exerciseLibraryFilters.search = e.target.value
-        .toLowerCase()
-        .trim();
+      this.exerciseLibraryFilters.search = e.target.value.toLowerCase().trim();
       this.renderExerciseLibrary();
     });
 
-    const filterButtons = filterContainer.querySelectorAll(".muscle-filter-btn");
+    const filterButtons =
+      filterContainer.querySelectorAll(".muscle-filter-btn");
 
     filterButtons.forEach((btn) => {
       btn.addEventListener("click", () => {
@@ -1503,7 +1523,10 @@ class WorkoutTracker {
   renderWorkoutInsights(workout) {
     const days = 14;
     const history = this.sessions.filter((s) => s.workoutId === workout.id);
-    const lastSession = history.length > 0 ? history.slice().sort((a, b) => new Date(b.date) - new Date(a.date))[0] : null;
+    const lastSession =
+      history.length > 0
+        ? history.slice().sort((a, b) => new Date(b.date) - new Date(a.date))[0]
+        : null;
     const recencyEl = document.getElementById("workoutRecency");
     const trendEl = document.getElementById("currentWorkoutTrend");
 
@@ -1565,13 +1588,16 @@ class WorkoutTracker {
 
     const averageVolume =
       volumes.length > 0
-        ? Math.round((volumes.reduce((a, b) => a + b, 0) / volumes.length) * 10) /
-          10
+        ? Math.round(
+            (volumes.reduce((a, b) => a + b, 0) / volumes.length) * 10
+          ) / 10
         : 0;
 
     recencyEl.textContent = this.formatDate(new Date(last.date));
     lastPerformedEl.textContent = this.formatDate(new Date(last.date));
-    countEl.textContent = `${totalSessions} session${totalSessions === 1 ? "" : "s"}`;
+    countEl.textContent = `${totalSessions} session${
+      totalSessions === 1 ? "" : "s"
+    }`;
     averageEl.textContent = averageVolume
       ? `${averageVolume} kg-reps per session`
       : "—";
@@ -1696,7 +1722,10 @@ class WorkoutTracker {
 
   describeTrend(recentSlice, previousSlice) {
     const recentTotal = recentSlice.reduce((sum, day) => sum + day.value, 0);
-    const previousTotal = previousSlice.reduce((sum, day) => sum + day.value, 0);
+    const previousTotal = previousSlice.reduce(
+      (sum, day) => sum + day.value,
+      0
+    );
 
     if (recentTotal === 0 && previousTotal === 0) {
       return "No activity yet";
@@ -1728,14 +1757,12 @@ class WorkoutTracker {
     this.onboardingSteps = [
       {
         title: "Welcome to Workout Tracker",
-        body:
-          "Track workouts, log sets, and keep your routine consistent. Let's take a 30-second tour.",
+        body: "Track workouts, log sets, and keep your routine consistent. Let's take a 30-second tour.",
         viewId: "workoutListView",
       },
       {
         title: "Pick a workout",
-        body:
-          "Start on the home screen, tap a workout, and you'll see the exercises inside. Add your own anytime via Manage.",
+        body: "Start on the home screen, tap a workout, and you'll see the exercises inside. Add your own anytime via Manage.",
         viewId: "workoutListView",
         focusSelector: "#workoutList .workout-card",
         prepare: () => {
@@ -1744,8 +1771,7 @@ class WorkoutTracker {
       },
       {
         title: "Log sets with ease",
-        body:
-          "Open an exercise to see your last session, add sets with reps and weight, and save to build history.",
+        body: "Open an exercise to see your last session, add sets with reps and weight, and save to build history.",
         viewId: "exerciseDetailView",
         focusId: "sessionForm",
         prepare: () => {
@@ -1754,8 +1780,7 @@ class WorkoutTracker {
       },
       {
         title: "Click 'Manage' to add and edit exercises and workouts",
-        body:
-          "Use the Manage menu to create workouts, tweak exercises, and keep your library organized.",
+        body: "Use the Manage menu to create workouts, tweak exercises, and keep your library organized.",
         viewId: "workoutListView",
         focusId: "manageBtn",
         prepare: () => {
@@ -2016,12 +2041,15 @@ class WorkoutTracker {
   }
 
   saveExerciseEdit() {
-    const originalName =
-      document.getElementById("editExerciseOriginalName").value;
+    const originalName = document.getElementById(
+      "editExerciseOriginalName"
+    ).value;
     const newName = document.getElementById("editExerciseName").value.trim();
     const muscleGroup = document.getElementById("editMuscleGroup").value;
-    const sets = parseInt(document.getElementById("editDefaultSets").value) || null;
-    const reps = parseInt(document.getElementById("editDefaultReps").value) || null;
+    const sets =
+      parseInt(document.getElementById("editDefaultSets").value) || null;
+    const reps =
+      parseInt(document.getElementById("editDefaultReps").value) || null;
     const weight =
       parseFloat(document.getElementById("editDefaultWeight").value) || null;
     const formNotes =
@@ -2834,7 +2862,10 @@ class WorkoutTracker {
       (normalizedTarget - this.quoteStartDate) / msPerDay
     );
 
-    return ((diffDays % this.quotes.length) + this.quotes.length) % this.quotes.length;
+    return (
+      ((diffDays % this.quotes.length) + this.quotes.length) %
+      this.quotes.length
+    );
   }
 
   getDailyQuote() {
