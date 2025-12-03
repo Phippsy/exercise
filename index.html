@@ -24,10 +24,50 @@
       <header class="app-header">
         <div class="header-top">
           <div>
-            <h1 class="app-title">Workout Tracker</h1>
+            <h1 class="app-title">
+              <span
+                id="userNameDisplay"
+                class="user-name-editable"
+                contenteditable="true"
+                spellcheck="false"
+                >My</span
+              ><span id="titlePossessive" class="title-possessive hidden"
+                >'s</span
+              ><span class="title-suffix"> Workout Tracker</span>
+            </h1>
             <div class="header-meta" id="currentDate"></div>
           </div>
           <div class="header-actions">
+            <button
+              id="themeToggleBtn"
+              class="btn-secondary btn-icon"
+              aria-label="Toggle theme">
+              <svg
+                id="themeIconDark"
+                class="icon icon-sm"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+              </svg>
+              <svg
+                id="themeIconLight"
+                class="icon icon-sm hidden"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+              </svg>
+              <span id="themeToggleText">Light</span>
+            </button>
             <button
               id="manageBtn"
               class="btn-secondary btn-icon"
@@ -122,6 +162,12 @@
               Back to Workouts
             </button>
             <h2 class="section-title" id="currentWorkoutName"></h2>
+            <div
+              id="workoutNotesDisplay"
+              class="workout-notes"
+              style="display: none">
+              <p id="workoutNotesContent"></p>
+            </div>
             <div class="section-header-actions">
               <p class="section-subtitle">
                 Select an exercise to view history and log progress
@@ -183,6 +229,13 @@
             <div class="exercise-meta">
               <span class="muscle-badge" id="muscleGroup"></span>
             </div>
+          </div>
+
+          <!-- Exercise Form Info -->
+          <div id="exerciseFormInfo" class="card" style="display: none">
+            <h3 class="card-title">Form Guide</h3>
+            <div id="exerciseFormNotesDisplay"></div>
+            <div id="exerciseFormVideoDisplay"></div>
           </div>
 
           <div id="singleExerciseView">
@@ -420,6 +473,24 @@
                   </div>
                 </div>
 
+                <div class="form-group">
+                  <label for="exerciseFormNotes">Form Notes (optional)</label>
+                  <textarea
+                    id="exerciseFormNotes"
+                    rows="2"
+                    placeholder="Tips for proper form..."></textarea>
+                </div>
+
+                <div class="form-group">
+                  <label for="exerciseFormVideo"
+                    >Form Video URL (optional)</label
+                  >
+                  <input
+                    type="url"
+                    id="exerciseFormVideo"
+                    placeholder="https://youtube.com/watch?v=..." />
+                </div>
+
                 <button type="submit" class="btn-primary btn-full">
                   Create Exercise
                 </button>
@@ -447,7 +518,106 @@
                 </div>
 
                 <div class="form-group">
+                  <label for="workoutNotes">Notes (optional)</label>
+                  <textarea
+                    id="workoutNotes"
+                    rows="3"
+                    placeholder="Add any notes about this workout..."></textarea>
+                </div>
+
+                <div class="form-group">
                   <label>Select Exercises *</label>
+
+                  <!-- Exercise Filters -->
+                  <div class="exercise-filters">
+                    <input
+                      type="text"
+                      id="exerciseSearchInput"
+                      class="exercise-search-input"
+                      placeholder="Search exercises..." />
+
+                    <div class="muscle-group-filters">
+                      <button
+                        type="button"
+                        class="muscle-filter-btn active"
+                        data-muscle="all">
+                        All
+                      </button>
+                      <button
+                        type="button"
+                        class="muscle-filter-btn active"
+                        data-muscle="Chest">
+                        Chest
+                      </button>
+                      <button
+                        type="button"
+                        class="muscle-filter-btn active"
+                        data-muscle="Back">
+                        Back
+                      </button>
+                      <button
+                        type="button"
+                        class="muscle-filter-btn active"
+                        data-muscle="Shoulders">
+                        Shoulders
+                      </button>
+                      <button
+                        type="button"
+                        class="muscle-filter-btn active"
+                        data-muscle="Biceps">
+                        Biceps
+                      </button>
+                      <button
+                        type="button"
+                        class="muscle-filter-btn active"
+                        data-muscle="Triceps">
+                        Triceps
+                      </button>
+                      <button
+                        type="button"
+                        class="muscle-filter-btn active"
+                        data-muscle="Legs">
+                        Legs
+                      </button>
+                      <button
+                        type="button"
+                        class="muscle-filter-btn active"
+                        data-muscle="Quads">
+                        Quads
+                      </button>
+                      <button
+                        type="button"
+                        class="muscle-filter-btn active"
+                        data-muscle="Hamstrings">
+                        Hamstrings
+                      </button>
+                      <button
+                        type="button"
+                        class="muscle-filter-btn active"
+                        data-muscle="Glutes">
+                        Glutes
+                      </button>
+                      <button
+                        type="button"
+                        class="muscle-filter-btn active"
+                        data-muscle="Core">
+                        Core
+                      </button>
+                      <button
+                        type="button"
+                        class="muscle-filter-btn active"
+                        data-muscle="Calves">
+                        Calves
+                      </button>
+                      <button
+                        type="button"
+                        class="muscle-filter-btn active"
+                        data-muscle="Forearms">
+                        Forearms
+                      </button>
+                    </div>
+                  </div>
+
                   <div id="exerciseSelector" class="exercise-selector"></div>
                 </div>
 
@@ -505,7 +675,106 @@
               </div>
 
               <div class="form-group">
+                <label for="editWorkoutNotes">Notes (optional)</label>
+                <textarea
+                  id="editWorkoutNotes"
+                  rows="3"
+                  placeholder="Add any notes about this workout..."></textarea>
+              </div>
+
+              <div class="form-group">
                 <label>Select Exercises *</label>
+
+                <!-- Exercise Filters -->
+                <div class="exercise-filters">
+                  <input
+                    type="text"
+                    id="editExerciseSearchInput"
+                    class="exercise-search-input"
+                    placeholder="Search exercises..." />
+
+                  <div class="muscle-group-filters">
+                    <button
+                      type="button"
+                      class="muscle-filter-btn active"
+                      data-muscle="all">
+                      All
+                    </button>
+                    <button
+                      type="button"
+                      class="muscle-filter-btn active"
+                      data-muscle="Chest">
+                      Chest
+                    </button>
+                    <button
+                      type="button"
+                      class="muscle-filter-btn active"
+                      data-muscle="Back">
+                      Back
+                    </button>
+                    <button
+                      type="button"
+                      class="muscle-filter-btn active"
+                      data-muscle="Shoulders">
+                      Shoulders
+                    </button>
+                    <button
+                      type="button"
+                      class="muscle-filter-btn active"
+                      data-muscle="Biceps">
+                      Biceps
+                    </button>
+                    <button
+                      type="button"
+                      class="muscle-filter-btn active"
+                      data-muscle="Triceps">
+                      Triceps
+                    </button>
+                    <button
+                      type="button"
+                      class="muscle-filter-btn active"
+                      data-muscle="Legs">
+                      Legs
+                    </button>
+                    <button
+                      type="button"
+                      class="muscle-filter-btn active"
+                      data-muscle="Quads">
+                      Quads
+                    </button>
+                    <button
+                      type="button"
+                      class="muscle-filter-btn active"
+                      data-muscle="Hamstrings">
+                      Hamstrings
+                    </button>
+                    <button
+                      type="button"
+                      class="muscle-filter-btn active"
+                      data-muscle="Glutes">
+                      Glutes
+                    </button>
+                    <button
+                      type="button"
+                      class="muscle-filter-btn active"
+                      data-muscle="Core">
+                      Core
+                    </button>
+                    <button
+                      type="button"
+                      class="muscle-filter-btn active"
+                      data-muscle="Calves">
+                      Calves
+                    </button>
+                    <button
+                      type="button"
+                      class="muscle-filter-btn active"
+                      data-muscle="Forearms">
+                      Forearms
+                    </button>
+                  </div>
+                </div>
+
                 <div id="editExerciseSelector" class="exercise-selector"></div>
               </div>
 

@@ -19,6 +19,8 @@ class WorkoutTracker {
   async init() {
     await this.loadWorkouts();
     this.loadSessions();
+    this.loadUserName();
+    this.loadTheme();
     this.setupEventListeners();
     this.renderWorkoutList();
     this.updateCurrentDate();
@@ -42,11 +44,17 @@ class WorkoutTracker {
         this.saveWorkouts();
       }
 
-      // Build exercise library from all exercises
-      this.buildExerciseLibrary();
+      // Load or build exercise library
+      const storedLibrary = localStorage.getItem("exerciseLibrary");
+      if (storedLibrary) {
+        this.exerciseLibrary = JSON.parse(storedLibrary);
+      } else {
+        this.buildExerciseLibrary();
+      }
     } catch (error) {
       console.error("Error loading workouts:", error);
       this.workouts = [];
+      this.exerciseLibrary = [];
     }
   }
 
@@ -64,6 +72,8 @@ class WorkoutTracker {
             reps: exercise.reps,
             weight_kg: exercise.weight_kg,
             notes: exercise.notes,
+            form_notes: exercise.form_notes,
+            form_video: exercise.form_video,
           });
         }
       });
@@ -93,11 +103,64 @@ class WorkoutTracker {
     localStorage.setItem("workoutSessions", JSON.stringify(this.sessions));
   }
 
+  loadUserName() {
+    const userName = localStorage.getItem("userName");
+    const nameDisplay = document.getElementById("userNameDisplay");
+    const possessive = document.getElementById("titlePossessive");
+    if (userName) {
+      nameDisplay.textContent = userName;
+      nameDisplay.classList.remove("is-default");
+      possessive.classList.remove("hidden");
+    } else {
+      nameDisplay.classList.add("is-default");
+      possessive.classList.add("hidden");
+    }
+  }
+
+  saveUserName(name) {
+    localStorage.setItem("userName", name);
+  }
+
+  loadTheme() {
+    const theme = localStorage.getItem("theme") || "dark";
+    if (theme === "light") {
+      document.body.classList.add("light-mode");
+      this.updateThemeToggle(true);
+    }
+  }
+
+  toggleTheme() {
+    const isLight = document.body.classList.toggle("light-mode");
+    localStorage.setItem("theme", isLight ? "light" : "dark");
+    this.updateThemeToggle(isLight);
+  }
+
+  updateThemeToggle(isLight) {
+    const darkIcon = document.getElementById("themeIconDark");
+    const lightIcon = document.getElementById("themeIconLight");
+    const toggleText = document.getElementById("themeToggleText");
+
+    if (isLight) {
+      darkIcon.classList.add("hidden");
+      lightIcon.classList.remove("hidden");
+      toggleText.textContent = "Dark";
+    } else {
+      darkIcon.classList.remove("hidden");
+      lightIcon.classList.add("hidden");
+      toggleText.textContent = "Light";
+    }
+  }
+
   // ============================================
   // Event Listeners
   // ============================================
 
   setupEventListeners() {
+    // Theme toggle
+    document.getElementById("themeToggleBtn").addEventListener("click", () => {
+      this.toggleTheme();
+    });
+
     // Navigation buttons
     document.getElementById("backToWorkouts").addEventListener("click", () => {
       this.showView("workoutListView");
@@ -195,6 +258,9 @@ class WorkoutTracker {
         this.createWorkout();
       });
 
+    // Exercise filtering for create workout
+    this.setupExerciseFiltering("exerciseSearchInput", "exerciseSelector");
+
     // Workout editing
     document
       .getElementById("closeEditWorkoutBtn")
@@ -220,6 +286,124 @@ class WorkoutTracker {
         e.preventDefault();
         this.saveWorkoutEdit();
       });
+
+    // Exercise filtering for edit workout
+    this.setupExerciseFiltering(
+      "editExerciseSearchInput",
+      "editExerciseSelector"
+    );
+
+    // User name editing
+    const nameDisplay = document.getElementById("userNameDisplay");
+    const possessive = document.getElementById("titlePossessive");
+    nameDisplay.addEventListener("blur", () => {
+      const name = nameDisplay.textContent.trim();
+      if (name && name !== "My") {
+        this.saveUserName(name);
+        nameDisplay.classList.remove("is-default");
+        possessive.classList.remove("hidden");
+      } else {
+        nameDisplay.textContent = "My";
+        nameDisplay.classList.add("is-default");
+        possessive.classList.add("hidden");
+        localStorage.removeItem("userName");
+      }
+    });
+
+    nameDisplay.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        nameDisplay.blur();
+      }
+    });
+  }
+
+  setupExerciseFiltering(searchInputId, selectorId) {
+    const searchInput = document.getElementById(searchInputId);
+    const selector = document.getElementById(selectorId);
+
+    // Search input filtering
+    searchInput.addEventListener("input", () => {
+      this.filterExercises(searchInputId, selectorId);
+    });
+
+    // Muscle group filter buttons
+    const container = searchInput.closest(".form-group");
+    const filterButtons = container.querySelectorAll(".muscle-filter-btn");
+
+    filterButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const muscle = btn.dataset.muscle;
+
+        if (muscle === "all") {
+          // Toggle all on/off
+          const allActive = btn.classList.contains("active");
+          filterButtons.forEach((b) => {
+            if (allActive) {
+              b.classList.remove("active");
+            } else {
+              b.classList.add("active");
+            }
+          });
+        } else {
+          // Toggle individual muscle group
+          btn.classList.toggle("active");
+
+          // Update "All" button state
+          const allBtn = container.querySelector('[data-muscle="all"]');
+          const otherBtns = Array.from(filterButtons).filter(
+            (b) => b.dataset.muscle !== "all"
+          );
+          const allOthersActive = otherBtns.every((b) =>
+            b.classList.contains("active")
+          );
+
+          if (allOthersActive) {
+            allBtn.classList.add("active");
+          } else {
+            allBtn.classList.remove("active");
+          }
+        }
+
+        this.filterExercises(searchInputId, selectorId);
+      });
+    });
+  }
+
+  filterExercises(searchInputId, selectorId) {
+    const searchInput = document.getElementById(searchInputId);
+    const selector = document.getElementById(selectorId);
+    const searchTerm = searchInput.value.toLowerCase().trim();
+
+    // Get active muscle groups
+    const container = searchInput.closest(".form-group");
+    const activeFilters = Array.from(
+      container.querySelectorAll(".muscle-filter-btn.active")
+    )
+      .filter((btn) => btn.dataset.muscle !== "all")
+      .map((btn) => btn.dataset.muscle);
+
+    // Filter exercise items
+    const items = selector.querySelectorAll(".exercise-selector-item");
+
+    items.forEach((item) => {
+      const label = item.querySelector("label").textContent.toLowerCase();
+      const muscleGroup = item.dataset.muscleGroup;
+
+      // Check search match
+      const matchesSearch = label.includes(searchTerm);
+
+      // Check muscle group match
+      const matchesMuscle =
+        activeFilters.length === 0 || activeFilters.includes(muscleGroup);
+
+      // Show/hide item
+      if (matchesSearch && matchesMuscle) {
+        item.classList.remove("hidden");
+      } else {
+        item.classList.add("hidden");
+      }
+    });
   }
 
   // ============================================
@@ -353,6 +537,17 @@ class WorkoutTracker {
     notice.classList.add("hidden");
 
     document.getElementById("currentWorkoutName").textContent = workout.name;
+
+    // Display workout notes if they exist
+    const notesDisplay = document.getElementById("workoutNotesDisplay");
+    const notesContent = document.getElementById("workoutNotesContent");
+    if (workout.notes) {
+      notesContent.textContent = workout.notes;
+      notesDisplay.style.display = "block";
+    } else {
+      notesDisplay.style.display = "none";
+    }
+
     this.renderExerciseList();
     this.showView("exerciseListView");
   }
@@ -447,6 +642,43 @@ class WorkoutTracker {
 
     document.getElementById("exerciseName").textContent = exercise.name;
     document.getElementById("muscleGroup").textContent = exercise.muscle_group;
+
+    // Display form info if it exists
+    const formInfoCard = document.getElementById("exerciseFormInfo");
+    const formNotesDisplay = document.getElementById(
+      "exerciseFormNotesDisplay"
+    );
+    const formVideoDisplay = document.getElementById(
+      "exerciseFormVideoDisplay"
+    );
+
+    if (exercise.form_notes || exercise.form_video) {
+      formInfoCard.style.display = "block";
+
+      // Display form notes
+      if (exercise.form_notes) {
+        formNotesDisplay.innerHTML = `<p style="margin-bottom: var(--spacing-md); color: var(--dark-text-primary); line-height: 1.6;">${exercise.form_notes}</p>`;
+      } else {
+        formNotesDisplay.innerHTML = "";
+      }
+
+      // Display form video link
+      if (exercise.form_video) {
+        formVideoDisplay.innerHTML = `
+          <a href="${exercise.form_video}" target="_blank" rel="noopener noreferrer" class="btn-secondary" style="display: inline-flex; align-items: center; gap: var(--spacing-xs);">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Watch Form Video
+          </a>
+        `;
+      } else {
+        formVideoDisplay.innerHTML = "";
+      }
+    } else {
+      formInfoCard.style.display = "none";
+    }
 
     // Show single exercise view, hide paired view
     document.getElementById("singleExerciseView").classList.remove("hidden");
@@ -993,6 +1225,10 @@ class WorkoutTracker {
     const reps = parseInt(document.getElementById("defaultReps").value) || null;
     const weight =
       parseFloat(document.getElementById("defaultWeight").value) || null;
+    const formNotes =
+      document.getElementById("exerciseFormNotes").value.trim() || null;
+    const formVideo =
+      document.getElementById("exerciseFormVideo").value.trim() || null;
 
     if (!name || !muscleGroup) {
       alert("Please fill in required fields");
@@ -1016,6 +1252,8 @@ class WorkoutTracker {
       reps,
       weight_kg: weight,
       notes: null,
+      form_notes: formNotes,
+      form_video: formVideo,
     };
 
     this.exerciseLibrary.push(exercise);
@@ -1137,6 +1375,7 @@ class WorkoutTracker {
     sorted.forEach((exercise) => {
       const item = document.createElement("div");
       item.className = "exercise-selector-item";
+      item.dataset.muscleGroup = exercise.muscle_group;
 
       const checkbox = document.createElement("input");
       checkbox.type = "checkbox";
@@ -1155,6 +1394,7 @@ class WorkoutTracker {
 
   createWorkout() {
     const name = document.getElementById("workoutName").value.trim();
+    const notes = document.getElementById("workoutNotes").value.trim() || null;
     const selectedCheckboxes = document.querySelectorAll(
       '#exerciseSelector input[type="checkbox"]:checked'
     );
@@ -1178,6 +1418,7 @@ class WorkoutTracker {
     const workout = {
       id: Date.now(),
       name,
+      notes,
       date: null,
       exercises,
     };
@@ -1222,6 +1463,7 @@ class WorkoutTracker {
     // Populate the edit form
     document.getElementById("editWorkoutId").value = workout.id;
     document.getElementById("editWorkoutName").value = workout.name;
+    document.getElementById("editWorkoutNotes").value = workout.notes || "";
 
     // Render exercise selector with current exercises checked
     this.renderEditExerciseSelector(workout.exercises);
@@ -1257,12 +1499,18 @@ class WorkoutTracker {
     sorted.forEach((exercise) => {
       const item = document.createElement("div");
       item.className = "exercise-selector-item";
+      item.dataset.muscleGroup = exercise.muscle_group;
 
       const checkbox = document.createElement("input");
       checkbox.type = "checkbox";
       checkbox.id = `edit-select-${exercise.name}`;
       checkbox.value = exercise.name;
       checkbox.checked = currentExerciseNames.has(exercise.name);
+
+      // Add event listener to update selected list
+      checkbox.addEventListener("change", () => {
+        this.updateEditSelectedExercises();
+      });
 
       const label = document.createElement("label");
       label.htmlFor = `edit-select-${exercise.name}`;
@@ -1272,30 +1520,138 @@ class WorkoutTracker {
       item.appendChild(label);
       container.appendChild(item);
     });
+
+    // Add selected exercises display with drag-and-drop reordering
+    this.renderSelectedExercisesForEdit(currentExercises);
+  }
+
+  updateEditSelectedExercises() {
+    // Get all checked exercises in their current order
+    const checkboxes = document.querySelectorAll(
+      '#editExerciseSelector input[type="checkbox"]:checked'
+    );
+    const selectedNames = Array.from(checkboxes).map((cb) => cb.value);
+    const exercises = selectedNames
+      .map((name) => {
+        return this.exerciseLibrary.find((e) => e.name === name);
+      })
+      .filter((e) => e); // Remove any not found
+
+    this.renderSelectedExercisesForEdit(exercises);
+  }
+
+  renderSelectedExercisesForEdit(exercises) {
+    // Find or create the selected exercises container
+    let selectedContainer = document.getElementById("editSelectedExercises");
+    if (!selectedContainer) {
+      const form = document
+        .getElementById("editExerciseSelector")
+        .closest(".form-group");
+      selectedContainer = document.createElement("div");
+      selectedContainer.id = "editSelectedExercises";
+      selectedContainer.className = "selected-exercises-list";
+      form.appendChild(selectedContainer);
+    }
+
+    if (exercises.length === 0) {
+      selectedContainer.innerHTML = "";
+      selectedContainer.style.display = "none";
+      return;
+    }
+
+    selectedContainer.style.display = "block";
+    selectedContainer.innerHTML =
+      '<h4 class="selected-exercises-title">Selected Exercises (hold and drag to reorder)</h4>';
+
+    exercises.forEach((exercise, index) => {
+      const item = document.createElement("div");
+      item.className = "selected-exercise-item";
+      item.draggable = true;
+      item.dataset.exerciseName = exercise.name;
+      item.dataset.index = index;
+
+      item.innerHTML = `
+        <svg class="drag-handle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 7h18M3 12h18M3 17h18" />
+        </svg>
+        <span class="selected-exercise-name">${exercise.name}</span>
+        <span class="selected-exercise-muscle">${exercise.muscle_group}</span>
+      `;
+
+      // Drag events
+      item.addEventListener("dragstart", (e) => {
+        e.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.setData("text/plain", index);
+        item.classList.add("dragging");
+      });
+
+      item.addEventListener("dragend", () => {
+        item.classList.remove("dragging");
+      });
+
+      item.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        const draggingItem = selectedContainer.querySelector(".dragging");
+        if (draggingItem && draggingItem !== item) {
+          const rect = item.getBoundingClientRect();
+          const midpoint = rect.top + rect.height / 2;
+          if (e.clientY < midpoint) {
+            item.parentNode.insertBefore(draggingItem, item);
+          } else {
+            item.parentNode.insertBefore(draggingItem, item.nextSibling);
+          }
+        }
+      });
+
+      selectedContainer.appendChild(item);
+    });
   }
 
   saveWorkoutEdit() {
     const workoutId = parseInt(document.getElementById("editWorkoutId").value);
     const name = document.getElementById("editWorkoutName").value.trim();
-    const selectedCheckboxes = document.querySelectorAll(
-      '#editExerciseSelector input[type="checkbox"]:checked'
-    );
+    const notes =
+      document.getElementById("editWorkoutNotes").value.trim() || null;
+
+    // Get exercises in the order they appear in the selected list (if it exists)
+    const selectedContainer = document.getElementById("editSelectedExercises");
+    let exercises;
+
+    if (selectedContainer && selectedContainer.style.display !== "none") {
+      // Use the reordered list
+      const selectedItems = selectedContainer.querySelectorAll(
+        ".selected-exercise-item"
+      );
+      const exerciseNames = Array.from(selectedItems).map(
+        (item) => item.dataset.exerciseName
+      );
+      exercises = exerciseNames.map((name) => {
+        const exercise = this.exerciseLibrary.find((e) => e.name === name);
+        return { ...exercise };
+      });
+    } else {
+      // Fallback to checkboxes
+      const selectedCheckboxes = document.querySelectorAll(
+        '#editExerciseSelector input[type="checkbox"]:checked'
+      );
+      const exerciseNames = Array.from(selectedCheckboxes).map(
+        (cb) => cb.value
+      );
+      exercises = exerciseNames.map((name) => {
+        const exercise = this.exerciseLibrary.find((e) => e.name === name);
+        return { ...exercise };
+      });
+    }
 
     if (!name) {
       alert("Please enter a workout name");
       return;
     }
 
-    if (selectedCheckboxes.length === 0) {
+    if (exercises.length === 0) {
       alert("Please select at least one exercise");
       return;
     }
-
-    const exerciseNames = Array.from(selectedCheckboxes).map((cb) => cb.value);
-    const exercises = exerciseNames.map((name) => {
-      const exercise = this.exerciseLibrary.find((e) => e.name === name);
-      return { ...exercise };
-    });
 
     // Find and update the workout
     const workoutIndex = this.workouts.findIndex((w) => w.id === workoutId);
@@ -1307,6 +1663,7 @@ class WorkoutTracker {
     this.workouts[workoutIndex] = {
       ...this.workouts[workoutIndex],
       name,
+      notes,
       exercises,
     };
 
