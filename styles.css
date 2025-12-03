@@ -1647,21 +1647,20 @@ input[type="number"]::-webkit-outer-spin-button {
   /* Tighter spacing on mobile */
   .app-container {
     padding: var(--spacing-sm);
-    padding-bottom: 80px; /* Space for fixed bottom header */
+    padding-top: var(--spacing-md);
   }
 
-  /* Keep header visible at bottom without covering content */
+  /* Keep header visible at top without covering content */
   .app-header {
-    position: fixed;
-    bottom: 0;
+    position: sticky;
+    top: 0;
     left: 0;
     right: 0;
     z-index: 100;
     background-color: var(--bg-page);
     margin-bottom: 0;
     padding: var(--spacing-sm);
-    border-top: 1px solid var(--border-subtle);
-    border-bottom: none;
+    border-bottom: 1px solid var(--border-subtle);
     backdrop-filter: blur(8px);
   }
 
