@@ -1624,7 +1624,7 @@ input[type="number"]::-webkit-outer-spin-button {
   /* Tighter spacing on mobile */
   .app-container {
     padding: var(--spacing-sm);
-    padding-top: 60px; /* Space for fixed header */
+    padding-top: 70px; /* Space for fixed header */
   }
 
   /* Pin header to top on mobile */
@@ -1636,20 +1636,21 @@ input[type="number"]::-webkit-outer-spin-button {
     z-index: 100;
     background-color: var(--bg-page);
     margin-bottom: 0;
-    padding: var(--spacing-xs) var(--spacing-sm);
+    padding: var(--spacing-sm);
     border-bottom: 1px solid var(--border-subtle);
     backdrop-filter: blur(8px);
   }
 
   .header-top {
-    flex-direction: row;
-    gap: var(--spacing-sm);
-    align-items: center;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    align-items: flex-start;
   }
 
   .app-title {
-    font-size: 16px;
-    white-space: nowrap;
+    font-size: 18px;
+    white-space: normal;
+    line-height: 1.2;
   }
 
   .header-meta {
@@ -1658,8 +1659,9 @@ input[type="number"]::-webkit-outer-spin-button {
 
   .header-actions {
     display: flex;
+    flex-wrap: wrap;
     gap: var(--spacing-xs);
-    margin-left: auto;
+    width: 100%;
   }
 
   .btn-icon {

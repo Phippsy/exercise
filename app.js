@@ -949,6 +949,9 @@ class WorkoutTracker {
     this.renderExerciseInsights(exercise);
 
     this.showView("exerciseDetailView");
+    
+    // Scroll to top of page to ensure "Log Today's Session" is visible
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   showPairedExerciseDetail(exercise1, exercise2) {
