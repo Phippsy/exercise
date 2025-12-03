@@ -477,6 +477,32 @@ button {
   margin-bottom: var(--spacing-md);
 }
 
+.screening-card {
+  border-color: var(--color-info);
+  background: linear-gradient(
+    135deg,
+    rgba(90, 103, 204, 0.08),
+    rgba(90, 103, 204, 0.02)
+  );
+}
+
+.screening-body {
+  color: var(--text-primary);
+  margin: var(--spacing-sm) 0;
+}
+
+.screening-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.screening-actions .btn-secondary.active {
+  background-color: var(--color-info);
+  color: #ffffff;
+  border-color: var(--color-info);
+}
+
 .card-subtitle {
   color: var(--text-muted);
   font-size: var(--font-size-sm);
@@ -548,6 +574,12 @@ button {
   border: 1px solid var(--border-subtle);
 }
 
+.pill-success {
+  background-color: rgba(123, 153, 60, 0.2);
+  color: var(--color-success);
+  border: 1px solid rgba(123, 153, 60, 0.6);
+}
+
 .insight-meta {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -613,6 +645,15 @@ button {
   color: var(--text-muted);
 }
 
+.workout-completed-today {
+  border-color: rgba(123, 153, 60, 0.8);
+  box-shadow: 0 4px 16px rgba(123, 153, 60, 0.25);
+}
+
+.workout-completion-badge {
+  margin-left: var(--spacing-sm);
+}
+
 /* ============================================
    Exercise List
    ============================================ */
@@ -665,6 +706,13 @@ button {
 
 .exercise-item-content {
   flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.exercise-item-details {
+  flex: 1;
 }
 
 .exercise-item-name {
@@ -676,6 +724,17 @@ button {
 .exercise-item-meta {
   font-size: var(--font-size-sm);
   color: var(--text-muted);
+}
+
+.exercise-item-status {
+  display: flex;
+  justify-content: flex-end;
+  min-width: 140px;
+}
+
+.exercise-completed-today {
+  border-color: rgba(123, 153, 60, 0.6);
+  background-color: rgba(123, 153, 60, 0.08);
 }
 
 .exercise-item-chevron {
@@ -1956,6 +2015,12 @@ input[type="number"]::-webkit-outer-spin-button {
 
 .onboarding-dot.active {
   background: var(--color-accent);
+}
+
+.tour-highlight {
+  position: relative;
+  box-shadow: 0 0 0 4px rgba(133, 102, 179, 0.35);
+  transition: box-shadow 0.2s ease;
 }
 
 .onboarding-actions {
