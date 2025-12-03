@@ -1,0 +1,248 @@
+{
+    "workouts": [
+        {
+            "id": 1,
+            "name": "Push/Arms/Back (≈60 min)",
+            "date": null,
+            "exercises": [
+                {
+                    "name": "Single Arm Pulldown - Kneeling",
+                    "muscle_group": "Back",
+                    "sets": 3,
+                    "reps": 8,
+                    "weight_kg": 22.5,
+                    "notes": null
+                },
+                {
+                    "name": "Seated Cable Row",
+                    "muscle_group": "Back",
+                    "sets": 4,
+                    "reps": 10,
+                    "weight_kg": 35,
+                    "notes": null
+                },
+                {
+                    "name": "Rope Tricep Extension",
+                    "muscle_group": "Triceps",
+                    "sets": null,
+                    "reps": 12,
+                    "weight_kg": 45,
+                    "notes": null
+                },
+                {
+                    "name": "Arm Curl (Barbell)",
+                    "muscle_group": "Biceps",
+                    "sets": null,
+                    "reps": 10,
+                    "weight_kg": 22.5,
+                    "notes": null
+                },
+                {
+                    "name": "Chest Press - Flat Bench (Dumbbells)",
+                    "muscle_group": "Chest",
+                    "sets": 3,
+                    "reps": 15,
+                    "weight_kg": 20,
+                    "notes": null
+                },
+                {
+                    "name": "Leg Press",
+                    "muscle_group": "Legs",
+                    "sets": null,
+                    "reps": 12,
+                    "weight_kg": 80,
+                    "notes": null
+                },
+                {
+                    "name": "Reverse Alternating Lunge (Kettlebell)",
+                    "muscle_group": "Legs",
+                    "sets": null,
+                    "reps": 12,
+                    "weight_kg": 4,
+                    "notes": null
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "name": "Core Insanity (≈45 min)",
+            "date": null,
+            "exercises": [
+                {
+                    "name": "Cable Pallof Press",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "12–15/side",
+                    "weight_kg": 7.5,
+                    "notes": null
+                },
+                {
+                    "name": "Dead Bug with Kettlebell",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "10/side",
+                    "weight_kg": "4–8",
+                    "notes": null
+                },
+                {
+                    "name": "TRX or Ring Fallout",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "8–12",
+                    "weight_kg": "Bodyweight",
+                    "notes": null
+                },
+                {
+                    "name": "Kettlebell Windmill",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "6–8/side",
+                    "weight_kg": "8–12",
+                    "notes": null
+                },
+                {
+                    "name": "Weighted Plank Pull-Through",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "10/side",
+                    "weight_kg": "8–12",
+                    "notes": null
+                },
+                {
+                    "name": "Ab Crunch Machine (Cable or Selectorized)",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": 15,
+                    "weight_kg": 55,
+                    "notes": null
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "name": "THU — Pump / Rear-Delt / Arms (≈45 min)",
+            "date": null,
+            "exercises": [
+                {
+                    "name": "Landmine Lateral-Raise→Press",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": null,
+                    "weight_kg": null,
+                    "notes": null
+                },
+                {
+                    "name": "Close-Grip Cable Row",
+                    "muscle_group": "Back",
+                    "sets": 4,
+                    "reps": null,
+                    "weight_kg": null,
+                    "notes": null
+                },
+                {
+                    "name": "Reverse Pec-Deck / Face-Pull",
+                    "muscle_group": "Shoulders",
+                    "sets": "3 + 1 burnout",
+                    "reps": null,
+                    "weight_kg": null,
+                    "notes": null
+                },
+                {
+                    "name": "EZ-Bar Curl",
+                    "muscle_group": "Biceps",
+                    "sets": 3,
+                    "reps": null,
+                    "weight_kg": null,
+                    "notes": null
+                },
+                {
+                    "name": "Rope Overhead Triceps Extension",
+                    "muscle_group": "Triceps",
+                    "sets": 3,
+                    "reps": null,
+                    "weight_kg": null,
+                    "notes": null
+                },
+                {
+                    "name": "Push-up Drop Set (feet-elevated → floor)",
+                    "muscle_group": "Chest",
+                    "sets": "+2",
+                    "reps": null,
+                    "weight_kg": "Bodyweight",
+                    "notes": null
+                },
+                {
+                    "name": "Finisher Curls / Pushdowns / Dead Hang",
+                    "muscle_group": "Biceps · Triceps · Back",
+                    "sets": 2,
+                    "reps": null,
+                    "weight_kg": null,
+                    "notes": "Finisher grouped as circuit"
+                }
+            ]
+        },
+        {
+            "id": 4,
+            "name": "WED — Landmines & Posterior (≈45 min)",
+            "date": null,
+            "exercises": [
+                {
+                    "name": "Front-Facing Lat Pulldown",
+                    "muscle_group": "Back",
+                    "sets": 3,
+                    "reps": null,
+                    "weight_kg": null,
+                    "notes": null
+                },
+                {
+                    "name": "Landmine Shoulder Press",
+                    "muscle_group": "Shoulders",
+                    "sets": "3 + 2 back-off",
+                    "reps": null,
+                    "weight_kg": null,
+                    "notes": null
+                },
+                {
+                    "name": "Stiff-Leg Deadlift",
+                    "muscle_group": "Legs",
+                    "sets": 3,
+                    "reps": null,
+                    "weight_kg": null,
+                    "notes": null
+                },
+                {
+                    "name": "Leg Press (feet high)",
+                    "muscle_group": "Quads",
+                    "sets": "+2",
+                    "reps": null,
+                    "weight_kg": null,
+                    "notes": null
+                },
+                {
+                    "name": "DB Hip Thrust",
+                    "muscle_group": "Glutes",
+                    "sets": "+2",
+                    "reps": null,
+                    "weight_kg": null,
+                    "notes": null
+                },
+                {
+                    "name": "Trap-Bar Carry",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": null,
+                    "weight_kg": null,
+                    "notes": null
+                },
+                {
+                    "name": "Ab-Mat Crunch + KB Pull-Through",
+                    "muscle_group": "Core",
+                    "sets": 6,
+                    "reps": null,
+                    "weight_kg": null,
+                    "notes": null
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0a0a">
+    <title>Workout Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-top">
+                <div>
+                    <h1 class="app-title">Workout Tracker</h1>
+                    <div class="header-meta" id="currentDate"></div>
+                </div>
+                <div class="header-actions">
+                    <button id="manageBtn" class="btn-secondary btn-icon" aria-label="Manage workouts and exercises">
+                        <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 011.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.56.94 1.109v1.094c0 .55-.397 1.02-.94 1.11l-.893.149c-.425.07-.765.383-.93.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 01-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.397.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 01-.12-1.45l.527-.737c.25-.35.273-.806.108-1.204-.165-.397-.505-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.107-1.204l-.527-.738a1.125 1.125 0 01.12-1.45l.773-.773a1.125 1.125 0 011.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        Manage
+                    </button>
+                    <button id="exportDataBtn" class="btn-secondary btn-icon" aria-label="Export data">
+                        <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
+                        </svg>
+                        Export
+                    </button>
+                    <button id="importDataBtn" class="btn-secondary btn-icon" aria-label="Import data">
+                        <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/>
+                        </svg>
+                        Import
+                    </button>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Hidden file input for import -->
+        <input type="file" id="fileInput" accept=".json" style="display: none;">
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Workout Selection View -->
+            <section id="workoutListView" class="view">
+                <div class="section-header">
+                    <h2 class="section-title">Your Workouts</h2>
+                    <p class="section-subtitle">Select a workout to begin tracking</p>
+                </div>
+                <div id="workoutList" class="workout-grid"></div>
+            </section>
+
+            <!-- Exercise List View -->
+            <section id="exerciseListView" class="view hidden">
+                <div class="section-header">
+                    <button id="backToWorkouts" class="btn-back" aria-label="Back to workouts">
+                        <svg class="icon icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                        Back to Workouts
+                    </button>
+                    <h2 class="section-title" id="currentWorkoutName"></h2>
+                    <div class="section-header-actions">
+                        <p class="section-subtitle">Select an exercise to view history and log progress</p>
+                        <button id="pairModeToggle" class="btn-secondary btn-icon">
+                            <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 4.5v15m6-15v15m-10.875 0h15.75c.621 0 1.125-.504 1.125-1.125V5.625c0-.621-.504-1.125-1.125-1.125H4.125C3.504 4.5 3 5.004 3 5.625v12.75c0 .621.504 1.125 1.125 1.125z"/>
+                            </svg>
+                            <span id="pairModeText">Pair Exercises</span>
+                        </button>
+                    </div>
+                </div>
+                <div id="pairModeNotice" class="pair-mode-notice hidden">
+                    <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"/>
+                    </svg>
+                    <span id="pairModeNoticeText">Select 2 exercises to pair</span>
+                </div>
+                <div id="exerciseList" class="exercise-list"></div>
+            </section>
+
+            <!-- Exercise Detail & Session Tracking View -->
+            <section id="exerciseDetailView" class="view hidden">
+                <div class="section-header">
+                    <button id="backToExercises" class="btn-back" aria-label="Back to exercises">
+                        <svg class="icon icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                        Back to Exercises
+                    </button>
+                    <h2 class="section-title" id="exerciseName"></h2>
+                    <div class="exercise-meta">
+                        <span class="muscle-badge" id="muscleGroup"></span>
+                    </div>
+                </div>
+
+                <div id="singleExerciseView">
+                    <!-- Previous Session Display -->
+                    <div class="card">
+                        <h3 class="card-title">Previous Session</h3>
+                        <div id="previousSession" class="previous-session"></div>
+                    </div>
+
+                    <!-- Current Session Form -->
+                    <div class="card">
+                        <h3 class="card-title">Log Today's Session</h3>
+                        <form id="sessionForm" class="session-form">
+                            <div id="setsContainer" class="sets-container"></div>
+                            
+                            <div class="form-actions">
+                                <button type="button" id="addSetBtn" class="btn-secondary">
+                                    <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14"/>
+                                    </svg>
+                                    Add Set
+                                </button>
+                                <button type="submit" class="btn-primary">
+                                    Save Session
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Session History -->
+                    <div class="card">
+                        <h3 class="card-title">Session History</h3>
+                        <div id="sessionHistory" class="session-history"></div>
+                    </div>
+                </div>
+
+                <!-- Paired Exercise View -->
+                <div id="pairedExerciseView" class="paired-exercise-container hidden">
+                    <div class="paired-exercises-grid">
+                        <!-- Exercise 1 -->
+                        <div class="paired-exercise-column">
+                            <div class="paired-exercise-header">
+                                <h3 class="paired-exercise-title" id="pairedExercise1Name"></h3>
+                                <span class="muscle-badge" id="pairedExercise1MuscleGroup"></span>
+                            </div>
+                            
+                            <div class="card">
+                                <h4 class="card-title-sm">Previous Session</h4>
+                                <div id="pairedPreviousSession1" class="previous-session"></div>
+                            </div>
+
+                            <div class="card">
+                                <h4 class="card-title-sm">Log Today's Session</h4>
+                                <div id="pairedSetsContainer1" class="sets-container"></div>
+                                <button type="button" id="pairedAddSetBtn1" class="btn-secondary btn-sm">
+                                    <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14"/>
+                                    </svg>
+                                    Add Set
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Exercise 2 -->
+                        <div class="paired-exercise-column">
+                            <div class="paired-exercise-header">
+                                <h3 class="paired-exercise-title" id="pairedExercise2Name"></h3>
+                                <span class="muscle-badge" id="pairedExercise2MuscleGroup"></span>
+                            </div>
+                            
+                            <div class="card">
+                                <h4 class="card-title-sm">Previous Session</h4>
+                                <div id="pairedPreviousSession2" class="previous-session"></div>
+                            </div>
+
+                            <div class="card">
+                                <h4 class="card-title-sm">Log Today's Session</h4>
+                                <div id="pairedSetsContainer2" class="sets-container"></div>
+                                <button type="button" id="pairedAddSetBtn2" class="btn-secondary btn-sm">
+                                    <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14"/>
+                                    </svg>
+                                    Add Set
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Paired Save Button -->
+                    <div class="card">
+                        <button id="savePairedSessionBtn" class="btn-primary btn-full">
+                            Save Both Sessions
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <!-- Management View -->
+        <aside id="managementView" class="management-view hidden">
+            <div class="management-overlay"></div>
+            <div class="management-panel">
+                <div class="management-header">
+                    <h2 class="management-title">Manage</h2>
+                    <button id="closeManagementBtn" class="btn-close" aria-label="Close">
+                        <svg class="icon icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Management Tabs -->
+                <div class="management-tabs">
+                    <button class="management-tab active" data-tab="exercises">Exercises</button>
+                    <button class="management-tab" data-tab="workouts">Workouts</button>
+                </div>
+                
+                <!-- Exercises Tab -->
+                <div id="exercisesTab" class="management-tab-content active">
+                    <div class="management-section">
+                        <h3 class="management-section-title">Create New Exercise</h3>
+                        <form id="createExerciseForm" class="management-form">
+                            <div class="form-group">
+                                <label for="exerciseName">Exercise Name *</label>
+                                <input type="text" id="exerciseName" required placeholder="e.g., Bench Press">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="muscleGroup">Muscle Group *</label>
+                                <select id="muscleGroup" required>
+                                    <option value="">Select muscle group</option>
+                                    <option value="Chest">Chest</option>
+                                    <option value="Back">Back</option>
+                                    <option value="Shoulders">Shoulders</option>
+                                    <option value="Biceps">Biceps</option>
+                                    <option value="Triceps">Triceps</option>
+                                    <option value="Legs">Legs</option>
+                                    <option value="Quads">Quads</option>
+                                    <option value="Hamstrings">Hamstrings</option>
+                                    <option value="Glutes">Glutes</option>
+                                    <option value="Core">Core</option>
+                                    <option value="Calves">Calves</option>
+                                    <option value="Forearms">Forearms</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="defaultSets">Default Sets</label>
+                                    <input type="number" id="defaultSets" min="1" step="1" placeholder="3">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="defaultReps">Default Reps</label>
+                                    <input type="number" id="defaultReps" min="1" step="1" placeholder="10">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="defaultWeight">Default Weight (kg)</label>
+                                    <input type="number" id="defaultWeight" min="0" step="0.5" placeholder="20">
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn-primary btn-full">Create Exercise</button>
+                        </form>
+                    </div>
+                    
+                    <div class="management-section">
+                        <h3 class="management-section-title">All Exercises</h3>
+                        <div id="exerciseLibrary" class="exercise-library"></div>
+                    </div>
+                </div>
+                
+                <!-- Workouts Tab -->
+                <div id="workoutsTab" class="management-tab-content">
+                    <div class="management-section">
+                        <h3 class="management-section-title">Create New Workout</h3>
+                        <form id="createWorkoutForm" class="management-form">
+                            <div class="form-group">
+                                <label for="workoutName">Workout Name *</label>
+                                <input type="text" id="workoutName" required placeholder="e.g., Push Day">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Select Exercises *</label>
+                                <div id="exerciseSelector" class="exercise-selector"></div>
+                            </div>
+                            
+                            <button type="submit" class="btn-primary btn-full">Create Workout</button>
+                        </form>
+                    </div>
+                    
+                    <div class="management-section">
+                        <h3 class="management-section-title">Your Workouts</h3>
+                        <div id="workoutManager" class="workout-manager"></div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Edit Workout Modal -->
+        <aside id="editWorkoutModal" class="management-view hidden">
+            <div class="management-overlay"></div>
+            <div class="management-panel">
+                <div class="management-header">
+                    <h2 class="management-title">Edit Workout</h2>
+                    <button id="closeEditWorkoutBtn" class="btn-close" aria-label="Close">
+                        <svg class="icon icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="management-tab-content active" style="padding: var(--spacing-lg);">
+                    <form id="editWorkoutForm" class="management-form">
+                        <input type="hidden" id="editWorkoutId">
+                        
+                        <div class="form-group">
+                            <label for="editWorkoutName">Workout Name *</label>
+                            <input type="text" id="editWorkoutName" required placeholder="e.g., Push Day">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Select Exercises *</label>
+                            <div id="editExerciseSelector" class="exercise-selector"></div>
+                        </div>
+                        
+                        <div class="form-actions" style="border-top: none; padding-top: 0;">
+                            <button type="button" id="cancelEditWorkoutBtn" class="btn-secondary">Cancel</button>
+                            <button type="submit" class="btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
