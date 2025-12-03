@@ -408,14 +408,14 @@ button {
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-xs);
-  padding: var(--spacing-md) var(--spacing-lg);
+  padding: 6px var(--spacing-md);
   background-color: var(--bg-surface);
   color: var(--text-primary);
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-medium);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
-  min-height: 40px;
+  min-height: 28px;
 }
 
 .btn-secondary:hover {
