@@ -773,6 +773,7 @@ button {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
 }
 
 .exercise-item {
