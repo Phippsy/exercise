@@ -138,6 +138,31 @@
             <h2 class="section-title">Your Workouts</h2>
             <p class="section-subtitle">Select a workout to begin tracking</p>
           </div>
+          <div class="insight-grid">
+            <div class="card compact-card">
+              <div class="card-header-row">
+                <div>
+                  <h3 class="card-title-sm">Recent Exercise Activity</h3>
+                  <p class="card-subtitle">Exercises logged each day</p>
+                </div>
+                <span id="activityTotal" class="pill pill-soft"></span>
+              </div>
+              <div id="activityChart" class="mini-bar-chart"></div>
+              <div id="activityTrend" class="chart-caption"></div>
+            </div>
+
+            <div class="card compact-card">
+              <div class="card-header-row">
+                <div>
+                  <h3 class="card-title-sm">Workout Pace</h3>
+                  <p class="card-subtitle">How often you train</p>
+                </div>
+                <span id="workoutFrequency" class="pill pill-soft"></span>
+              </div>
+              <div id="workoutChart" class="mini-bar-chart"></div>
+              <div id="workoutTrend" class="chart-caption"></div>
+            </div>
+          </div>
           <div id="workoutList" class="workout-grid"></div>
         </section>
 
@@ -208,6 +233,19 @@
             </svg>
             <span id="pairModeNoticeText">Select 2 exercises to pair</span>
           </div>
+          <div class="insight-grid">
+            <div class="card compact-card">
+              <div class="card-header-row">
+                <div>
+                  <h3 class="card-title-sm">Workout Insights</h3>
+                  <p class="card-subtitle">Recent frequency for this plan</p>
+                </div>
+                <span id="workoutRecency" class="pill pill-soft"></span>
+              </div>
+              <div id="currentWorkoutChart" class="mini-bar-chart"></div>
+              <div id="currentWorkoutTrend" class="chart-caption"></div>
+            </div>
+          </div>
           <div id="exerciseList" class="exercise-list"></div>
         </section>
 
@@ -245,6 +283,31 @@
           </div>
 
           <div id="singleExerciseView">
+            <div class="card exercise-insight-card">
+              <div class="card-header-row">
+                <div>
+                  <h3 class="card-title-sm">Exercise Insights</h3>
+                  <p class="card-subtitle">Quick glance at your momentum</p>
+                </div>
+                <span id="exerciseRecency" class="pill pill-soft"></span>
+              </div>
+              <div class="insight-meta">
+                <div>
+                  <p class="insight-label">Last performed</p>
+                  <p id="exerciseLastPerformed" class="insight-value"></p>
+                </div>
+                <div>
+                  <p class="insight-label">Lifetime sessions</p>
+                  <p id="exerciseSessionCount" class="insight-value"></p>
+                </div>
+                <div>
+                  <p class="insight-label">Typical volume</p>
+                  <p id="exerciseAverage" class="insight-value"></p>
+                </div>
+              </div>
+              <div id="exerciseChart" class="mini-bar-chart"></div>
+              <div id="exerciseTrend" class="chart-caption"></div>
+            </div>
             <!-- Previous Session Display -->
             <div class="card">
               <h3 class="card-title">Previous Session</h3>
@@ -799,6 +862,35 @@
           </div>
         </div>
       </aside>
+    </div>
+
+    <div id="onboardingOverlay" class="onboarding-overlay hidden" role="dialog" aria-modal="true">
+      <div class="onboarding-card">
+        <div class="onboarding-header">
+          <h3 id="onboardingTitle">Welcome to Workout Tracker</h3>
+          <button id="onboardingSkip" class="btn-icon" aria-label="Skip tour">
+            <svg
+              class="icon icon-sm"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <p id="onboardingBody" class="onboarding-body"></p>
+        <div class="onboarding-progress" aria-hidden="true">
+          <span class="onboarding-dot" data-step="0"></span>
+          <span class="onboarding-dot" data-step="1"></span>
+          <span class="onboarding-dot" data-step="2"></span>
+          <span class="onboarding-dot" data-step="3"></span>
+        </div>
+        <div class="onboarding-actions">
+          <button id="onboardingBack" class="btn-secondary" type="button">Back</button>
+          <button id="onboardingNext" class="btn-primary" type="button">Next</button>
+        </div>
+      </div>
     </div>
 
     <script src="app.js"></script>
