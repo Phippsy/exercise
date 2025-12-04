@@ -2983,8 +2983,12 @@ class WorkoutTracker {
             return;
           }
 
-          const exists = this.workouts.some((w) => w.id === workout.id);
+          const exists = this.workouts.some(
+            (w) => w.name.toLowerCase() === workout.name.toLowerCase()
+          );
           if (!exists) {
+            // Generate new ID to avoid conflicts
+            workout.id = Date.now();
             this.workouts.push(workout);
             this.saveWorkouts();
             this.renderWorkoutManager();
@@ -2992,7 +2996,7 @@ class WorkoutTracker {
             this.showSuccessMessage(`Workout "${workout.name}" imported!`);
           } else {
             this.showSuccessMessage(
-              `Workout "${workout.name}" already exists. Import skipped.`
+              `Workout "${workout.name}" already exists (same name). Import skipped.`
             );
           }
 
@@ -3044,9 +3048,13 @@ class WorkoutTracker {
 
         // Import workouts (if present)
         if (importedData.workouts && Array.isArray(importedData.workouts)) {
-          const existingWorkoutIds = new Set(this.workouts.map((w) => w.id));
+          const existingWorkoutNames = new Set(
+            this.workouts.map((w) => w.name.toLowerCase())
+          );
           importedData.workouts.forEach((workout) => {
-            if (!existingWorkoutIds.has(workout.id)) {
+            if (!existingWorkoutNames.has(workout.name.toLowerCase())) {
+              // Generate new ID to avoid conflicts
+              workout.id = Date.now() + results.workouts.added;
               this.workouts.push(workout);
               results.workouts.added++;
             } else {
