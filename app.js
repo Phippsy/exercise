@@ -18,8 +18,13 @@ class WorkoutTracker {
     this.onboardingFocusElement = null;
     this.dailyQuoteExpanded = false;
     this.exerciseLibraryFilters = { search: "", muscles: new Set() };
+    this.workoutFilters = new Set();
+    this.favoriteFilterOnly =
+      JSON.parse(localStorage.getItem("favoriteFilterOnly")) || false;
     this.quoteStartDate = new Date("2024-01-01T00:00:00");
     this.warmupAdded = false;
+    this.draggedExerciseIndex = null;
+    this.touchReorderTargetIndex = null;
 
     this.init();
   }
@@ -32,6 +37,7 @@ class WorkoutTracker {
     this.loadTheme();
     this.setupEventListeners();
     this.setupExerciseLibraryFilters();
+    this.setupWorkoutFilters();
     this.renderWorkoutList();
     this.renderActivityOverview();
     this.renderWorkoutOverview();
@@ -566,6 +572,74 @@ class WorkoutTracker {
     this.renderExerciseLibrary();
   }
 
+  setupWorkoutFilters() {
+    const filterContainer = document.getElementById("workoutFilters");
+    const favoriteToggle = document.getElementById("favoritesOnlyToggle");
+
+    if (!filterContainer) return;
+
+    const filterButtons = filterContainer.querySelectorAll(".muscle-filter-btn");
+
+    filterButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const muscle = btn.dataset.muscle;
+
+        if (muscle === "all") {
+          const allActive = btn.classList.contains("active");
+          filterButtons.forEach((button) =>
+            button.classList.toggle("active", !allActive)
+          );
+        } else {
+          btn.classList.toggle("active");
+          const allBtn = filterContainer.querySelector('[data-muscle="all"]');
+          const otherBtns = Array.from(filterButtons).filter(
+            (b) => b.dataset.muscle !== "all"
+          );
+          const allOthersActive = otherBtns.every((b) =>
+            b.classList.contains("active")
+          );
+
+          if (allOthersActive) {
+            allBtn.classList.add("active");
+          } else {
+            allBtn.classList.remove("active");
+          }
+        }
+
+        this.updateWorkoutFilters(filterContainer);
+      });
+    });
+
+    if (favoriteToggle) {
+      favoriteToggle.classList.toggle("active", this.favoriteFilterOnly);
+      favoriteToggle.setAttribute("aria-pressed", this.favoriteFilterOnly);
+
+      favoriteToggle.addEventListener("click", () => {
+        this.favoriteFilterOnly = !this.favoriteFilterOnly;
+        favoriteToggle.classList.toggle("active", this.favoriteFilterOnly);
+        favoriteToggle.setAttribute("aria-pressed", this.favoriteFilterOnly);
+        localStorage.setItem(
+          "favoriteFilterOnly",
+          JSON.stringify(this.favoriteFilterOnly)
+        );
+        this.updateWorkoutFilters(filterContainer);
+      });
+    }
+
+    this.updateWorkoutFilters(filterContainer);
+  }
+
+  updateWorkoutFilters(filterContainer) {
+    const activeMuscles = Array.from(
+      filterContainer.querySelectorAll(".muscle-filter-btn.active")
+    )
+      .filter((btn) => btn.dataset.muscle !== "all")
+      .map((btn) => btn.dataset.muscle);
+
+    this.workoutFilters = new Set(activeMuscles);
+    this.renderWorkoutList();
+  }
+
   filterExercises(searchInputId, selectorId) {
     const searchInput = document.getElementById(searchInputId);
     const selector = document.getElementById(selectorId);
@@ -610,25 +684,6 @@ class WorkoutTracker {
     const views = document.querySelectorAll(".view");
     views.forEach((view) => view.classList.add("hidden"));
     document.getElementById(viewId).classList.remove("hidden");
-
-    if (viewId !== "exerciseDetailView") {
-      this.toggleNowLoggingBar(false);
-    }
-  }
-
-  toggleNowLoggingBar(show, context = "") {
-    const bar = document.getElementById("nowLoggingBar");
-    const label = document.getElementById("nowLoggingContext");
-
-    if (!bar || !label) return;
-
-    if (show) {
-      bar.classList.remove("hidden");
-      label.textContent = context;
-    } else {
-      bar.classList.add("hidden");
-      label.textContent = "";
-    }
   }
 
   // ============================================
@@ -638,29 +693,24 @@ class WorkoutTracker {
   renderWorkoutList() {
     const container = document.getElementById("workoutList");
     container.innerHTML = "";
-    const favoritesRow = document.getElementById("favoritesRow");
-    const favoritesList = document.getElementById("favoritesList");
+    const activeFilters = this.workoutFilters;
+    const favoritesOnly = this.favoriteFilterOnly;
 
-    const favorites = this.workouts.filter((w) => w.favorite);
-    const others = this.workouts.filter((w) => !w.favorite);
+    const sortedWorkouts = [
+      ...this.workouts.filter((w) => w.favorite),
+      ...this.workouts.filter((w) => !w.favorite),
+    ].filter((workout) => {
+      if (activeFilters.size === 0) return true;
+      const workoutMuscles = workout.exercises.map((ex) => ex.muscle_group);
+      return workoutMuscles.some((muscle) => activeFilters.has(muscle));
+    });
 
-    if (favoritesList && favoritesRow) {
-      favoritesList.innerHTML = "";
-      favorites.forEach((workout) => {
-        const chip = document.createElement("button");
-        chip.className = "favorite-chip";
-        chip.type = "button";
-        chip.innerHTML = `
-          <span class="favorite-chip-title">${workout.name}</span>
-          <span class="favorite-chip-meta">${workout.exercises.length} exercises</span>
-        `;
-        chip.addEventListener("click", () => this.showExerciseList(workout));
-        favoritesList.appendChild(chip);
-      });
-      favoritesRow.classList.toggle("hidden", favorites.length === 0);
-    }
+    const filteredWorkouts = sortedWorkouts.filter((workout) => {
+      if (!favoritesOnly) return true;
+      return workout.favorite;
+    });
 
-    [...favorites, ...others].forEach((workout) => {
+    filteredWorkouts.forEach((workout) => {
       const card = this.createWorkoutCard(workout);
       container.appendChild(card);
     });
@@ -671,6 +721,13 @@ class WorkoutTracker {
     card.className = "workout-card";
     card.setAttribute("tabindex", "0");
     card.setAttribute("role", "button");
+
+    const header = document.createElement("div");
+    header.className = "workout-card-header";
+
+    const title = document.createElement("h3");
+    title.className = "workout-card-title";
+    title.textContent = workout.name;
 
     const favoriteToggle = document.createElement("button");
     favoriteToggle.className = `favorite-toggle ${
@@ -687,11 +744,10 @@ class WorkoutTracker {
       e.stopPropagation();
       this.toggleFavorite(workout);
     });
-    card.appendChild(favoriteToggle);
 
-    const title = document.createElement("h3");
-    title.className = "workout-card-title";
-    title.textContent = workout.name;
+    header.appendChild(title);
+    header.appendChild(favoriteToggle);
+    card.appendChild(header);
 
     const meta = document.createElement("div");
     meta.className = "workout-card-meta";
@@ -706,7 +762,6 @@ class WorkoutTracker {
       meta.appendChild(badge);
     }
 
-    card.appendChild(title);
     card.appendChild(meta);
 
     const actions = document.createElement("div");
@@ -896,15 +951,17 @@ class WorkoutTracker {
     const container = document.getElementById("exerciseList");
     container.innerHTML = "";
 
-    this.currentWorkout.exercises.forEach((exercise) => {
-      const item = this.createExerciseItem(exercise);
+    this.currentWorkout.exercises.forEach((exercise, index) => {
+      const item = this.createExerciseItem(exercise, index);
       container.appendChild(item);
     });
   }
 
-  createExerciseItem(exercise) {
+  createExerciseItem(exercise, index) {
     const item = document.createElement("div");
     item.className = "exercise-item";
+    item.dataset.index = index;
+    item.setAttribute("draggable", "true");
 
     if (this.pairMode) {
       item.classList.add("pair-mode");
@@ -989,7 +1046,130 @@ class WorkoutTracker {
       });
     }
 
+    this.enableExerciseReorder(item, index);
+
     return item;
+  }
+
+  enableExerciseReorder(item, index) {
+    item.addEventListener("dragstart", (e) => {
+      this.draggedExerciseIndex = index;
+      item.classList.add("dragging");
+      if (e.dataTransfer) {
+        e.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.setData("text/plain", String(index));
+      }
+    });
+
+    item.addEventListener("dragend", () => {
+      this.resetExerciseDragging();
+    });
+
+    item.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      const targetIndex = Number(item.dataset.index);
+      if (targetIndex === this.draggedExerciseIndex) return;
+      this.clearExerciseDropTargets();
+      item.classList.add("drag-over");
+    });
+
+    item.addEventListener("dragleave", () => {
+      item.classList.remove("drag-over");
+    });
+
+    item.addEventListener("drop", (e) => {
+      e.preventDefault();
+      const fromIndex =
+        this.draggedExerciseIndex ?? Number(e.dataTransfer.getData("text/plain"));
+      const toIndex = Number(item.dataset.index);
+      this.finishExerciseReorder(fromIndex, toIndex);
+    });
+
+    item.addEventListener(
+      "touchstart",
+      () => {
+        this.draggedExerciseIndex = index;
+        this.touchReorderTargetIndex = index;
+        item.classList.add("dragging");
+      },
+      { passive: true }
+    );
+
+    item.addEventListener(
+      "touchmove",
+      (e) => {
+        const touch = e.touches[0];
+        if (!touch) return;
+        const target = document.elementFromPoint(touch.clientX, touch.clientY);
+        const dropTarget = target?.closest(".exercise-item");
+        if (dropTarget && dropTarget.dataset.index) {
+          const targetIndex = Number(dropTarget.dataset.index);
+          if (targetIndex !== this.touchReorderTargetIndex) {
+            this.clearExerciseDropTargets();
+            dropTarget.classList.add("drag-over");
+            this.touchReorderTargetIndex = targetIndex;
+          }
+        }
+        e.preventDefault();
+      },
+      { passive: false }
+    );
+
+    item.addEventListener("touchend", () => {
+      this.finishExerciseReorder(
+        this.draggedExerciseIndex,
+        this.touchReorderTargetIndex
+      );
+    });
+
+    item.addEventListener("touchcancel", () => {
+      this.resetExerciseDragging();
+    });
+  }
+
+  clearExerciseDropTargets() {
+    document
+      .querySelectorAll(".exercise-item.drag-over")
+      .forEach((el) => el.classList.remove("drag-over"));
+  }
+
+  finishExerciseReorder(fromIndex, toIndex) {
+    if (fromIndex === null || fromIndex === undefined) {
+      this.resetExerciseDragging();
+      return;
+    }
+
+    if (toIndex === null || toIndex === undefined) {
+      this.resetExerciseDragging();
+      return;
+    }
+
+    if (fromIndex === toIndex) {
+      this.resetExerciseDragging();
+      return;
+    }
+
+    this.reorderExercises(fromIndex, toIndex);
+    this.resetExerciseDragging();
+  }
+
+  reorderExercises(fromIndex, toIndex) {
+    const exercises = this.currentWorkout.exercises;
+    if (!Array.isArray(exercises)) return;
+    if (toIndex < 0 || toIndex >= exercises.length) return;
+
+    const [moved] = exercises.splice(fromIndex, 1);
+    exercises.splice(toIndex, 0, moved);
+    this.saveWorkouts();
+    this.renderExerciseList();
+  }
+
+  resetExerciseDragging() {
+    document
+      .querySelectorAll(".exercise-item.drag-over, .exercise-item.dragging")
+      .forEach((el) => el.classList.remove("drag-over", "dragging"));
+    this.draggedExerciseIndex = null;
+    this.touchReorderTargetIndex = null;
   }
 
   // ============================================
@@ -1056,11 +1236,6 @@ class WorkoutTracker {
 
     this.showView("exerciseDetailView");
 
-    this.toggleNowLoggingBar(
-      true,
-      `${this.currentWorkout.name} → ${exercise.name}`
-    );
-
     // Scroll to top of page to ensure "Log Today's Session" is visible
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -1094,10 +1269,6 @@ class WorkoutTracker {
     this.renderPairedSessionForm(exercise2, "pairedSetsContainer2", 2);
 
     this.showView("exerciseDetailView");
-    this.toggleNowLoggingBar(
-      true,
-      `${this.currentWorkout.name} → ${exercise1.name} + ${exercise2.name}`
-    );
   }
 
   renderPairedPreviousSession(exercise, containerId) {

@@ -138,15 +138,62 @@
         <!-- Workout Selection View -->
         <section id="workoutListView" class="view">
           <h3 class="workouts-section-title">Your Workouts</h3>
-          <div
-            id="favoritesRow"
-            class="favorites-row hidden"
-            aria-live="polite">
-            <div class="favorites-header">
-              <h4 class="favorites-title">Favorites</h4>
-              <p class="favorites-subtitle">Starred plans for fast access</p>
+          <div class="workout-filter-bar">
+            <div class="filter-row">
+              <div class="filter-label">Filter workouts</div>
+              <button
+                type="button"
+                id="favoritesOnlyToggle"
+                class="favorite-filter-btn"
+                aria-pressed="false">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                </svg>
+                Favourites only
+              </button>
             </div>
-            <div id="favoritesList" class="favorites-list"></div>
+            <div id="workoutFilters" class="muscle-group-filters">
+              <button type="button" class="muscle-filter-btn active" data-muscle="all">
+                All
+              </button>
+              <button type="button" class="muscle-filter-btn active" data-muscle="Chest">
+                Chest
+              </button>
+              <button type="button" class="muscle-filter-btn active" data-muscle="Back">
+                Back
+              </button>
+              <button type="button" class="muscle-filter-btn active" data-muscle="Shoulders">
+                Shoulders
+              </button>
+              <button type="button" class="muscle-filter-btn active" data-muscle="Biceps">
+                Biceps
+              </button>
+              <button type="button" class="muscle-filter-btn active" data-muscle="Triceps">
+                Triceps
+              </button>
+              <button type="button" class="muscle-filter-btn active" data-muscle="Legs">
+                Legs
+              </button>
+              <button type="button" class="muscle-filter-btn active" data-muscle="Quads">
+                Quads
+              </button>
+              <button type="button" class="muscle-filter-btn active" data-muscle="Hamstrings">
+                Hamstrings
+              </button>
+              <button type="button" class="muscle-filter-btn active" data-muscle="Glutes">
+                Glutes
+              </button>
+              <button type="button" class="muscle-filter-btn active" data-muscle="Core">
+                Core
+              </button>
+              <button type="button" class="muscle-filter-btn active" data-muscle="Calves">
+                Calves
+              </button>
+              <button type="button" class="muscle-filter-btn active" data-muscle="Forearms">
+                Forearms
+              </button>
+            </div>
           </div>
           <div id="workoutList" class="workout-grid"></div>
           <div
@@ -511,13 +558,6 @@
           </div>
         </section>
       </main>
-      <div id="nowLoggingBar" class="now-logging-bar hidden">
-        <div>
-          <p class="now-logging-label">Now logging</p>
-          <p id="nowLoggingContext" class="now-logging-context"></p>
-        </div>
-      </div>
-
       <!-- Management View -->
       <aside id="managementView" class="management-view hidden">
         <div class="management-overlay"></div>
