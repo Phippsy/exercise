@@ -338,7 +338,8 @@ body {
   box-shadow: 0 14px 40px rgba(0, 0, 0, 0.24);
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: var(--spacing-md);
   z-index: 20;
 }
 
@@ -509,6 +510,10 @@ button {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
   border-radius: var(--radius-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+.section-back-btn {
   margin-bottom: var(--spacing-lg);
 }
 
