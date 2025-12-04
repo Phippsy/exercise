@@ -872,27 +872,12 @@ button {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   padding: var(--spacing-md) var(--spacing-lg);
-  cursor: grab;
+  cursor: pointer;
   transition: all 0.15s ease;
   display: flex;
   justify-content: space-between;
   align-items: center;
   position: relative;
-}
-
-.exercise-item:active {
-  cursor: grabbing;
-}
-
-.exercise-item.dragging {
-  opacity: 0.9;
-  border-color: var(--color-accent);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
-}
-
-.exercise-item.drag-over {
-  border-color: var(--color-primary);
-  background-color: var(--bg-surface-subtle);
 }
 
 .exercise-item.pair-mode {
@@ -957,6 +942,34 @@ button {
 
 .exercise-item-chevron {
   color: var(--text-muted);
+}
+
+.exercise-reorder-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0 var(--spacing-md);
+}
+
+.reorder-btn {
+  background: var(--bg-surface-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 4px;
+  color: var(--text-secondary);
+  transition: background-color 0.15s ease, border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.reorder-btn:hover {
+  background: var(--bg-surface-strong);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+.reorder-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* ============================================
