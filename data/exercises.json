@@ -11,7 +11,8 @@
                     "sets": 3,
                     "reps": 8,
                     "weight_kg": 22.5,
-                    "notes": null
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=lpsxaTUFK00"
                 },
                 {
                     "name": "Seated Cable Row",
@@ -19,7 +20,8 @@
                     "sets": 4,
                     "reps": 10,
                     "weight_kg": 35,
-                    "notes": null
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=HJSVR_27HBw"
                 },
                 {
                     "name": "Rope Tricep Extension",
@@ -27,7 +29,8 @@
                     "sets": null,
                     "reps": 12,
                     "weight_kg": 45,
-                    "notes": null
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=vB5OHsJ3EME"
                 },
                 {
                     "name": "Arm Curl (Barbell)",
@@ -35,7 +38,8 @@
                     "sets": null,
                     "reps": 10,
                     "weight_kg": 22.5,
-                    "notes": null
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=kwG2ipFRgfo"
                 },
                 {
                     "name": "Chest Press - Flat Bench (Dumbbells)",
@@ -43,7 +47,8 @@
                     "sets": 3,
                     "reps": 15,
                     "weight_kg": 20,
-                    "notes": null
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=VmB1G1K7v94"
                 },
                 {
                     "name": "Leg Press",
@@ -51,7 +56,8 @@
                     "sets": null,
                     "reps": 12,
                     "weight_kg": 80,
-                    "notes": null
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=IZxyjW7MPJQ"
                 },
                 {
                     "name": "Reverse Alternating Lunge (Kettlebell)",
@@ -59,7 +65,8 @@
                     "sets": null,
                     "reps": 12,
                     "weight_kg": 4,
-                    "notes": null
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=Gi-k1AuhzLA"
                 }
             ]
         },
@@ -74,7 +81,8 @@
                     "sets": 3,
                     "reps": "12–15/side",
                     "weight_kg": 7.5,
-                    "notes": null
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=bRv88Ar9mto"
                 },
                 {
                     "name": "Dead Bug with Kettlebell",
@@ -82,7 +90,8 @@
                     "sets": 3,
                     "reps": "10/side",
                     "weight_kg": "4–8",
-                    "notes": null
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=dDGFO7-1vz4"
                 },
                 {
                     "name": "TRX or Ring Fallout",
@@ -90,7 +99,8 @@
                     "sets": 3,
                     "reps": "8–12",
                     "weight_kg": "Bodyweight",
-                    "notes": null
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=kbN7CVP_HuA"
                 },
                 {
                     "name": "Kettlebell Windmill",
@@ -98,7 +108,8 @@
                     "sets": 3,
                     "reps": "6–8/side",
                     "weight_kg": "8–12",
-                    "notes": null
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=PRtfVhC6wMo"
                 },
                 {
                     "name": "Weighted Plank Pull-Through",
@@ -106,7 +117,8 @@
                     "sets": 3,
                     "reps": "10/side",
                     "weight_kg": "8–12",
-                    "notes": null
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=8n-Tz5hZJTg"
                 },
                 {
                     "name": "Ab Crunch Machine (Cable or Selectorized)",
@@ -114,7 +126,8 @@
                     "sets": 3,
                     "reps": 15,
                     "weight_kg": 55,
-                    "notes": null
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=zhhKljPipJ4"
                 }
             ]
         },
@@ -129,7 +142,8 @@
                     "sets": 3,
                     "reps": null,
                     "weight_kg": null,
-                    "notes": null
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=smZKyaUkP9w"
                 },
                 {
                     "name": "Close-Grip Cable Row",
@@ -137,7 +151,8 @@
                     "sets": 4,
                     "reps": null,
                     "weight_kg": null,
-                    "notes": null
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=GZbfZ033f74"
                 },
                 {
                     "name": "Reverse Pec-Deck / Face-Pull",
@@ -145,7 +160,8 @@
                     "sets": "3 + 1 burnout",
                     "reps": null,
                     "weight_kg": null,
-                    "notes": null
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=rep-qVOkqgk"
                 },
                 {
                     "name": "EZ-Bar Curl",
@@ -153,7 +169,8 @@
                     "sets": 3,
                     "reps": null,
                     "weight_kg": null,
-                    "notes": null
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=uO_CNYidOw0"
                 },
                 {
                     "name": "Rope Overhead Triceps Extension",
@@ -161,7 +178,8 @@
                     "sets": 3,
                     "reps": null,
                     "weight_kg": null,
-                    "notes": null
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=a8PGS2VynDk"
                 },
                 {
                     "name": "Push-up Drop Set (feet-elevated → floor)",
@@ -169,7 +187,8 @@
                     "sets": "+2",
                     "reps": null,
                     "weight_kg": "Bodyweight",
-                    "notes": null
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=IODxDxX7oi4"
                 },
                 {
                     "name": "Finisher Curls / Pushdowns / Dead Hang",
@@ -177,7 +196,8 @@
                     "sets": 2,
                     "reps": null,
                     "weight_kg": null,
-                    "notes": "Finisher grouped as circuit"
+                    "notes": "Finisher grouped as circuit",
+                    "form_video": "https://www.youtube.com/watch?v=Br_LJVvE5s0"
                 }
             ]
         },
@@ -192,7 +212,8 @@
                     "sets": 3,
                     "reps": null,
                     "weight_kg": null,
-                    "notes": null
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=CAwf7n6Luuc"
                 },
                 {
                     "name": "Landmine Shoulder Press",
@@ -200,7 +221,8 @@
                     "sets": "3 + 2 back-off",
                     "reps": null,
                     "weight_kg": null,
-                    "notes": null
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=uA2gh88sSJU"
                 },
                 {
                     "name": "Stiff-Leg Deadlift",
@@ -208,7 +230,8 @@
                     "sets": 3,
                     "reps": null,
                     "weight_kg": null,
-                    "notes": null
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=op9kVnSso6Q"
                 },
                 {
                     "name": "Leg Press (feet high)",
@@ -216,7 +239,8 @@
                     "sets": "+2",
                     "reps": null,
                     "weight_kg": null,
-                    "notes": null
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=IZxyjW7MPJQ"
                 },
                 {
                     "name": "DB Hip Thrust",
@@ -224,7 +248,8 @@
                     "sets": "+2",
                     "reps": null,
                     "weight_kg": null,
-                    "notes": null
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=LM8XHLYJoYs"
                 },
                 {
                     "name": "Trap-Bar Carry",
@@ -232,7 +257,8 @@
                     "sets": 3,
                     "reps": null,
                     "weight_kg": null,
-                    "notes": null
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=P3YbTr_KZJg"
                 },
                 {
                     "name": "Ab-Mat Crunch + KB Pull-Through",
@@ -240,7 +266,8 @@
                     "sets": 6,
                     "reps": null,
                     "weight_kg": null,
-                    "notes": null
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=-cx5wMl0Rio"
                 }
             ]
         }
