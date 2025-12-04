@@ -1367,11 +1367,16 @@ class WorkoutTracker {
                     </button>
                 </div>
             </div>
-            <button type="button" class="btn-remove" data-set="${setNum}" data-exercise="${exerciseNum}" aria-label="Remove set">
-                <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
+            <div class="input-group">
+                <label>&nbsp;</label>
+                <div class="input-with-controls">
+                    <button type="button" class="btn-remove" data-set="${setNum}" data-exercise="${exerciseNum}" aria-label="Remove set">
+                        <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
         `;
 
     container.appendChild(row);
@@ -1629,11 +1634,16 @@ class WorkoutTracker {
                     </button>
                 </div>
             </div>
-            <button type="button" class="btn-remove" data-set="${setNum}" aria-label="Remove set">
-                <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
+            <div class="input-group">
+                <label>&nbsp;</label>
+                <div class="input-with-controls">
+                    <button type="button" class="btn-remove" data-set="${setNum}" aria-label="Remove set">
+                        <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
         `;
 
     if (insertBefore) {

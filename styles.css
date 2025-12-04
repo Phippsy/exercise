@@ -526,12 +526,16 @@ button {
 .btn-remove {
   border-color: var(--color-danger);
   color: var(--color-danger);
-  margin-top: 24px;
 }
 
 .btn-remove:hover {
   background-color: var(--color-danger);
   color: #ffffff;
+}
+
+/* Ensure remove button wrapper matches input field height */
+.input-with-controls:has(.btn-remove) {
+  min-height: 40px;
 }
 
 /* ============================================
@@ -1569,7 +1573,6 @@ button {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
   color: var(--text-muted);
-  padding-top: 24px;
 }
 
 .input-group {
