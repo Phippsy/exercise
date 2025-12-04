@@ -270,6 +270,130 @@
                     "form_video": "https://www.youtube.com/watch?v=MmBisIuvLeU"
                 }
             ]
+        },
+        {
+            "id": 5,
+            "name": "Friday Pump Workout (≈70 min)",
+            "date": null,
+            "exercises": [
+                {
+                    "name": "TRX Push-Up",
+                    "muscle_group": "Chest",
+                    "sets": 4,
+                    "reps": "AMRAP (10–15 target)",
+                    "weight_kg": "Bodyweight",
+                    "notes": "Focus on stability and full range of motion.",
+                    "form_video": "https://www.youtube.com/watch?v=WyBvJ6TkkvM"
+                },
+                {
+                    "name": "TRX Fallout",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "10–12",
+                    "weight_kg": "Bodyweight",
+                    "notes": "Keep core tight, do not let lower back arch.",
+                    "form_video": "https://www.youtube.com/watch?v=O94yvafBw1w"
+                },
+                {
+                    "name": "Kettlebell Gorilla Rows",
+                    "muscle_group": "Back",
+                    "sets": 3,
+                    "reps": "10/arm",
+                    "weight_kg": 24,
+                    "notes": "Alternating arms.",
+                    "form_video": "https://www.youtube.com/watch?v=D-dCSZ9c5jM"
+                },
+                {
+                    "name": "Landmine Lateral Raise to Press",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "8/arm",
+                    "weight_kg": "10–15",
+                    "notes": "Fluid motion from lateral raise into the press.",
+                    "form_video": "https://www.youtube.com/watch?v=F03UQPq2t9k"
+                },
+                {
+                    "name": "Reverse Pec Deck / Rear Delt Flys",
+                    "muscle_group": "Shoulders (Rear Delt)",
+                    "sets": 3,
+                    "reps": "12–15",
+                    "weight_kg": null,
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=H530fW3y9bk"
+                },
+                {
+                    "name": "Angled Cable Chest Fly (High-to-Low)",
+                    "muscle_group": "Chest",
+                    "sets": 3,
+                    "reps": "15–20",
+                    "weight_kg": "12.5–17.5",
+                    "notes": "DAP ELT+; 60lbs on specialist machine.",
+                    "form_video": "https://www.youtube.com/watch?v=Iweqb_Yd_14"
+                },
+                {
+                    "name": "Close-Grip Cable Row",
+                    "muscle_group": "Back",
+                    "sets": 4,
+                    "reps": "10–12",
+                    "weight_kg": "35–40",
+                    "notes": "Ercolina machine.",
+                    "form_video": "https://www.youtube.com/watch?v=ucp2ZkU32X0"
+                },
+                {
+                    "name": "Overhead Cable Triceps Extension (Rope)",
+                    "muscle_group": "Triceps",
+                    "sets": 3,
+                    "reps": "12–15",
+                    "weight_kg": "15–20",
+                    "notes": "Ercolina machine.",
+                    "form_video": "https://www.youtube.com/watch?v=KjQ_54-hCq4"
+                },
+                {
+                    "name": "EZ Bar Curl",
+                    "muscle_group": "Biceps",
+                    "sets": 3,
+                    "reps": 10,
+                    "weight_kg": "35 (or max)",
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=cdrd8DcMDwk"
+                },
+                {
+                    "name": "Straight Arm Lat Pulldown",
+                    "muscle_group": "Back",
+                    "sets": 3,
+                    "reps": 12,
+                    "weight_kg": null,
+                    "notes": "Cable or Band.",
+                    "form_video": "https://www.youtube.com/watch?v=G6NdR5nO1Go"
+                },
+                {
+                    "name": "Barbell Curl",
+                    "muscle_group": "Biceps",
+                    "sets": 3,
+                    "reps": 12,
+                    "weight_kg": "Light/Moderate",
+                    "notes": "Finisher Circuit - Round 1/3",
+                    "form_video": "https://www.youtube.com/watch?v=kwG2ipFRgfo"
+                },
+                {
+                    "name": "Rope Tricep Pushdown",
+                    "muscle_group": "Triceps",
+                    "sets": 3,
+                    "reps": 15,
+                    "weight_kg": null,
+                    "notes": "Finisher Circuit - Round 2/3",
+                    "form_video": "https://www.youtube.com/watch?v=vB5OHsJ3EME"
+                },
+                {
+                    "name": "Dead Hang Hold",
+                    "muscle_group": "Back/Grip",
+                    "sets": 3,
+                    "reps": "30 sec",
+                    "weight_kg": "Bodyweight",
+                    "notes": "Finisher Circuit - Round 3/3. Active shoulders if possible.",
+                    "form_video": "https://www.youtube.com/watch?v=i9sTjhN4Z3M"
+                }
+            ]
         }
     ]
 }
