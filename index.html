@@ -11,6 +11,7 @@
       content="black-translucent" />
     <meta name="theme-color" content="#0a0a0a" />
     <title>Workout Tracker</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="stylesheet" href="styles.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -137,7 +138,10 @@
         <!-- Workout Selection View -->
         <section id="workoutListView" class="view">
           <h3 class="workouts-section-title">Your Workouts</h3>
-          <div id="favoritesRow" class="favorites-row hidden" aria-live="polite">
+          <div
+            id="favoritesRow"
+            class="favorites-row hidden"
+            aria-live="polite">
             <div class="favorites-header">
               <h4 class="favorites-title">Favorites</h4>
               <p class="favorites-subtitle">Starred plans for fast access</p>
@@ -211,11 +215,11 @@
 
         <!-- Exercise List View -->
         <section id="exerciseListView" class="view hidden">
-            <div class="section-header">
-              <button
-                id="backToWorkouts"
-                class="btn-back"
-                aria-label="Back to workouts">
+          <div class="section-header">
+            <button
+              id="backToWorkouts"
+              class="btn-back"
+              aria-label="Back to workouts">
               <svg
                 class="icon icon-md"
                 viewBox="0 0 24 24"
@@ -246,7 +250,10 @@
               <p class="section-subtitle">
                 Select an exercise to view history and log progress
               </p>
-              <div id="sessionChecklist" class="session-checklist" aria-live="polite"></div>
+              <div
+                id="sessionChecklist"
+                class="session-checklist"
+                aria-live="polite"></div>
               <button id="pairModeToggle" class="btn-secondary btn-icon">
                 <svg
                   class="icon icon-sm"
@@ -341,7 +348,10 @@
                   Add warmup block
                 </button>
               </div>
-              <div id="sessionSummary" class="session-summary hidden" aria-live="polite"></div>
+              <div
+                id="sessionSummary"
+                class="session-summary hidden"
+                aria-live="polite"></div>
               <form id="sessionForm" class="session-form">
                 <div id="setsContainer" class="sets-container"></div>
 
