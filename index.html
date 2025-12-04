@@ -137,6 +137,13 @@
         <!-- Workout Selection View -->
         <section id="workoutListView" class="view">
           <h3 class="workouts-section-title">Your Workouts</h3>
+          <div id="favoritesRow" class="favorites-row hidden" aria-live="polite">
+            <div class="favorites-header">
+              <h4 class="favorites-title">Favorites</h4>
+              <p class="favorites-subtitle">Starred plans for fast access</p>
+            </div>
+            <div id="favoritesList" class="favorites-list"></div>
+          </div>
           <div id="workoutList" class="workout-grid"></div>
           <div
             id="dailyQuoteCard"
@@ -204,11 +211,11 @@
 
         <!-- Exercise List View -->
         <section id="exerciseListView" class="view hidden">
-          <div class="section-header">
-            <button
-              id="backToWorkouts"
-              class="btn-back"
-              aria-label="Back to workouts">
+            <div class="section-header">
+              <button
+                id="backToWorkouts"
+                class="btn-back"
+                aria-label="Back to workouts">
               <svg
                 class="icon icon-md"
                 viewBox="0 0 24 24"
@@ -239,6 +246,7 @@
               <p class="section-subtitle">
                 Select an exercise to view history and log progress
               </p>
+              <div id="sessionChecklist" class="session-checklist" aria-live="polite"></div>
               <button id="pairModeToggle" class="btn-secondary btn-icon">
                 <svg
                   class="icon icon-sm"
@@ -322,6 +330,18 @@
             <!-- Current Session Form -->
             <div class="card">
               <h3 class="card-title">Log Today's Session</h3>
+              <div id="warmupSuggestion" class="warmup-suggestion">
+                <div>
+                  <p class="warmup-title">Suggested warmup</p>
+                  <p class="warmup-copy">
+                    Add two lighter ramp-up sets before your working weight.
+                  </p>
+                </div>
+                <button id="addWarmupBlock" type="button" class="btn-soft">
+                  Add warmup block
+                </button>
+              </div>
+              <div id="sessionSummary" class="session-summary hidden" aria-live="polite"></div>
               <form id="sessionForm" class="session-form">
                 <div id="setsContainer" class="sets-container"></div>
 
@@ -481,6 +501,15 @@
           </div>
         </section>
       </main>
+      <div id="nowLoggingBar" class="now-logging-bar hidden">
+        <div>
+          <p class="now-logging-label">Now logging</p>
+          <p id="nowLoggingContext" class="now-logging-context"></p>
+        </div>
+        <button id="returnToLogging" class="btn-primary btn-sm" type="button">
+          Back to sets
+        </button>
+      </div>
 
       <!-- Management View -->
       <aside id="managementView" class="management-view hidden">
