@@ -251,12 +251,6 @@ class WorkoutTracker {
       this.addWarmupSets();
     });
 
-    document.getElementById("returnToLogging").addEventListener("click", () => {
-      document.getElementById("sessionForm").scrollIntoView({
-        behavior: "smooth",
-      });
-    });
-
     // Pair mode
     document.getElementById("pairModeToggle").addEventListener("click", () => {
       this.togglePairMode();
@@ -1409,13 +1403,19 @@ class WorkoutTracker {
     const baseWeight = this.currentExercise.weight_kg || 20;
     const baseReps = this.currentExercise.reps || 8;
 
-    [0.5, 0.7].forEach((ratio) => {
-      const warmupWeight = Math.max(
-        0,
-        parseFloat((baseWeight * ratio).toFixed(1))
-      );
-      this.addSetRow(null, baseReps, warmupWeight);
-    });
+    const container = document.getElementById("setsContainer");
+    const insertBefore = container.firstChild;
+
+    [0.5, 0.7]
+      .slice()
+      .reverse()
+      .forEach((ratio) => {
+        const warmupWeight = Math.max(
+          0,
+          parseFloat((baseWeight * ratio).toFixed(1))
+        );
+        this.addSetRow(null, baseReps, warmupWeight, insertBefore);
+      });
 
     this.warmupAdded = true;
     this.renumberSets();
@@ -1425,7 +1425,12 @@ class WorkoutTracker {
     this.showSuccessMessage("Warmup block added. Tweak the weights as needed.");
   }
 
-  addSetRow(setNumber = null, defaultReps = "", defaultWeight = "") {
+  addSetRow(
+    setNumber = null,
+    defaultReps = "",
+    defaultWeight = "",
+    insertBefore = null
+  ) {
     const container = document.getElementById("setsContainer");
     const currentSetCount = container.children.length;
     const setNum = setNumber || currentSetCount + 1;
@@ -1475,7 +1480,11 @@ class WorkoutTracker {
             </button>
         `;
 
-    container.appendChild(row);
+    if (insertBefore) {
+      container.insertBefore(row, insertBefore);
+    } else {
+      container.appendChild(row);
+    }
 
     // Add event listeners for increment/decrement buttons
     row.querySelectorAll(".btn-increment, .btn-decrement").forEach((btn) => {
@@ -1506,6 +1515,32 @@ class WorkoutTracker {
       const setNum = index + 1;
       row.setAttribute("data-set-number", setNum);
       row.querySelector(".set-label").textContent = `Set ${setNum}`;
+
+      const repsInput = row.querySelector('input[id^="reps-"]');
+      const weightInput = row.querySelector('input[id^="weight-"]');
+
+      if (repsInput) {
+        repsInput.id = `reps-${setNum}`;
+        repsInput.name = `reps-${setNum}`;
+      }
+
+      if (weightInput) {
+        weightInput.id = `weight-${setNum}`;
+        weightInput.name = `weight-${setNum}`;
+      }
+
+      row.querySelectorAll('[data-target^="reps-"]').forEach((btn) => {
+        btn.setAttribute("data-target", `reps-${setNum}`);
+      });
+
+      row.querySelectorAll('[data-target^="weight-"]').forEach((btn) => {
+        btn.setAttribute("data-target", `weight-${setNum}`);
+      });
+
+      const removeBtn = row.querySelector(".btn-remove");
+      if (removeBtn) {
+        removeBtn.setAttribute("data-set", setNum);
+      }
     });
   }
 
