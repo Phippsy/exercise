@@ -213,25 +213,7 @@ class WorkoutTracker {
       this.toggleTheme();
     });
 
-    // Daily quote
-    const quoteToggle = document.getElementById("quoteToggle");
-    const quoteCard = document.getElementById("dailyQuoteCard");
-    if (quoteToggle) {
-      quoteToggle.addEventListener("click", () => {
-        this.toggleDailyQuote();
-      });
-    }
-    if (quoteCard) {
-      quoteCard.addEventListener("click", (event) => {
-        if (
-          event.target.closest("#quoteToggle") ||
-          event.target.closest(".quote-body")
-        ) {
-          return;
-        }
-        this.toggleDailyQuote();
-      });
-    }
+    // Daily quote - no interactions needed
 
     // Navigation buttons
     document.getElementById("backToWorkouts").addEventListener("click", () => {
@@ -459,9 +441,7 @@ class WorkoutTracker {
   }
 
   initializeDailyQuoteCard() {
-    this.dailyQuoteExpanded = false;
     this.renderDailyQuote();
-    this.updateDailyQuoteState();
   }
 
   setupExerciseFiltering(searchInputId, selectorId) {
@@ -734,11 +714,11 @@ class WorkoutTracker {
       workout.favorite ? "active" : ""
     }`;
     favoriteToggle.setAttribute("aria-pressed", workout.favorite);
+    favoriteToggle.setAttribute("aria-label", workout.favorite ? "Remove from favorites" : "Add to favorites");
     favoriteToggle.innerHTML = `
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
       </svg>
-      ${workout.favorite ? "Favorited" : "Favorite"}
     `;
     favoriteToggle.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -3462,26 +3442,6 @@ class WorkoutTracker {
       toggleLabel.textContent = this.dailyQuoteExpanded ? "Hide" : "Show";
       toggle.setAttribute("aria-expanded", this.dailyQuoteExpanded.toString());
     }
-  }
-
-  toggleDailyQuote() {
-    this.dailyQuoteExpanded = !this.dailyQuoteExpanded;
-    this.updateDailyQuoteState();
-  }
-
-  updateDailyQuoteState() {
-    const card = document.getElementById("dailyQuoteCard");
-    const quoteBody = document.getElementById("quoteBody");
-    const toggle = document.getElementById("quoteToggle");
-    const toggleLabel = document.getElementById("quoteToggleLabel");
-
-    if (!card || !quoteBody || !toggle || !toggleLabel) return;
-
-    card.classList.toggle("expanded", this.dailyQuoteExpanded);
-    card.classList.toggle("collapsed", !this.dailyQuoteExpanded);
-    quoteBody.classList.toggle("hidden", !this.dailyQuoteExpanded);
-    toggle.setAttribute("aria-expanded", this.dailyQuoteExpanded.toString());
-    toggleLabel.textContent = this.dailyQuoteExpanded ? "Hide" : "Show";
   }
 
   scrollToTop() {

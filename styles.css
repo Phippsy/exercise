@@ -565,6 +565,8 @@ button {
     rgba(79, 70, 229, 0.12)
   );
   border-color: rgba(99, 102, 241, 0.35);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
 }
 
 .quote-card-top {
@@ -572,45 +574,15 @@ button {
   justify-content: space-between;
   align-items: center;
   gap: var(--spacing-md);
-}
-
-.quote-controls {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-}
-
-.quote-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-xxs);
-  padding: 6px 10px;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--border-subtle);
-  background: var(--bg-surface-subtle);
-  color: var(--text-muted);
-  font-weight: var(--font-weight-semibold);
-  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.quote-toggle:hover {
-  background: var(--state-hover);
-  color: var(--text-primary);
-  border-color: var(--border-strong);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-}
-
-.quote-toggle:focus-visible {
-  outline: 2px solid var(--state-focus);
-  outline-offset: 3px;
+  margin-bottom: var(--spacing-md);
 }
 
 .quote-text {
   font-size: 1.1rem;
   line-height: 1.7;
-  margin: var(--spacing-md) 0 var(--spacing-xs);
+  margin: 0 0 var(--spacing-sm);
   color: var(--text-primary);
+  font-style: italic;
 }
 
 .quote-author {
@@ -621,24 +593,6 @@ button {
 
 .quote-body {
   margin-top: var(--spacing-sm);
-}
-
-.quote-card.collapsed {
-  padding: var(--spacing-sm) var(--spacing-md);
-  margin-bottom: var(--spacing-md);
-  cursor: pointer;
-}
-
-.quote-card.collapsed .quote-body {
-  display: none;
-}
-
-.quote-card.expanded {
-  padding: var(--spacing-lg);
-}
-
-.quote-card.expanded .quote-toggle svg {
-  transform: rotate(180deg);
 }
 
 .card-subtitle {
@@ -808,15 +762,16 @@ button {
 .workout-card .favorite-toggle {
   background: transparent;
   border: 1px solid var(--border-subtle);
-  border-radius: 12px;
-  padding: 6px 10px;
+  border-radius: 8px;
+  padding: 6px;
   color: var(--text-muted);
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 13px;
+  justify-content: center;
   flex-shrink: 0;
-  white-space: nowrap;
+  min-width: 32px;
+  min-height: 32px;
+  transition: all 0.15s ease;
 }
 
 .workout-card .favorite-toggle.active {
@@ -865,6 +820,8 @@ button {
   color: var(--text-muted);
   font-weight: 600;
 }
+
+
 
 .favorite-filter-btn {
   display: inline-flex;

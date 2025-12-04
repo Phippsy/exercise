@@ -198,37 +198,13 @@
           <div id="workoutList" class="workout-grid"></div>
           <div
             id="dailyQuoteCard"
-            class="card quote-card collapsed"
+            class="card quote-card"
             aria-live="polite">
             <div class="quote-card-top">
-              <div>
-                <h3 class="card-title-sm">Daily motivation</h3>
-                <p class="card-subtitle">Tap to reveal today's quote</p>
-              </div>
-              <div class="quote-controls">
-                <span id="quoteDate" class="pill pill-soft"></span>
-                <button
-                  id="quoteToggle"
-                  class="quote-toggle"
-                  type="button"
-                  aria-expanded="false"
-                  aria-controls="quoteBody">
-                  <span id="quoteToggleLabel">Show</span>
-                  <svg
-                    class="icon icon-sm"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M6 9l6 6 6-6" />
-                  </svg>
-                </button>
-              </div>
+              <h3 class="card-title-sm">Daily motivation</h3>
+              <span id="quoteDate" class="pill pill-soft"></span>
             </div>
-            <div id="quoteBody" class="quote-body hidden">
+            <div id="quoteBody" class="quote-body">
               <blockquote id="quoteText" class="quote-text"></blockquote>
               <p id="quoteAuthor" class="quote-author"></p>
             </div>
