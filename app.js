@@ -2590,6 +2590,14 @@ class WorkoutTracker {
       const actions = document.createElement("div");
       actions.className = "workout-manager-actions";
 
+      const exportBtn = document.createElement("button");
+      exportBtn.className = "btn-secondary btn-sm";
+      exportBtn.type = "button"; // Prevent form submission/navigation
+      exportBtn.textContent = "Export";
+      exportBtn.addEventListener("click", () => {
+        this.exportWorkout(workout.id);
+      });
+
       const editBtn = document.createElement("button");
       editBtn.className = "btn-secondary btn-sm";
       editBtn.type = "button"; // Prevent form submission/navigation
@@ -2602,6 +2610,7 @@ class WorkoutTracker {
       deleteBtn.textContent = "Delete";
       deleteBtn.addEventListener("click", () => this.deleteWorkout(workout.id));
 
+      actions.appendChild(exportBtn);
       actions.appendChild(editBtn);
       actions.appendChild(deleteBtn);
 
@@ -2629,6 +2638,7 @@ class WorkoutTracker {
   exportData() {
     const exportData = {
       version: "2.0",
+      exportType: "full",
       exportDate: new Date().toISOString(),
       sessions: this.sessions,
       workouts: this.workouts,
@@ -2657,6 +2667,39 @@ class WorkoutTracker {
     );
   }
 
+  exportWorkout(workoutId) {
+    const workout = this.workouts.find((w) => w.id === workoutId);
+    if (!workout) {
+      alert("Workout not found");
+      return;
+    }
+
+    const dataToExport = {
+      version: "2.0",
+      exportType: "workout",
+      exportDate: new Date().toISOString(),
+      workout,
+    };
+
+    const dataStr = JSON.stringify(dataToExport, null, 2);
+    const dataBlob = new Blob([dataStr], { type: "application/json" });
+
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement("a");
+    link.href = url;
+
+    const dateStr = new Date().toISOString().split("T")[0];
+    const sanitizedName = workout.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    link.download = `workout-${sanitizedName || "export"}-${dateStr}.json`;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    this.showSuccessMessage(`Workout "${workout.name}" exported!`);
+  }
+
   importData(event) {
     const file = event.target.files[0];
     if (!file) return;
@@ -2665,6 +2708,51 @@ class WorkoutTracker {
     reader.onload = (e) => {
       try {
         const importedData = JSON.parse(e.target.result);
+
+        const isWorkoutImport =
+          importedData.exportType === "workout" ||
+          (!!importedData.workout && !importedData.sessions);
+
+        if (isWorkoutImport) {
+          const workout = { ...importedData.workout };
+
+          if (!workout || !workout.exercises || !Array.isArray(workout.exercises)) {
+            throw new Error("Invalid workout export format");
+          }
+
+          if (!workout.name) {
+            throw new Error("Workout is missing a name");
+          }
+
+          if (!workout.id) {
+            workout.id = Date.now();
+          }
+
+          const confirmMsg =
+            `Import workout "${workout.name}" with ${workout.exercises.length} exercises?` +
+            "\n\nIt will be added to your workouts if it doesn't already exist.";
+
+          if (!confirm(confirmMsg)) {
+            event.target.value = "";
+            return;
+          }
+
+          const exists = this.workouts.some((w) => w.id === workout.id);
+          if (!exists) {
+            this.workouts.push(workout);
+            this.saveWorkouts();
+            this.renderWorkoutManager();
+            this.renderWorkoutList();
+            this.showSuccessMessage(`Workout "${workout.name}" imported!`);
+          } else {
+            this.showSuccessMessage(
+              `Workout "${workout.name}" already exists. Import skipped.`
+            );
+          }
+
+          event.target.value = "";
+          return;
+        }
 
         // Validate the data structure
         if (!importedData.sessions || !Array.isArray(importedData.sessions)) {
