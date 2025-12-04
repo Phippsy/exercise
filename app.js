@@ -23,8 +23,6 @@ class WorkoutTracker {
       JSON.parse(localStorage.getItem("favoriteFilterOnly")) || false;
     this.quoteStartDate = new Date("2024-01-01T00:00:00");
     this.warmupAdded = false;
-    this.draggedExerciseIndex = null;
-    this.touchReorderTargetIndex = null;
 
     this.init();
   }
@@ -945,7 +943,6 @@ class WorkoutTracker {
     const item = document.createElement("div");
     item.className = "exercise-item";
     item.dataset.index = index;
-    item.setAttribute("draggable", "true");
 
     if (this.pairMode) {
       item.classList.add("pair-mode");
@@ -1007,6 +1004,43 @@ class WorkoutTracker {
       content.appendChild(status);
     }
 
+    const reorderControls = document.createElement("div");
+    reorderControls.className = "exercise-reorder-controls";
+
+    const moveUpBtn = document.createElement("button");
+    moveUpBtn.className = "btn-icon reorder-btn";
+    moveUpBtn.type = "button";
+    moveUpBtn.setAttribute("aria-label", `Move ${exercise.name} up`);
+    moveUpBtn.innerHTML = `
+      <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4l-6 6m6-6l6 6m-6-6v16" />
+      </svg>
+    `;
+    moveUpBtn.disabled = index === 0;
+    moveUpBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      this.moveExercise(index, -1);
+    });
+
+    const moveDownBtn = document.createElement("button");
+    moveDownBtn.className = "btn-icon reorder-btn";
+    moveDownBtn.type = "button";
+    moveDownBtn.setAttribute("aria-label", `Move ${exercise.name} down`);
+    moveDownBtn.innerHTML = `
+      <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 20l6-6m-6 6l-6-6m6 6V4" />
+      </svg>
+    `;
+    moveDownBtn.disabled =
+      index === (this.currentWorkout?.exercises?.length || 0) - 1;
+    moveDownBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      this.moveExercise(index, 1);
+    });
+
+    reorderControls.appendChild(moveUpBtn);
+    reorderControls.appendChild(moveDownBtn);
+
     const chevron = document.createElement("div");
     chevron.className = "exercise-item-chevron";
     chevron.innerHTML = `
@@ -1016,6 +1050,7 @@ class WorkoutTracker {
         `;
 
     item.appendChild(content);
+    item.appendChild(reorderControls);
     if (!this.pairMode) {
       item.appendChild(chevron);
     }
@@ -1030,112 +1065,7 @@ class WorkoutTracker {
       });
     }
 
-    this.enableExerciseReorder(item, index);
-
     return item;
-  }
-
-  enableExerciseReorder(item, index) {
-    item.addEventListener("dragstart", (e) => {
-      this.draggedExerciseIndex = index;
-      item.classList.add("dragging");
-      if (e.dataTransfer) {
-        e.dataTransfer.effectAllowed = "move";
-        e.dataTransfer.setData("text/plain", String(index));
-      }
-    });
-
-    item.addEventListener("dragend", () => {
-      this.resetExerciseDragging();
-    });
-
-    item.addEventListener("dragover", (e) => {
-      e.preventDefault();
-      const targetIndex = Number(item.dataset.index);
-      if (targetIndex === this.draggedExerciseIndex) return;
-      this.clearExerciseDropTargets();
-      item.classList.add("drag-over");
-    });
-
-    item.addEventListener("dragleave", () => {
-      item.classList.remove("drag-over");
-    });
-
-    item.addEventListener("drop", (e) => {
-      e.preventDefault();
-      const fromIndex =
-        this.draggedExerciseIndex ??
-        Number(e.dataTransfer.getData("text/plain"));
-      const toIndex = Number(item.dataset.index);
-      this.finishExerciseReorder(fromIndex, toIndex);
-    });
-
-    item.addEventListener(
-      "touchstart",
-      () => {
-        this.draggedExerciseIndex = index;
-        this.touchReorderTargetIndex = index;
-        item.classList.add("dragging");
-      },
-      { passive: true }
-    );
-
-    item.addEventListener(
-      "touchmove",
-      (e) => {
-        const touch = e.touches[0];
-        if (!touch) return;
-        const target = document.elementFromPoint(touch.clientX, touch.clientY);
-        const dropTarget = target?.closest(".exercise-item");
-        if (dropTarget && dropTarget.dataset.index) {
-          const targetIndex = Number(dropTarget.dataset.index);
-          if (targetIndex !== this.touchReorderTargetIndex) {
-            this.clearExerciseDropTargets();
-            dropTarget.classList.add("drag-over");
-            this.touchReorderTargetIndex = targetIndex;
-          }
-        }
-        e.preventDefault();
-      },
-      { passive: false }
-    );
-
-    item.addEventListener("touchend", () => {
-      this.finishExerciseReorder(
-        this.draggedExerciseIndex,
-        this.touchReorderTargetIndex
-      );
-    });
-
-    item.addEventListener("touchcancel", () => {
-      this.resetExerciseDragging();
-    });
-  }
-
-  clearExerciseDropTargets() {
-    document
-      .querySelectorAll(".exercise-item.drag-over")
-      .forEach((el) => el.classList.remove("drag-over"));
-  }
-
-  finishExerciseReorder(fromIndex, toIndex) {
-    if (fromIndex === null || fromIndex === undefined) {
-      this.resetExerciseDragging();
-      return;
-    }
-
-    if (toIndex === null || toIndex === undefined) {
-      this.resetExerciseDragging();
-      return;
-    }
-
-    if (fromIndex === toIndex) {
-      this.resetExerciseDragging();
-      return;
-    }
-
-    this.reorderExercises(fromIndex, toIndex);
-    this.resetExerciseDragging();
   }
 
   reorderExercises(fromIndex, toIndex) {
@@ -1149,12 +1079,11 @@ class WorkoutTracker {
     this.renderExerciseList();
   }
 
-  resetExerciseDragging() {
-    document
-      .querySelectorAll(".exercise-item.drag-over, .exercise-item.dragging")
-      .forEach((el) => el.classList.remove("drag-over", "dragging"));
-    this.draggedExerciseIndex = null;
-    this.touchReorderTargetIndex = null;
+  moveExercise(index, direction) {
+    const newIndex = index + direction;
+    if (!this.currentWorkout?.exercises) return;
+    if (newIndex < 0 || newIndex >= this.currentWorkout.exercises.length) return;
+    this.reorderExercises(index, newIndex);
   }
 
   // ============================================
