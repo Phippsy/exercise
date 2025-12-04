@@ -323,36 +323,8 @@ body {
 }
 
 /* ============================================
-   Sticky Logging Bar
+   Animations
    ============================================ */
-
-.now-logging-bar {
-  position: fixed;
-  bottom: 12px;
-  left: 12px;
-  right: 12px;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: 14px;
-  padding: 12px;
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.24);
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: var(--spacing-md);
-  z-index: 20;
-}
-
-.now-logging-label {
-  margin: 0;
-  color: var(--text-muted);
-  font-size: 14px;
-}
-
-.now-logging-context {
-  margin: 4px 0 0 0;
-  font-weight: var(--font-weight-bold);
-}
 
 @keyframes fadeIn {
   from {
@@ -825,10 +797,15 @@ button {
   margin-left: var(--spacing-sm);
 }
 
+
+.workout-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  justify-content: space-between;
+}
+
 .workout-card .favorite-toggle {
-  position: absolute;
-  top: 12px;
-  right: 12px;
   background: transparent;
   border: 1px solid var(--border-subtle);
   border-radius: 12px;
@@ -838,6 +815,8 @@ button {
   align-items: center;
   gap: 6px;
   font-size: 13px;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .workout-card .favorite-toggle.active {
@@ -866,59 +845,57 @@ button {
   border: 1px dashed var(--border-subtle);
 }
 
-.favorites-row {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  padding: 12px;
-  border-radius: 16px;
-  margin-bottom: 16px;
-  box-shadow: var(--elevation-low);
-}
-
-.favorites-list {
-  display: flex;
-  gap: 12px;
-  overflow-x: auto;
-  padding: 4px 0;
-}
-
-.favorites-header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 8px;
-}
-
-.favorites-title {
-  margin: 0;
-}
-
-.favorites-subtitle {
-  margin: 0;
-  color: var(--text-muted);
-  font-size: 14px;
-}
-
-.favorite-chip {
-  min-width: 200px;
-  padding: 12px;
-  border-radius: 12px;
-  border: 1px solid var(--border-subtle);
-  background: linear-gradient(135deg, rgba(133, 102, 179, 0.08), transparent);
+.workout-filter-bar {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  cursor: pointer;
+  gap: 8px;
+  margin-bottom: 16px;
 }
 
-.favorite-chip-title {
+.workout-filter-bar .filter-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.workout-filter-bar .filter-label {
+  font-size: 14px;
+  color: var(--text-muted);
   font-weight: 600;
 }
 
-.favorite-chip-meta {
-  color: var(--text-muted);
-  font-size: 14px;
+.favorite-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+  color: var(--text-default);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.favorite-filter-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+.favorite-filter-btn:hover {
+  background: var(--state-hover);
+  border-color: var(--border-strong);
+}
+
+.favorite-filter-btn.active {
+  background: var(--color-accent);
+  color: #0b0b0f;
+  border-color: var(--color-accent);
+  box-shadow: 0 6px 16px rgba(133, 102, 179, 0.25);
 }
 
 /* ============================================
@@ -937,12 +914,27 @@ button {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   padding: var(--spacing-md) var(--spacing-lg);
-  cursor: pointer;
+  cursor: grab;
   transition: all 0.15s ease;
   display: flex;
   justify-content: space-between;
   align-items: center;
   position: relative;
+}
+
+.exercise-item:active {
+  cursor: grabbing;
+}
+
+.exercise-item.dragging {
+  opacity: 0.9;
+  border-color: var(--color-accent);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+}
+
+.exercise-item.drag-over {
+  border-color: var(--color-primary);
+  background-color: var(--bg-surface-subtle);
 }
 
 .exercise-item.pair-mode {
