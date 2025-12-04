@@ -1572,7 +1572,10 @@ class WorkoutTracker {
       return { weight: false, volume: false };
     }
 
-    const newMaxWeight = Math.max(0, ...newSets.map((set) => set.weight_kg || 0));
+    const newMaxWeight = Math.max(
+      0,
+      ...newSets.map((set) => set.weight_kg || 0)
+    );
     const newVolume = this.calculateVolume(newSets);
 
     const previousMaxWeight = history.reduce((max, session) => {
@@ -1606,13 +1609,15 @@ class WorkoutTracker {
     summary.innerHTML = `
       <div class="session-summary-details">
         <p class="session-summary-title">Session saved</p>
-        <p class="session-summary-meta">${session.sets.length} sets · ${volume.toFixed(
-          1
-        )} kg-reps total</p>
+        <p class="session-summary-meta">${
+          session.sets.length
+        } sets · ${volume.toFixed(1)} kg-reps total</p>
       </div>
       <div>
         ${prBadges
-          .map((badge) => `<span class="pr-badge" aria-label="PR">${badge}</span>`)
+          .map(
+            (badge) => `<span class="pr-badge" aria-label="PR">${badge}</span>`
+          )
           .join(" ")}
       </div>
     `;
@@ -2935,7 +2940,9 @@ class WorkoutTracker {
     link.href = url;
 
     const dateStr = new Date().toISOString().split("T")[0];
-    const sanitizedName = workout.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    const sanitizedName = workout.name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-");
     link.download = `workout-${sanitizedName || "export"}-${dateStr}.json`;
 
     document.body.appendChild(link);
@@ -2962,7 +2969,11 @@ class WorkoutTracker {
         if (isWorkoutImport) {
           const workout = { ...importedData.workout };
 
-          if (!workout || !workout.exercises || !Array.isArray(workout.exercises)) {
+          if (
+            !workout ||
+            !workout.exercises ||
+            !Array.isArray(workout.exercises)
+          ) {
             throw new Error("Invalid workout export format");
           }
 
