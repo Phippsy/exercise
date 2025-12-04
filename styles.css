@@ -751,7 +751,6 @@ button {
   margin-left: var(--spacing-sm);
 }
 
-
 .workout-card-header {
   display: flex;
   align-items: flex-start;
@@ -820,8 +819,6 @@ button {
   color: var(--text-muted);
   font-weight: 600;
 }
-
-
 
 .favorite-filter-btn {
   display: inline-flex;

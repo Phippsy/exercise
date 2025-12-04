@@ -558,7 +558,8 @@ class WorkoutTracker {
 
     if (!filterContainer) return;
 
-    const filterButtons = filterContainer.querySelectorAll(".muscle-filter-btn");
+    const filterButtons =
+      filterContainer.querySelectorAll(".muscle-filter-btn");
 
     filterButtons.forEach((btn) => {
       btn.addEventListener("click", () => {
@@ -714,7 +715,10 @@ class WorkoutTracker {
       workout.favorite ? "active" : ""
     }`;
     favoriteToggle.setAttribute("aria-pressed", workout.favorite);
-    favoriteToggle.setAttribute("aria-label", workout.favorite ? "Remove from favorites" : "Add to favorites");
+    favoriteToggle.setAttribute(
+      "aria-label",
+      workout.favorite ? "Remove from favorites" : "Add to favorites"
+    );
     favoriteToggle.innerHTML = `
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
@@ -1060,7 +1064,8 @@ class WorkoutTracker {
     item.addEventListener("drop", (e) => {
       e.preventDefault();
       const fromIndex =
-        this.draggedExerciseIndex ?? Number(e.dataTransfer.getData("text/plain"));
+        this.draggedExerciseIndex ??
+        Number(e.dataTransfer.getData("text/plain"));
       const toIndex = Number(item.dataset.index);
       this.finishExerciseReorder(fromIndex, toIndex);
     });
