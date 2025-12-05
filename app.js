@@ -2322,11 +2322,11 @@ class WorkoutTracker {
   }
 
   generateWorkoutShareCard(entry) {
-    const width = 780;
-    const padding = 32;
+    const width = 680;
+    const padding = 28;
     const chartHeight = 220;
     const chartGap = 22;
-    const chartsY = 240;
+    const chartsY = 228;
     const listStartY = chartsY + chartHeight * 2 + chartGap + 32;
     const rowHeight = 88;
     const exercises = entry.exercises || [];
@@ -2349,19 +2349,19 @@ class WorkoutTracker {
     // Accent overlay
     ctx.fillStyle = "rgba(79, 70, 229, 0.08)";
     ctx.beginPath();
-    ctx.ellipse(width * 0.65, 230, 260, 160, 0.3, 0, Math.PI * 2);
+    ctx.ellipse(width * 0.6, 220, 230, 150, 0.3, 0, Math.PI * 2);
     ctx.fill();
 
     // Header
     ctx.fillStyle = "#a5b4fc";
-    ctx.font = "24px Inter, sans-serif";
+    ctx.font = "22px Inter, sans-serif";
     ctx.fillText(this.formatDate(new Date(entry.date)), padding, 60);
 
     ctx.fillStyle = "#f8fafc";
-    ctx.font = "40px Inter, sans-serif";
+    ctx.font = "38px Inter, sans-serif";
     this.drawTruncatedText(ctx, entry.workoutName, padding, 102, width - padding * 2);
 
-    ctx.font = "22px Inter, sans-serif";
+    ctx.font = "20px Inter, sans-serif";
     ctx.fillStyle = "#cbd5e1";
     this.drawTruncatedText(
       ctx,
@@ -2383,7 +2383,7 @@ class WorkoutTracker {
       },
     ];
 
-    ctx.font = "18px Inter, sans-serif";
+    ctx.font = "17px Inter, sans-serif";
     const statWidth = (width - padding * 2 - 24) / 3;
     stats.forEach((stat, index) => {
       const x = padding + index * (statWidth + 12);
@@ -2392,9 +2392,9 @@ class WorkoutTracker {
       ctx.fillStyle = "#cbd5e1";
       ctx.fillText(stat.label, x, 204);
       ctx.fillStyle = "#f8fafc";
-      ctx.font = "24px Inter, sans-serif";
+      ctx.font = "22px Inter, sans-serif";
       this.drawTruncatedText(ctx, stat.value, x, 232, statWidth - 12);
-      ctx.font = "18px Inter, sans-serif";
+      ctx.font = "17px Inter, sans-serif";
     });
 
     // Charts
