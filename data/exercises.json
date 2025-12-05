@@ -394,6 +394,130 @@
                     "form_video": "https://www.youtube.com/watch?v=i9sTjhN4Z3M"
                 }
             ]
+        },
+        {
+            "id": 6,
+            "name": "Ben loves the gym",
+            "date": null,
+            "exercises": [
+                {
+                    "name": "Single Arm Pulldown - Kneeling",
+                    "muscle_group": "Back",
+                    "sets": 3,
+                    "reps": 8,
+                    "weight_kg": 22.5,
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=Vu3OrBHrMNk"
+                },
+                {
+                    "name": "Seated Cable Row",
+                    "muscle_group": "Back",
+                    "sets": 4,
+                    "reps": 10,
+                    "weight_kg": 35,
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=A77hAjcpN1s"
+                },
+                {
+                    "name": "Chest Press - Flat Bench (Dumbbells)",
+                    "muscle_group": "Chest",
+                    "sets": 4,
+                    "reps": 12,
+                    "weight_kg": 22.5,
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=6gkpmeP3jmQ"
+                },
+                {
+                    "name": "Roman Chair Side Bend",
+                    "muscle_group": "Core",
+                    "sets": 2,
+                    "reps": "10/side",
+                    "weight_kg": null,
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=SkWTRlKzs6A"
+                },
+                {
+                    "name": "Leg Press",
+                    "muscle_group": "Legs",
+                    "sets": null,
+                    "reps": 12,
+                    "weight_kg": 70,
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=Aq5uxXrXq7c"
+                },
+                {
+                    "name": "Cable Face Pulls / Rear Delt Flys",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": 15,
+                    "weight_kg": "20–22.5",
+                    "notes": "Plastic machines",
+                    "form_video": "https://www.youtube.com/watch?v=cuTBqxntdso"
+                },
+                {
+                    "name": "Push Ups",
+                    "muscle_group": "Chest",
+                    "sets": 3,
+                    "reps": 15,
+                    "weight_kg": null,
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=i9sTjhN4Z3M"
+                },
+                {
+                    "name": "Jack Knife",
+                    "muscle_group": "Core",
+                    "sets": 4,
+                    "reps": 10,
+                    "weight_kg": null,
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/shorts/qKkGRZFVX8U"
+                },
+                {
+                    "name": "Farmers Carry (Kettlebell)",
+                    "muscle_group": "Full Body",
+                    "sets": 4,
+                    "reps": 20,
+                    "weight_kg": 16,
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=fxwrTkKUkTo"
+                },
+                {
+                    "name": "TRX Push-Up",
+                    "muscle_group": "Chest",
+                    "sets": 4,
+                    "reps": "10–15 (AMRAP)",
+                    "weight_kg": null,
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=LFawJbMAop0"
+                },
+                {
+                    "name": "TRX Fallout",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "10–12",
+                    "weight_kg": null,
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=vXES8oB5RZA"
+                },
+                {
+                    "name": "TRX Mountain Climbers",
+                    "muscle_group": "Core",
+                    "sets": null,
+                    "reps": null,
+                    "weight_kg": null,
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=tUlpRgKA9Q0"
+                },
+                {
+                    "name": "TRX Pistol Squats",
+                    "muscle_group": "Legs",
+                    "sets": null,
+                    "reps": null,
+                    "weight_kg": null,
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/shorts/w00oAfp_9xM"
+                }
+            ]
         }
     ]
 }
