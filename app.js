@@ -2173,6 +2173,10 @@ class WorkoutTracker {
     const chips = document.getElementById("historyStatChips");
     const funFact = document.getElementById("historyFunFact");
     const exerciseGrid = document.getElementById("historyExerciseGrid");
+    const volumeChart = document.getElementById("historyVolumeChart");
+    const volumeLegend = document.getElementById("historyVolumeLegend");
+    const milestones = document.getElementById("historyMilestones");
+    const quoteEl = document.getElementById("historyQuote");
     const exercises = entry.exercises || [];
 
     if (mood) mood.textContent = this.getHistoryMood(entry);
@@ -2195,6 +2199,120 @@ class WorkoutTracker {
 
     if (funFact) {
       funFact.textContent = entry.headline || this.buildWorkoutHeadline(entry);
+    }
+
+    if (volumeChart) {
+      const volumeBreakdown = this.getVolumeByMuscle(exercises);
+      volumeChart.innerHTML = "";
+      if (volumeLegend) volumeLegend.textContent = "";
+
+      if (volumeBreakdown.length === 0) {
+        volumeChart.innerHTML =
+          '<p class="chart-caption">Log sets to see the muscle breakdown.</p>';
+      } else {
+        const maxVolume = Math.max(...volumeBreakdown.map((v) => v.volume), 1);
+        const totalVolume = volumeBreakdown.reduce(
+          (sum, item) => sum + item.volume,
+          0
+        );
+
+        volumeBreakdown.forEach((item, index) => {
+          const bar = document.createElement("div");
+          bar.className = "volume-bar-item";
+          const gradient = `linear-gradient(120deg, hsl(${200 + index * 18}, 82%, 72%), hsl(${280 + index * 16}, 88%, 74%))`;
+          const pct = Math.round((item.volume / totalVolume) * 100);
+
+          bar.innerHTML = `
+            <div class="volume-bar-row">
+              <div class="volume-bar-info">
+                <span class="volume-swatch" style="background: ${gradient}"></span>
+                <div>
+                  <p class="volume-bar-name">${item.muscle}</p>
+                  <p class="volume-bar-sub">${item.volume.toFixed(1)} kg-reps</p>
+                </div>
+              </div>
+              <span class="volume-bar-value">${pct}%</span>
+            </div>
+            <div class="volume-bar-track">
+              <div class="volume-bar-fill" style="width: ${(item.volume / maxVolume) * 100}%; background: ${gradient}"></div>
+            </div>
+          `;
+
+          volumeChart.appendChild(bar);
+        });
+
+        if (volumeLegend) {
+          const top = volumeBreakdown[0];
+          volumeLegend.textContent = `${top.muscle} carried the day (${Math.round(
+            (top.volume / totalVolume) * 100
+          )}% of volume)`;
+        }
+      }
+    }
+
+    if (milestones) {
+      const historyForWorkout = this.workoutHistory.filter(
+        (s) => s.workoutId === entry.workoutId
+      );
+      const totalRuns = historyForWorkout.length;
+      const previousRun = historyForWorkout
+        .filter((run) => run.id !== entry.id)
+        .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+      const firstRun = historyForWorkout
+        .slice()
+        .sort((a, b) => new Date(a.date) - new Date(b.date))[0];
+      const topMuscle = this.getVolumeByMuscle(exercises)[0];
+
+      milestones.innerHTML = "";
+
+      const stats = [
+        {
+          label: "Session count",
+          value:
+            totalRuns === 1
+              ? "Debut session"
+              : `${totalRuns} total runs`,
+          sub: firstRun
+            ? `Started ${this.formatDate(new Date(firstRun.date))}`
+            : "Log this workout to start tracking",
+        },
+        {
+          label: "Last completed",
+          value: previousRun
+            ? this.formatRelativeDay(previousRun.date, entry.date)
+            : "First time",
+          sub: previousRun
+            ? this.formatDate(new Date(previousRun.date))
+            : "No earlier record",
+        },
+        {
+          label: "Body-part MVP",
+          value: topMuscle ? topMuscle.muscle : "Full body",
+          sub: topMuscle
+            ? `${topMuscle.volume.toFixed(1)} kg-reps of focus`
+            : "Add sets to see the breakdown",
+        },
+      ];
+
+      stats.forEach((stat) => {
+        const card = document.createElement("div");
+        card.className = "milestone-card";
+        card.innerHTML = `
+          <p class="milestone-label">${stat.label}</p>
+          <p class="milestone-value">${stat.value}</p>
+          <p class="milestone-sub">${stat.sub}</p>
+        `;
+        milestones.appendChild(card);
+      });
+    }
+
+    if (quoteEl) {
+      const quote = this.getRandomQuote();
+      if (quote) {
+        quoteEl.innerHTML = `“${quote.text}” <span>— ${quote.author}</span>`;
+      } else {
+        quoteEl.textContent = "";
+      }
     }
 
     if (exerciseGrid) {
@@ -2376,7 +2494,7 @@ class WorkoutTracker {
 
     if (!totalEl || !trendEl) return;
 
-    totalEl.textContent = `${total} entries`;
+    totalEl.textContent = `${total} sets`;
     trendEl.textContent = trendText;
 
     this.renderMiniBarChart(
@@ -2568,7 +2686,8 @@ class WorkoutTracker {
 
     this.sessions.forEach((session) => {
       const key = session.date.split("T")[0];
-      counts.set(key, (counts.get(key) || 0) + 1);
+      const setsLogged = (session.sets || []).length;
+      counts.set(key, (counts.get(key) || 0) + setsLogged);
     });
 
     const results = [];
@@ -2673,6 +2792,45 @@ class WorkoutTracker {
     }
 
     return "Holding steady";
+  }
+
+  getVolumeByMuscle(exercises = []) {
+    const totals = new Map();
+
+    exercises.forEach((exercise) => {
+      const key = exercise.muscleGroup || "Full body";
+      totals.set(key, (totals.get(key) || 0) + (exercise.volume || 0));
+    });
+
+    return Array.from(totals.entries())
+      .map(([muscle, volume]) => ({ muscle, volume }))
+      .sort((a, b) => b.volume - a.volume);
+  }
+
+  formatRelativeDay(dateString, referenceDate = new Date()) {
+    if (!dateString) return "Unknown";
+    const target = new Date(dateString);
+    const reference = new Date(referenceDate);
+    const diffDays = Math.round(
+      (reference.getTime() - target.getTime()) / (1000 * 60 * 60 * 24)
+    );
+
+    if (diffDays <= 0) return "Earlier today";
+    if (diffDays === 1) return "Yesterday";
+    if (diffDays < 7) return `${diffDays} days ago`;
+
+    const diffWeeks = Math.round(diffDays / 7);
+    if (diffWeeks < 4) {
+      return `${diffWeeks} week${diffWeeks === 1 ? "" : "s"} ago`;
+    }
+
+    return this.formatDate(target);
+  }
+
+  getRandomQuote() {
+    if (!this.quotes.length) return null;
+    const index = Math.floor(Math.random() * this.quotes.length);
+    return this.quotes[index];
   }
 
   // ============================================

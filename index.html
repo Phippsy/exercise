@@ -12,7 +12,7 @@
     <meta name="theme-color" content="#0a0a0a" />
     <title>Workout Tracker</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <link rel="stylesheet" href="styles.css?v=1.1.0" />
+    <link rel="stylesheet" href="styles.css?v=1.2.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -267,7 +267,7 @@
               <div class="card-header-row">
                 <div>
                   <h3 class="card-title-sm">Recent Exercise Activity</h3>
-                  <p class="card-subtitle">Exercises logged each day</p>
+                  <p class="card-subtitle">Sets logged each day</p>
                 </div>
                 <span id="activityTotal" class="pill pill-soft"></span>
               </div>
@@ -686,6 +686,26 @@
                 </div>
 
                 <div class="history-highlights" id="historyFunFact"></div>
+
+                <div class="history-visual-grid">
+                  <div class="history-visual-card">
+                    <div class="history-visual-header">
+                      <p class="section-kicker">Body focus</p>
+                      <h4 class="card-title-sm">Volume by muscle group</h4>
+                    </div>
+                    <div id="historyVolumeChart" class="volume-bar-list"></div>
+                    <p id="historyVolumeLegend" class="chart-caption"></p>
+                  </div>
+
+                  <div class="history-visual-card stat-card">
+                    <div class="history-visual-header">
+                      <p class="section-kicker">Session context</p>
+                      <h4 class="card-title-sm">Milestones & streaks</h4>
+                    </div>
+                    <div id="historyMilestones" class="milestone-grid"></div>
+                    <div id="historyQuote" class="quote-chip subtle"></div>
+                  </div>
+                </div>
 
                 <div class="history-exercise-grid" id="historyExerciseGrid"></div>
 
@@ -1391,6 +1411,6 @@
       </div>
     </div>
 
-    <script src="app.js?v=1.1.0"></script>
+    <script src="app.js?v=1.2.0"></script>
   </body>
 </html>
