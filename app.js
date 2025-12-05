@@ -2323,7 +2323,16 @@ class WorkoutTracker {
 
   generateWorkoutShareCard(entry) {
     const width = 1080;
-    const height = 1920;
+    const padding = 48;
+    const chartHeight = 320;
+    const chartsY = 280;
+    const listStartY = chartsY + chartHeight + 56;
+    const rowHeight = 82;
+    const exercises = entry.exercises || [];
+    const rows = Math.max(Math.ceil(exercises.length / 2), 1);
+    const gridHeight = exercises.length ? rows * rowHeight : 96;
+    const footerHeight = 96;
+    const height = listStartY + gridHeight + footerHeight;
     const canvas = document.createElement("canvas");
     canvas.width = width;
     canvas.height = height;
@@ -2341,8 +2350,6 @@ class WorkoutTracker {
     ctx.beginPath();
     ctx.ellipse(width * 0.7, 260, 320, 180, 0.3, 0, Math.PI * 2);
     ctx.fill();
-
-    const padding = 48;
 
     // Header
     ctx.fillStyle = "#a5b4fc";
@@ -2390,10 +2397,8 @@ class WorkoutTracker {
 
     // Charts
     const chartWidth = (width - padding * 2 - 32) / 2;
-    const chartHeight = 320;
-    const chartsY = 280;
-    const volumeData = this.getVolumeByMuscle(entry.exercises || []);
-    const repData = this.getRepsByMuscle(entry.exercises || []);
+    const volumeData = this.getVolumeByMuscle(exercises);
+    const repData = this.getRepsByMuscle(exercises);
     this.drawShareChart(ctx, volumeData, {
       x: padding,
       y: chartsY,
@@ -2414,8 +2419,7 @@ class WorkoutTracker {
     });
 
     // Exercise grid (all exercises)
-    const listStartY = chartsY + chartHeight + 56;
-    this.drawExerciseGrid(ctx, entry.exercises || [], {
+    this.drawExerciseGrid(ctx, exercises, {
       x: padding,
       y: listStartY,
       width: width - padding * 2,
