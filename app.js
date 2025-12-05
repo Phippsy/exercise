@@ -6,6 +6,7 @@ class WorkoutTracker {
   constructor() {
     this.workouts = [];
     this.sessions = [];
+    this.workoutHistory = [];
     this.exerciseLibrary = []; // Master list of all available exercises
     this.quotes = [];
     this.currentWorkout = null;
@@ -17,6 +18,8 @@ class WorkoutTracker {
     this.onboardingSteps = [];
     this.onboardingFocusElement = null;
     this.dailyQuoteExpanded = false;
+    this.selectedHistoryId = null;
+    this.latestShareDataUrl = null;
     this.exerciseLibraryFilters = { search: "", muscles: new Set() };
     this.workoutFilters = new Set();
     this.favoriteFilterOnly =
@@ -31,6 +34,7 @@ class WorkoutTracker {
     await this.loadWorkouts();
     await this.loadQuotes();
     this.loadSessions();
+    this.loadWorkoutHistory();
     this.loadUserName();
     this.loadTheme();
     this.setupEventListeners();
@@ -137,6 +141,18 @@ class WorkoutTracker {
 
   saveSessions() {
     localStorage.setItem("workoutSessions", JSON.stringify(this.sessions));
+  }
+
+  loadWorkoutHistory() {
+    const stored = localStorage.getItem("workoutHistory");
+    this.workoutHistory = stored ? JSON.parse(stored) : [];
+    this.workoutHistory.sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+  }
+
+  saveWorkoutHistory() {
+    localStorage.setItem("workoutHistory", JSON.stringify(this.workoutHistory));
   }
 
   loadUserName() {
@@ -273,6 +289,41 @@ class WorkoutTracker {
     document.getElementById("fileInput").addEventListener("change", (e) => {
       this.importData(e);
     });
+
+    const historyBtn = document.getElementById("historyBtn");
+    if (historyBtn) {
+      historyBtn.addEventListener("click", () => {
+        this.openHistoryView();
+      });
+    }
+
+    const backToDashboard = document.getElementById("backToDashboard");
+    if (backToDashboard) {
+      backToDashboard.addEventListener("click", () => {
+        this.showView("workoutListView");
+      });
+    }
+
+    const endWorkoutBtn = document.getElementById("endWorkoutBtn");
+    if (endWorkoutBtn) {
+      endWorkoutBtn.addEventListener("click", () => {
+        this.endCurrentWorkoutSession();
+      });
+    }
+
+    const shareWorkoutCardBtn = document.getElementById("shareWorkoutCardBtn");
+    if (shareWorkoutCardBtn) {
+      shareWorkoutCardBtn.addEventListener("click", () => {
+        this.exportSelectedWorkoutShareCard();
+      });
+    }
+
+    const copyShareLink = document.getElementById("copyShareLink");
+    if (copyShareLink) {
+      copyShareLink.addEventListener("click", () => {
+        this.copySelectedWorkoutShareCard();
+      });
+    }
 
     // Management view
     document.getElementById("manageBtn").addEventListener("click", () => {
@@ -1921,6 +1972,376 @@ class WorkoutTracker {
   }
 
   // ============================================
+  // Workout History & Sharing
+  // ============================================
+
+  endCurrentWorkoutSession() {
+    if (!this.currentWorkout) return;
+
+    const todayKey = this.getLocalDateKey();
+    const todaysSessions = this.sessions.filter(
+      (s) =>
+        s.workoutId === this.currentWorkout.id &&
+        this.getLocalDateKey(new Date(s.date)) === todayKey
+    );
+
+    const exerciseMap = new Map();
+
+    todaysSessions.forEach((session) => {
+      const existing = exerciseMap.get(session.exerciseName) || {
+        name: session.exerciseName,
+        muscleGroup: session.muscleGroup,
+        sets: 0,
+        reps: 0,
+        volume: 0,
+      };
+
+      const sessionReps = (session.sets || []).reduce(
+        (sum, set) => sum + (set.reps || 0),
+        0
+      );
+      const sessionVolume = this.calculateVolume(session.sets || []);
+
+      existing.sets += (session.sets || []).length;
+      existing.reps += sessionReps;
+      existing.volume += sessionVolume;
+
+      exerciseMap.set(session.exerciseName, existing);
+    });
+
+    const exercises = Array.from(exerciseMap.values());
+
+    const summary = {
+      id: Date.now(),
+      workoutId: this.currentWorkout.id,
+      workoutName: this.currentWorkout.name,
+      date: new Date().toISOString(),
+      exercises,
+      totalSets: exercises.reduce((sum, ex) => sum + ex.sets, 0),
+      totalVolume: Math.round(
+        exercises.reduce((sum, ex) => sum + ex.volume, 0) * 10
+      ) / 10,
+      totalReps: exercises.reduce((sum, ex) => sum + ex.reps, 0),
+      completionPct:
+        this.currentWorkout.exercises.length === 0
+          ? 0
+          : Math.round((exercises.length / this.currentWorkout.exercises.length) * 100),
+    };
+
+    summary.headline = this.buildWorkoutHeadline(summary);
+
+    const existingIndex = this.workoutHistory.findIndex(
+      (entry) =>
+        entry.workoutId === summary.workoutId &&
+        this.getLocalDateKey(new Date(entry.date)) === todayKey
+    );
+
+    if (existingIndex !== -1) {
+      this.workoutHistory.splice(existingIndex, 1);
+    }
+
+    this.workoutHistory.unshift(summary);
+    this.saveWorkoutHistory();
+    this.selectedHistoryId = summary.id;
+
+    this.refreshInsights();
+
+    this.showSuccessMessage("Workout saved to history");
+    this.openHistoryView(summary.id);
+  }
+
+  buildWorkoutHeadline(summary) {
+    if (summary.totalVolume > 0) {
+      return `Moved ${summary.totalVolume.toFixed(1)} kg-reps across ${summary.totalSets} sets`;
+    }
+
+    if (summary.totalSets > 0) {
+      return `${summary.totalSets} sets logged — momentum rising`;
+    }
+
+    return "Logged a check-in — the streak counts";
+  }
+
+  openHistoryView(selectedId = null) {
+    this.showView("workoutHistoryView");
+    this.renderWorkoutHistoryList(selectedId || this.selectedHistoryId);
+  }
+
+  openHistoryForDate(dateKey) {
+    const match = this.workoutHistory.find(
+      (entry) => this.getLocalDateKey(new Date(entry.date)) === dateKey
+    );
+
+    if (match) {
+      this.selectedHistoryId = match.id;
+      this.openHistoryView(match.id);
+      return;
+    }
+
+    this.openHistoryView();
+    this.showSuccessMessage("No saved workout for that day yet");
+  }
+
+  renderWorkoutHistoryList(selectedId = null) {
+    const list = document.getElementById("workoutHistoryList");
+    const count = document.getElementById("historyCount");
+
+    if (!list) return;
+
+    list.innerHTML = "";
+    const hasEntries = this.workoutHistory.length > 0;
+    if (count) {
+      count.textContent = hasEntries
+        ? `${this.workoutHistory.length} saved`
+        : "Nothing yet";
+    }
+
+    if (!hasEntries) {
+      this.selectedHistoryId = null;
+      this.renderWorkoutHistoryDetail(null);
+      return;
+    }
+
+    const targetId = selectedId || this.workoutHistory[0].id;
+    this.selectedHistoryId = targetId;
+
+    this.workoutHistory.forEach((entry) => {
+      const exerciseCount = entry.exercises?.length || 0;
+      const item = document.createElement("button");
+      item.className = "history-list-item";
+      item.type = "button";
+      item.setAttribute(
+        "aria-label",
+        `${entry.workoutName} on ${this.formatDate(new Date(entry.date))}`
+      );
+
+      if (entry.id === targetId) {
+        item.classList.add("active");
+      }
+
+      const title = document.createElement("div");
+      title.className = "history-list-title";
+      title.textContent = entry.workoutName;
+
+      const meta = document.createElement("div");
+      meta.className = "history-list-meta";
+      meta.textContent = `${this.formatDate(new Date(entry.date))} · ${
+        exerciseCount
+      } exercise${exerciseCount === 1 ? "" : "s"}`;
+
+      const stats = document.createElement("div");
+      stats.className = "history-list-stats";
+      stats.innerHTML = `
+        <span>${entry.totalSets || 0} sets</span>
+        <span>${(entry.totalVolume || 0).toFixed(1)} kg-reps</span>
+      `;
+
+      item.appendChild(title);
+      item.appendChild(meta);
+      item.appendChild(stats);
+
+      item.addEventListener("click", () => {
+        this.selectedHistoryId = entry.id;
+        this.renderWorkoutHistoryList(entry.id);
+      });
+
+      list.appendChild(item);
+    });
+
+    const selectedEntry = this.workoutHistory.find((e) => e.id === targetId);
+    this.renderWorkoutHistoryDetail(selectedEntry || null);
+  }
+
+  renderWorkoutHistoryDetail(entry) {
+    const detail = document.getElementById("historyDetail");
+    const empty = document.getElementById("historyEmptyState");
+
+    if (!detail) return;
+
+    if (!entry) {
+      detail.classList.add("hidden");
+      if (empty) empty.classList.remove("hidden");
+      return;
+    }
+
+    detail.classList.remove("hidden");
+    if (empty) empty.classList.add("hidden");
+
+    const mood = document.getElementById("historyDetailMood");
+    const title = document.getElementById("historyDetailTitle");
+    const date = document.getElementById("historyDetailDate");
+    const chips = document.getElementById("historyStatChips");
+    const funFact = document.getElementById("historyFunFact");
+    const exerciseGrid = document.getElementById("historyExerciseGrid");
+    const exercises = entry.exercises || [];
+
+    if (mood) mood.textContent = this.getHistoryMood(entry);
+    if (title) title.textContent = entry.workoutName;
+    if (date) date.textContent = this.formatDate(new Date(entry.date));
+
+    if (chips) {
+      chips.innerHTML = "";
+      [
+        `${entry.totalSets || 0} sets`,
+        `${(entry.totalVolume || 0).toFixed(1)} kg-reps`,
+        `${exercises.length} exercise${exercises.length === 1 ? "" : "s"}`,
+      ].forEach((text) => {
+        const pill = document.createElement("span");
+        pill.className = "pill pill-soft";
+        pill.textContent = text;
+        chips.appendChild(pill);
+      });
+    }
+
+    if (funFact) {
+      funFact.textContent = entry.headline || this.buildWorkoutHeadline(entry);
+    }
+
+    if (exerciseGrid) {
+      exerciseGrid.innerHTML = "";
+      if (exercises.length === 0) {
+        exerciseGrid.innerHTML =
+          '<p class="history-empty-body">No sets logged today — count it as a recovery check-in.</p>';
+      } else {
+        const sorted = exercises
+          .slice()
+          .sort((a, b) => (b.volume || 0) - (a.volume || 0));
+        sorted.forEach((exercise) => {
+          const card = document.createElement("div");
+          card.className = "history-exercise-card";
+
+          card.innerHTML = `
+            <div class="history-exercise-top">
+              <p class="history-exercise-name">${exercise.name}</p>
+              <span class="pill pill-soft">${exercise.muscleGroup || ""}</span>
+            </div>
+            <p class="history-exercise-meta">${exercise.sets || 0} sets · ${
+            exercise.reps || 0
+          } reps · ${(exercise.volume || 0).toFixed(1)} kg-reps</p>
+          `;
+
+          exerciseGrid.appendChild(card);
+        });
+      }
+    }
+
+    const previewUrl = this.generateWorkoutShareCard(entry);
+    this.setHistorySharePreview(previewUrl);
+  }
+
+  getHistoryMood(entry) {
+    if (!entry) return "";
+    if (entry.totalVolume > 0) return "Strength day";
+    if (entry.totalSets > 0) return "Logged and loaded";
+    return "Mindful check-in";
+  }
+
+  generateWorkoutShareCard(entry) {
+    const width = 960;
+    const height = 540;
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+
+    // Background
+    const gradient = ctx.createLinearGradient(0, 0, width, height);
+    gradient.addColorStop(0, "#0f172a");
+    gradient.addColorStop(1, "#1f2937");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, width, height);
+
+    // Title
+    ctx.fillStyle = "#a5b4fc";
+    ctx.font = "24px Inter, sans-serif";
+    ctx.fillText(this.formatDate(new Date(entry.date)), 32, 48);
+
+    ctx.fillStyle = "#f8fafc";
+    ctx.font = "36px Inter, sans-serif";
+    ctx.fillText(entry.workoutName, 32, 90);
+
+    ctx.font = "20px Inter, sans-serif";
+    ctx.fillStyle = "#cbd5e1";
+    ctx.fillText(entry.headline || this.buildWorkoutHeadline(entry), 32, 126);
+
+    // Stats row
+    const stats = [
+      `${entry.totalSets || 0} sets`,
+      `${(entry.totalVolume || 0).toFixed(1)} kg-reps`,
+      `${entry.exercises.length} exercise${entry.exercises.length === 1 ? "" : "s"}`,
+    ];
+
+    ctx.font = "18px Inter, sans-serif";
+    ctx.fillStyle = "#e2e8f0";
+    stats.forEach((stat, index) => {
+      ctx.fillText(stat, 32 + index * 200, 170);
+    });
+
+    // Exercise callouts
+    const exercises = (entry.exercises || []).slice(0, 5);
+    ctx.font = "16px Inter, sans-serif";
+    ctx.fillStyle = "#cbd5e1";
+
+    exercises.forEach((exercise, index) => {
+      const y = 220 + index * 60;
+      ctx.fillText(exercise.name, 32, y);
+      ctx.fillText(`${exercise.sets || 0} sets`, 300, y);
+      ctx.fillText(`${(exercise.volume || 0).toFixed(1)} kg-reps`, 420, y);
+    });
+
+    // Footer
+    ctx.fillStyle = "#94a3b8";
+    ctx.fillText("Workout Tracker • Shareable recap", 32, height - 32);
+
+    return canvas.toDataURL("image/png");
+  }
+
+  setHistorySharePreview(dataUrl) {
+    const preview = document.getElementById("historySharePreview");
+    if (preview) {
+      preview.src = dataUrl;
+    }
+    this.latestShareDataUrl = dataUrl;
+  }
+
+  exportSelectedWorkoutShareCard() {
+    const entry = this.workoutHistory.find(
+      (item) => item.id === this.selectedHistoryId
+    );
+    if (!entry) return;
+
+    const dataUrl = this.generateWorkoutShareCard(entry);
+    const link = document.createElement("a");
+    link.href = dataUrl;
+    const dateStr = this.getLocalDateKey(new Date(entry.date));
+    link.download = `${entry.workoutName}-${dateStr}-recap.png`;
+    link.click();
+    this.setHistorySharePreview(dataUrl);
+    this.showSuccessMessage("Recap image exported");
+  }
+
+  async copySelectedWorkoutShareCard() {
+    const entry = this.workoutHistory.find(
+      (item) => item.id === this.selectedHistoryId
+    );
+    if (!entry) return;
+
+    const dataUrl = this.generateWorkoutShareCard(entry);
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(dataUrl);
+        this.showSuccessMessage("Copied image data URL to clipboard");
+      } else {
+        this.showSuccessMessage("Copy not supported in this browser");
+      }
+    } catch (error) {
+      console.error("Copy failed", error);
+      this.showSuccessMessage("Unable to copy right now");
+    }
+    this.setHistorySharePreview(dataUrl);
+  }
+
+  // ============================================
   // Insights and Visualizations
   // ============================================
 
@@ -1989,13 +2410,24 @@ class WorkoutTracker {
       dailyCounts.map((day) => ({
         label: day.label,
         value: day.value,
-      }))
+        date: day.date,
+      })),
+      (entry) => {
+        if (entry.date) {
+          this.openHistoryForDate(entry.date);
+        }
+      }
     );
   }
 
   renderWorkoutInsights(workout) {
     const days = 14;
-    const history = this.sessions.filter((s) => s.workoutId === workout.id);
+    const historySource =
+      this.workoutHistory.filter((s) => s.workoutId === workout.id).length > 0
+        ? this.workoutHistory
+        : this.sessions;
+
+    const history = historySource.filter((s) => s.workoutId === workout.id);
     const lastSession =
       history.length > 0
         ? history.slice().sort((a, b) => new Date(b.date) - new Date(a.date))[0]
@@ -2094,7 +2526,7 @@ class WorkoutTracker {
     );
   }
 
-  renderMiniBarChart(containerId, data) {
+  renderMiniBarChart(containerId, data, onBarClick = null) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
@@ -2116,6 +2548,16 @@ class WorkoutTracker {
       bar.style.height = `${(entry.value / maxValue) * 100}%`;
       bar.setAttribute("data-label", entry.label);
       bar.title = `${entry.label}: ${entry.value}`;
+
+      if (onBarClick) {
+        bar.classList.add("mini-bar-clickable");
+        bar.tabIndex = 0;
+        bar.addEventListener("click", () => onBarClick(entry));
+        bar.addEventListener("keypress", (e) => {
+          if (e.key === "Enter") onBarClick(entry);
+        });
+      }
+
       container.appendChild(bar);
     });
   }
@@ -2150,8 +2592,15 @@ class WorkoutTracker {
     this.sessions
       .filter((s) => s.workoutId === workoutId)
       .forEach((session) => {
-        const key = session.date.split("T")[0];
+        const key = (session.date || "").split("T")[0];
         counts.set(key, (counts.get(key) || 0) + 1);
+      });
+
+    this.workoutHistory
+      .filter((s) => s.workoutId === workoutId)
+      .forEach((entry) => {
+        const key = (entry.date || "").split("T")[0];
+        counts.set(key, Math.max(1, counts.get(key) || 0));
       });
 
     const results = [];
@@ -2162,6 +2611,7 @@ class WorkoutTracker {
       results.push({
         label: this.formatShortDate(date),
         value: counts.get(key) || 0,
+        date: key,
       });
     }
     return results;
@@ -2171,8 +2621,10 @@ class WorkoutTracker {
     const today = new Date();
     const counts = new Map();
 
-    this.sessions.forEach((session) => {
-      const key = session.date.split("T")[0];
+    const allEntries = [...this.sessions, ...this.workoutHistory];
+
+    allEntries.forEach((session) => {
+      const key = (session.date || "").split("T")[0];
       if (!counts.has(key)) {
         counts.set(key, new Set());
       }
@@ -2188,6 +2640,7 @@ class WorkoutTracker {
       results.push({
         label: this.formatShortDate(date),
         value: set ? set.size : 0,
+        date: key,
       });
     }
     return results;
