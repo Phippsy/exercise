@@ -1034,12 +1034,27 @@ class WorkoutTracker {
       meta.textContent = `Last: ${this.formatDate(date)} • ${
         lastSession.sets.length
       } sets`;
-    } else {
-      meta.textContent = exercise.muscle_group;
     }
 
     details.appendChild(name);
     details.appendChild(meta);
+    
+    // Add muscle group badges
+    if (exercise.muscle_group) {
+      const muscleBadges = document.createElement("div");
+      muscleBadges.className = "exercise-muscle-badges";
+      
+      // Split muscle groups if there are multiple (comma-separated)
+      const muscleGroups = exercise.muscle_group.split(',').map(m => m.trim());
+      muscleGroups.forEach((muscle) => {
+        const badge = document.createElement("span");
+        badge.className = "exercise-muscle-badge";
+        badge.textContent = muscle;
+        muscleBadges.appendChild(badge);
+      });
+      
+      details.appendChild(muscleBadges);
+    }
     content.appendChild(details);
 
     const status = document.createElement("div");
@@ -1342,7 +1357,7 @@ class WorkoutTracker {
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14"/>
                         </svg>
                     </button>
-                    <input type="number" id="paired${exerciseNum}-weight-${setNum}" value="${defaultWeight}" min="0" step="0.5" required>
+                    <input type="number" id="paired${exerciseNum}-weight-${setNum}" value="${defaultWeight}" min="0" step="0.5">
                     <button type="button" class="btn-increment" data-target="paired${exerciseNum}-weight-${setNum}" aria-label="Increase weight">
                         <svg class="icon icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14"/>
@@ -1462,11 +1477,10 @@ class WorkoutTracker {
       const reps = parseInt(
         document.getElementById(`paired${exerciseNum}-reps-${setNum}`).value
       );
-      const weight = parseFloat(
-        document.getElementById(`paired${exerciseNum}-weight-${setNum}`).value
-      );
+      const weightValue = document.getElementById(`paired${exerciseNum}-weight-${setNum}`).value;
+      const weight = weightValue ? parseFloat(weightValue) : 0;
 
-      if (!isNaN(reps) && !isNaN(weight)) {
+      if (!isNaN(reps)) {
         sets.push({ reps, weight_kg: weight });
       }
     });
@@ -1609,7 +1623,7 @@ class WorkoutTracker {
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14"/>
                         </svg>
                     </button>
-                    <input type="number" id="weight-${setNum}" name="weight-${setNum}" value="${defaultWeight}" min="0" step="0.5" required>
+                    <input type="number" id="weight-${setNum}" name="weight-${setNum}" value="${defaultWeight}" min="0" step="0.5">
                     <button type="button" class="btn-increment" data-target="weight-${setNum}" aria-label="Increase weight">
                         <svg class="icon icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14"/>
@@ -1700,9 +1714,8 @@ class WorkoutTracker {
     Array.from(container.children).forEach((row) => {
       const setNum = row.getAttribute("data-set-number");
       const reps = parseInt(document.getElementById(`reps-${setNum}`).value);
-      const weight = parseFloat(
-        document.getElementById(`weight-${setNum}`).value
-      );
+      const weightValue = document.getElementById(`weight-${setNum}`).value;
+      const weight = weightValue ? parseFloat(weightValue) : 0;
 
       sets.push({ reps, weight_kg: weight });
     });
