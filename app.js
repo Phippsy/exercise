@@ -2322,16 +2322,17 @@ class WorkoutTracker {
   }
 
   generateWorkoutShareCard(entry) {
-    const width = 1080;
-    const padding = 48;
-    const chartHeight = 320;
-    const chartsY = 280;
-    const listStartY = chartsY + chartHeight + 56;
-    const rowHeight = 82;
+    const width = 780;
+    const padding = 32;
+    const chartHeight = 220;
+    const chartGap = 22;
+    const chartsY = 240;
+    const listStartY = chartsY + chartHeight * 2 + chartGap + 32;
+    const rowHeight = 88;
     const exercises = entry.exercises || [];
     const rows = Math.max(Math.ceil(exercises.length / 2), 1);
     const gridHeight = exercises.length ? rows * rowHeight : 96;
-    const footerHeight = 96;
+    const footerHeight = 88;
     const height = listStartY + gridHeight + footerHeight;
     const canvas = document.createElement("canvas");
     canvas.width = width;
@@ -2348,17 +2349,17 @@ class WorkoutTracker {
     // Accent overlay
     ctx.fillStyle = "rgba(79, 70, 229, 0.08)";
     ctx.beginPath();
-    ctx.ellipse(width * 0.7, 260, 320, 180, 0.3, 0, Math.PI * 2);
+    ctx.ellipse(width * 0.65, 230, 260, 160, 0.3, 0, Math.PI * 2);
     ctx.fill();
 
     // Header
     ctx.fillStyle = "#a5b4fc";
-    ctx.font = "26px Inter, sans-serif";
-    ctx.fillText(this.formatDate(new Date(entry.date)), padding, 64);
+    ctx.font = "24px Inter, sans-serif";
+    ctx.fillText(this.formatDate(new Date(entry.date)), padding, 60);
 
     ctx.fillStyle = "#f8fafc";
-    ctx.font = "42px Inter, sans-serif";
-    this.drawTruncatedText(ctx, entry.workoutName, padding, 108, width - padding * 2);
+    ctx.font = "40px Inter, sans-serif";
+    this.drawTruncatedText(ctx, entry.workoutName, padding, 102, width - padding * 2);
 
     ctx.font = "22px Inter, sans-serif";
     ctx.fillStyle = "#cbd5e1";
@@ -2366,7 +2367,7 @@ class WorkoutTracker {
       ctx,
       entry.headline || this.buildWorkoutHeadline(entry),
       padding,
-      146,
+      140,
       width - padding * 2
     );
 
@@ -2383,20 +2384,21 @@ class WorkoutTracker {
     ];
 
     ctx.font = "18px Inter, sans-serif";
+    const statWidth = (width - padding * 2 - 24) / 3;
     stats.forEach((stat, index) => {
-      const x = padding + index * 220;
+      const x = padding + index * (statWidth + 12);
       ctx.fillStyle = "rgba(255,255,255,0.06)";
-      this.drawRoundedRect(ctx, x - 12, 180, 200, 70, 12);
+      this.drawRoundedRect(ctx, x - 8, 178, statWidth, 68, 12);
       ctx.fillStyle = "#cbd5e1";
-      ctx.fillText(stat.label, x, 206);
+      ctx.fillText(stat.label, x, 204);
       ctx.fillStyle = "#f8fafc";
-      ctx.font = "26px Inter, sans-serif";
-      ctx.fillText(stat.value, x, 236);
+      ctx.font = "24px Inter, sans-serif";
+      this.drawTruncatedText(ctx, stat.value, x, 232, statWidth - 12);
       ctx.font = "18px Inter, sans-serif";
     });
 
     // Charts
-    const chartWidth = (width - padding * 2 - 32) / 2;
+    const chartWidth = width - padding * 2;
     const volumeData = this.getVolumeByMuscle(exercises);
     const repData = this.getRepsByMuscle(exercises);
     this.drawShareChart(ctx, volumeData, {
@@ -2409,8 +2411,8 @@ class WorkoutTracker {
       emptyText: "Add loaded lifts to see volume share.",
     });
     this.drawShareChart(ctx, repData, {
-      x: padding + chartWidth + 32,
-      y: chartsY,
+      x: padding,
+      y: chartsY + chartHeight + chartGap,
       width: chartWidth,
       height: chartHeight,
       title: "Reps completed",
