@@ -314,6 +314,14 @@ class WorkoutTracker {
         this.createWorkout();
       });
 
+    const editWorkoutBtn = document.getElementById("editWorkoutBtn");
+    if (editWorkoutBtn) {
+      editWorkoutBtn.addEventListener("click", () => {
+        if (!this.currentWorkout) return;
+        this.editWorkout(this.currentWorkout.id);
+      });
+    }
+
     // Exercise filtering for create workout
     this.setupExerciseFiltering("exerciseSearchInput", "exerciseSelector");
 
@@ -749,6 +757,15 @@ class WorkoutTracker {
     const actions = document.createElement("div");
     actions.className = "workout-card-actions";
 
+    const editBtn = document.createElement("button");
+    editBtn.className = "btn-secondary btn-ghost";
+    editBtn.type = "button";
+    editBtn.textContent = "Edit";
+    editBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      this.editWorkout(workout.id);
+    });
+
     const duplicateBtn = document.createElement("button");
     duplicateBtn.className = "btn-secondary btn-ghost";
     duplicateBtn.type = "button";
@@ -758,6 +775,7 @@ class WorkoutTracker {
       this.duplicateWorkout(workout);
     });
 
+    actions.appendChild(editBtn);
     actions.appendChild(duplicateBtn);
     card.appendChild(actions);
 
@@ -2935,6 +2953,41 @@ class WorkoutTracker {
     };
 
     this.saveWorkouts();
+
+    const updatedWorkout = this.workouts[workoutIndex];
+
+    if (this.currentWorkout && this.currentWorkout.id === workoutId) {
+      this.currentWorkout = updatedWorkout;
+
+      const workoutNameElement = document.getElementById("currentWorkoutName");
+      if (workoutNameElement) {
+        workoutNameElement.textContent = updatedWorkout.name;
+        workoutNameElement.dataset.workoutId = updatedWorkout.id;
+      }
+
+      const notesDisplay = document.getElementById("workoutNotesDisplay");
+      const notesContent = document.getElementById("workoutNotesContent");
+
+      if (updatedWorkout.notes) {
+        notesContent.textContent = updatedWorkout.notes;
+        notesDisplay.style.display = "block";
+      } else if (notesDisplay) {
+        notesDisplay.style.display = "none";
+      }
+
+      if (
+        this.currentExercise &&
+        !updatedWorkout.exercises.some(
+          (exercise) => exercise.name === this.currentExercise.name
+        )
+      ) {
+        this.currentExercise = null;
+      }
+
+      this.renderExerciseList();
+      this.updateSessionChecklist(updatedWorkout);
+      this.renderWorkoutInsights(updatedWorkout);
+    }
 
     // Close modal
     this.hideEditWorkoutModal();
