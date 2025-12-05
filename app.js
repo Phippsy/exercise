@@ -1038,21 +1038,23 @@ class WorkoutTracker {
 
     details.appendChild(name);
     details.appendChild(meta);
-    
+
     // Add muscle group badges
     if (exercise.muscle_group) {
       const muscleBadges = document.createElement("div");
       muscleBadges.className = "exercise-muscle-badges";
-      
+
       // Split muscle groups if there are multiple (comma-separated)
-      const muscleGroups = exercise.muscle_group.split(',').map(m => m.trim());
+      const muscleGroups = exercise.muscle_group
+        .split(",")
+        .map((m) => m.trim());
       muscleGroups.forEach((muscle) => {
         const badge = document.createElement("span");
         badge.className = "exercise-muscle-badge";
         badge.textContent = muscle;
         muscleBadges.appendChild(badge);
       });
-      
+
       details.appendChild(muscleBadges);
     }
     content.appendChild(details);
@@ -1151,7 +1153,8 @@ class WorkoutTracker {
   moveExercise(index, direction) {
     const newIndex = index + direction;
     if (!this.currentWorkout?.exercises) return;
-    if (newIndex < 0 || newIndex >= this.currentWorkout.exercises.length) return;
+    if (newIndex < 0 || newIndex >= this.currentWorkout.exercises.length)
+      return;
     this.reorderExercises(index, newIndex);
   }
 
@@ -1477,7 +1480,9 @@ class WorkoutTracker {
       const reps = parseInt(
         document.getElementById(`paired${exerciseNum}-reps-${setNum}`).value
       );
-      const weightValue = document.getElementById(`paired${exerciseNum}-weight-${setNum}`).value;
+      const weightValue = document.getElementById(
+        `paired${exerciseNum}-weight-${setNum}`
+      ).value;
       const weight = weightValue ? parseFloat(weightValue) : 0;
 
       if (!isNaN(reps)) {
