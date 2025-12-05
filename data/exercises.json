@@ -8,9 +8,9 @@
                 {
                     "name": "Single Arm Pulldown - Kneeling",
                     "muscle_group": "Back",
-                    "sets": 3,
-                    "reps": 8,
-                    "weight_kg": 22.5,
+                    "sets": 4,
+                    "reps": 10,
+                    "weight_kg": 42.5,
                     "notes": null,
                     "form_video": "https://www.youtube.com/watch?v=Vu3OrBHrMNk"
                 },
@@ -19,7 +19,7 @@
                     "muscle_group": "Back",
                     "sets": 4,
                     "reps": 10,
-                    "weight_kg": 35,
+                    "weight_kg": 75,
                     "notes": null,
                     "form_video": "https://www.youtube.com/watch?v=A77hAjcpN1s"
                 },
@@ -46,7 +46,7 @@
                     "muscle_group": "Chest",
                     "sets": 3,
                     "reps": 15,
-                    "weight_kg": 20,
+                    "weight_kg": 22.5,
                     "notes": null,
                     "form_video": "https://www.youtube.com/watch?v=pKZMNVbfUzQ"
                 },
@@ -79,7 +79,7 @@
                     "name": "Cable Pallof Press",
                     "muscle_group": "Core",
                     "sets": 3,
-                    "reps": "12–15/side",
+                    "reps": "12-15/side",
                     "weight_kg": 7.5,
                     "notes": null,
                     "form_video": "https://www.youtube.com/watch?v=xeFp4MXad98"
@@ -89,7 +89,7 @@
                     "muscle_group": "Core",
                     "sets": 3,
                     "reps": "10/side",
-                    "weight_kg": "4–8",
+                    "weight_kg": "4-8",
                     "notes": null,
                     "form_video": "https://www.youtube.com/watch?v=Sa7msHujL3M"
                 },
@@ -97,7 +97,7 @@
                     "name": "TRX or Ring Fallout",
                     "muscle_group": "Core",
                     "sets": 3,
-                    "reps": "8–12",
+                    "reps": "8-12",
                     "weight_kg": "Bodyweight",
                     "notes": null,
                     "form_video": "https://www.youtube.com/watch?v=u5vDWl1kUm8"
@@ -106,8 +106,8 @@
                     "name": "Kettlebell Windmill",
                     "muscle_group": "Core",
                     "sets": 3,
-                    "reps": "6–8/side",
-                    "weight_kg": "8–12",
+                    "reps": "8-10/side",
+                    "weight_kg": "8-12",
                     "notes": null,
                     "form_video": "https://www.youtube.com/watch?v=4NwW4_H54jc"
                 },
@@ -116,7 +116,7 @@
                     "muscle_group": "Core",
                     "sets": 3,
                     "reps": "10/side",
-                    "weight_kg": "8–12",
+                    "weight_kg": "8-12",
                     "notes": null,
                     "form_video": "https://www.youtube.com/watch?v=aFrXv1bdioY"
                 },
@@ -141,7 +141,7 @@
                     "muscle_group": "Shoulders",
                     "sets": 3,
                     "reps": null,
-                    "weight_kg": null,
+                    "weight_kg": 20,
                     "notes": null,
                     "form_video": "https://www.youtube.com/watch?v=PjB_H_r9h1A"
                 },
@@ -168,7 +168,7 @@
                     "muscle_group": "Biceps",
                     "sets": 3,
                     "reps": null,
-                    "weight_kg": null,
+                    "weight_kg": 22.5,
                     "notes": null,
                     "form_video": "https://www.youtube.com/watch?v=2_an9taJ9UY"
                 },
@@ -185,7 +185,7 @@
                     "name": "Push-up Drop Set (feet-elevated → floor)",
                     "muscle_group": "Chest",
                     "sets": "+2",
-                    "reps": null,
+                    "reps": 15,
                     "weight_kg": "Bodyweight",
                     "notes": null,
                     "form_video": "https://www.youtube.com/watch?v=JyCG_5l3XLk"
@@ -211,7 +211,7 @@
                     "muscle_group": "Back",
                     "sets": 3,
                     "reps": null,
-                    "weight_kg": null,
+                    "weight_kg": 60,
                     "notes": null,
                     "form_video": "https://www.youtube.com/watch?v=CAwf7n6Luuc"
                 },
@@ -219,8 +219,8 @@
                     "name": "Landmine Shoulder Press",
                     "muscle_group": "Shoulders",
                     "sets": "3 + 2 back-off",
-                    "reps": null,
-                    "weight_kg": null,
+                    "reps": 10,
+                    "weight_kg": 27.5,
                     "notes": null,
                     "form_video": "https://www.youtube.com/watch?v=M1k-y3X-xkc"
                 },
@@ -229,7 +229,7 @@
                     "muscle_group": "Legs",
                     "sets": 3,
                     "reps": null,
-                    "weight_kg": null,
+                    "weight_kg": 60,
                     "notes": null,
                     "form_video": "https://www.youtube.com/watch?v=CN_7cz3P-1U"
                 },
@@ -280,7 +280,7 @@
                     "name": "TRX Push-Up",
                     "muscle_group": "Chest",
                     "sets": 4,
-                    "reps": "AMRAP (10–15 target)",
+                    "reps": "AMRAP (10-15 target)",
                     "weight_kg": "Bodyweight",
                     "notes": "Focus on stability and full range of motion.",
                     "form_video": "https://www.youtube.com/watch?v=WyBvJ6TkkvM"
@@ -289,7 +289,7 @@
                     "name": "TRX Fallout",
                     "muscle_group": "Core",
                     "sets": 3,
-                    "reps": "10–12",
+                    "reps": "10-12",
                     "weight_kg": "Bodyweight",
                     "notes": "Keep core tight, do not let lower back arch.",
                     "form_video": "https://www.youtube.com/watch?v=O94yvafBw1w"
@@ -308,7 +308,7 @@
                     "muscle_group": "Shoulders",
                     "sets": 3,
                     "reps": "8/arm",
-                    "weight_kg": "10–15",
+                    "weight_kg": "10-15",
                     "notes": "Fluid motion from lateral raise into the press.",
                     "form_video": "https://www.youtube.com/watch?v=F03UQPq2t9k"
                 },
@@ -316,7 +316,7 @@
                     "name": "Reverse Pec Deck / Rear Delt Flys",
                     "muscle_group": "Shoulders (Rear Delt)",
                     "sets": 3,
-                    "reps": "12–15",
+                    "reps": "12-15",
                     "weight_kg": null,
                     "notes": null,
                     "form_video": "https://www.youtube.com/watch?v=H530fW3y9bk"
@@ -325,8 +325,8 @@
                     "name": "Angled Cable Chest Fly (High-to-Low)",
                     "muscle_group": "Chest",
                     "sets": 3,
-                    "reps": "15–20",
-                    "weight_kg": "12.5–17.5",
+                    "reps": "15-20",
+                    "weight_kg": "12.5-17.5",
                     "notes": "DAP ELT+; 60lbs on specialist machine.",
                     "form_video": "https://www.youtube.com/watch?v=Iweqb_Yd_14"
                 },
@@ -334,8 +334,8 @@
                     "name": "Close-Grip Cable Row",
                     "muscle_group": "Back",
                     "sets": 4,
-                    "reps": "10–12",
-                    "weight_kg": "35–40",
+                    "reps": "10-12",
+                    "weight_kg": "35-40",
                     "notes": "Ercolina machine.",
                     "form_video": "https://www.youtube.com/watch?v=ucp2ZkU32X0"
                 },
@@ -343,8 +343,8 @@
                     "name": "Overhead Cable Triceps Extension (Rope)",
                     "muscle_group": "Triceps",
                     "sets": 3,
-                    "reps": "12–15",
-                    "weight_kg": "15–20",
+                    "reps": "12-15",
+                    "weight_kg": "15-20",
                     "notes": "Ercolina machine.",
                     "form_video": "https://www.youtube.com/watch?v=KjQ_54-hCq4"
                 },
@@ -403,9 +403,9 @@
                 {
                     "name": "Single Arm Pulldown - Kneeling",
                     "muscle_group": "Back",
-                    "sets": 3,
-                    "reps": 8,
-                    "weight_kg": 22.5,
+                    "sets": 4,
+                    "reps": 10,
+                    "weight_kg": 42.5,
                     "notes": null,
                     "form_video": "https://www.youtube.com/watch?v=Vu3OrBHrMNk"
                 },
@@ -414,7 +414,7 @@
                     "muscle_group": "Back",
                     "sets": 4,
                     "reps": 10,
-                    "weight_kg": 35,
+                    "weight_kg": 75,
                     "notes": null,
                     "form_video": "https://www.youtube.com/watch?v=A77hAjcpN1s"
                 },
@@ -450,7 +450,7 @@
                     "muscle_group": "Shoulders",
                     "sets": 3,
                     "reps": 15,
-                    "weight_kg": "20–22.5",
+                    "weight_kg": "20-22.5",
                     "notes": "Plastic machines",
                     "form_video": "https://www.youtube.com/watch?v=cuTBqxntdso"
                 },
@@ -476,7 +476,7 @@
                     "name": "Farmers Carry (Kettlebell)",
                     "muscle_group": "Full Body",
                     "sets": 4,
-                    "reps": 20,
+                    "reps": "6 x 20m",
                     "weight_kg": 16,
                     "notes": null,
                     "form_video": "https://www.youtube.com/watch?v=fxwrTkKUkTo"
@@ -485,7 +485,7 @@
                     "name": "TRX Push-Up",
                     "muscle_group": "Chest",
                     "sets": 4,
-                    "reps": "10–15 (AMRAP)",
+                    "reps": "10-15 (AMRAP)",
                     "weight_kg": null,
                     "notes": null,
                     "form_video": "https://www.youtube.com/watch?v=LFawJbMAop0"
@@ -494,7 +494,7 @@
                     "name": "TRX Fallout",
                     "muscle_group": "Core",
                     "sets": 3,
-                    "reps": "10–12",
+                    "reps": "10-12",
                     "weight_kg": null,
                     "notes": null,
                     "form_video": "https://www.youtube.com/watch?v=vXES8oB5RZA"
