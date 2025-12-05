@@ -2175,6 +2175,8 @@ class WorkoutTracker {
     const exerciseGrid = document.getElementById("historyExerciseGrid");
     const volumeChart = document.getElementById("historyVolumeChart");
     const volumeLegend = document.getElementById("historyVolumeLegend");
+    const repsChart = document.getElementById("historyRepsChart");
+    const repsLegend = document.getElementById("historyRepsLegend");
     const milestones = document.getElementById("historyMilestones");
     const quoteEl = document.getElementById("historyQuote");
     const exercises = entry.exercises || [];
@@ -2201,54 +2203,19 @@ class WorkoutTracker {
       funFact.textContent = entry.headline || this.buildWorkoutHeadline(entry);
     }
 
-    if (volumeChart) {
-      const volumeBreakdown = this.getVolumeByMuscle(exercises);
-      volumeChart.innerHTML = "";
-      if (volumeLegend) volumeLegend.textContent = "";
-
-      if (volumeBreakdown.length === 0) {
-        volumeChart.innerHTML =
-          '<p class="chart-caption">Log sets to see the muscle breakdown.</p>';
-      } else {
-        const maxVolume = Math.max(...volumeBreakdown.map((v) => v.volume), 1);
-        const totalVolume = volumeBreakdown.reduce(
-          (sum, item) => sum + item.volume,
-          0
-        );
-
-        volumeBreakdown.forEach((item, index) => {
-          const bar = document.createElement("div");
-          bar.className = "volume-bar-item";
-          const gradient = `linear-gradient(120deg, hsl(${200 + index * 18}, 82%, 72%), hsl(${280 + index * 16}, 88%, 74%))`;
-          const pct = Math.round((item.volume / totalVolume) * 100);
-
-          bar.innerHTML = `
-            <div class="volume-bar-row">
-              <div class="volume-bar-info">
-                <span class="volume-swatch" style="background: ${gradient}"></span>
-                <div>
-                  <p class="volume-bar-name">${item.muscle}</p>
-                  <p class="volume-bar-sub">${item.volume.toFixed(1)} kg-reps</p>
-                </div>
-              </div>
-              <span class="volume-bar-value">${pct}%</span>
-            </div>
-            <div class="volume-bar-track">
-              <div class="volume-bar-fill" style="width: ${(item.volume / maxVolume) * 100}%; background: ${gradient}"></div>
-            </div>
-          `;
-
-          volumeChart.appendChild(bar);
-        });
-
-        if (volumeLegend) {
-          const top = volumeBreakdown[0];
-          volumeLegend.textContent = `${top.muscle} carried the day (${Math.round(
-            (top.volume / totalVolume) * 100
-          )}% of volume)`;
-        }
-      }
-    }
+    this.renderMuscleChart(
+      volumeChart,
+      volumeLegend,
+      this.getVolumeByMuscle(exercises),
+      "kg-reps"
+    );
+    this.renderMuscleChart(
+      repsChart,
+      repsLegend,
+      this.getRepsByMuscle(exercises),
+      "reps",
+      "Track reps to see how bodyweight work stacks up."
+    );
 
     if (milestones) {
       const historyForWorkout = this.workoutHistory.filter(
@@ -2355,8 +2322,8 @@ class WorkoutTracker {
   }
 
   generateWorkoutShareCard(entry) {
-    const width = 960;
-    const height = 540;
+    const width = 1080;
+    const height = 1920;
     const canvas = document.createElement("canvas");
     canvas.width = width;
     canvas.height = height;
@@ -2365,51 +2332,99 @@ class WorkoutTracker {
     // Background
     const gradient = ctx.createLinearGradient(0, 0, width, height);
     gradient.addColorStop(0, "#0f172a");
-    gradient.addColorStop(1, "#1f2937");
+    gradient.addColorStop(1, "#111827");
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, width, height);
 
-    // Title
+    // Accent overlay
+    ctx.fillStyle = "rgba(79, 70, 229, 0.08)";
+    ctx.beginPath();
+    ctx.ellipse(width * 0.7, 260, 320, 180, 0.3, 0, Math.PI * 2);
+    ctx.fill();
+
+    const padding = 48;
+
+    // Header
     ctx.fillStyle = "#a5b4fc";
-    ctx.font = "24px Inter, sans-serif";
-    ctx.fillText(this.formatDate(new Date(entry.date)), 32, 48);
+    ctx.font = "26px Inter, sans-serif";
+    ctx.fillText(this.formatDate(new Date(entry.date)), padding, 64);
 
     ctx.fillStyle = "#f8fafc";
-    ctx.font = "36px Inter, sans-serif";
-    ctx.fillText(entry.workoutName, 32, 90);
+    ctx.font = "42px Inter, sans-serif";
+    this.drawTruncatedText(ctx, entry.workoutName, padding, 108, width - padding * 2);
 
-    ctx.font = "20px Inter, sans-serif";
+    ctx.font = "22px Inter, sans-serif";
     ctx.fillStyle = "#cbd5e1";
-    ctx.fillText(entry.headline || this.buildWorkoutHeadline(entry), 32, 126);
+    this.drawTruncatedText(
+      ctx,
+      entry.headline || this.buildWorkoutHeadline(entry),
+      padding,
+      146,
+      width - padding * 2
+    );
 
     // Stats row
     const stats = [
-      `${entry.totalSets || 0} sets`,
-      `${(entry.totalVolume || 0).toFixed(1)} kg-reps`,
-      `${entry.exercises.length} exercise${entry.exercises.length === 1 ? "" : "s"}`,
+      { label: "Sets", value: entry.totalSets || 0 },
+      { label: "Volume", value: `${(entry.totalVolume || 0).toFixed(1)} kg-reps` },
+      {
+        label: "Exercises",
+        value: `${entry.exercises.length} ${
+          entry.exercises.length === 1 ? "movement" : "movements"
+        }`,
+      },
     ];
 
     ctx.font = "18px Inter, sans-serif";
-    ctx.fillStyle = "#e2e8f0";
     stats.forEach((stat, index) => {
-      ctx.fillText(stat, 32 + index * 200, 170);
+      const x = padding + index * 220;
+      ctx.fillStyle = "rgba(255,255,255,0.06)";
+      this.drawRoundedRect(ctx, x - 12, 180, 200, 70, 12);
+      ctx.fillStyle = "#cbd5e1";
+      ctx.fillText(stat.label, x, 206);
+      ctx.fillStyle = "#f8fafc";
+      ctx.font = "26px Inter, sans-serif";
+      ctx.fillText(stat.value, x, 236);
+      ctx.font = "18px Inter, sans-serif";
     });
 
-    // Exercise callouts
-    const exercises = (entry.exercises || []).slice(0, 5);
-    ctx.font = "16px Inter, sans-serif";
-    ctx.fillStyle = "#cbd5e1";
+    // Charts
+    const chartWidth = (width - padding * 2 - 32) / 2;
+    const chartHeight = 320;
+    const chartsY = 280;
+    const volumeData = this.getVolumeByMuscle(entry.exercises || []);
+    const repData = this.getRepsByMuscle(entry.exercises || []);
+    this.drawShareChart(ctx, volumeData, {
+      x: padding,
+      y: chartsY,
+      width: chartWidth,
+      height: chartHeight,
+      title: "Weighted volume",
+      unit: "kg-reps",
+      emptyText: "Add loaded lifts to see volume share.",
+    });
+    this.drawShareChart(ctx, repData, {
+      x: padding + chartWidth + 32,
+      y: chartsY,
+      width: chartWidth,
+      height: chartHeight,
+      title: "Reps completed",
+      unit: "reps",
+      emptyText: "Track bodyweight moves to unlock this view.",
+    });
 
-    exercises.forEach((exercise, index) => {
-      const y = 220 + index * 60;
-      ctx.fillText(exercise.name, 32, y);
-      ctx.fillText(`${exercise.sets || 0} sets`, 300, y);
-      ctx.fillText(`${(exercise.volume || 0).toFixed(1)} kg-reps`, 420, y);
+    // Exercise grid (all exercises)
+    const listStartY = chartsY + chartHeight + 56;
+    this.drawExerciseGrid(ctx, entry.exercises || [], {
+      x: padding,
+      y: listStartY,
+      width: width - padding * 2,
     });
 
     // Footer
     ctx.fillStyle = "#94a3b8";
-    ctx.fillText("Workout Tracker • Shareable recap", 32, height - 32);
+    ctx.font = "18px Inter, sans-serif";
+    ctx.fillText("Workout Tracker • Shareable recap", padding, height - 32);
 
     return canvas.toDataURL("image/png");
   }
@@ -2457,6 +2472,145 @@ class WorkoutTracker {
       this.showSuccessMessage("Unable to copy right now");
     }
     this.setHistorySharePreview(dataUrl);
+  }
+
+  drawRoundedRect(ctx, x, y, width, height, radius = 12) {
+    const r = Math.min(radius, height / 2, width / 2);
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + width - r, y);
+    ctx.quadraticCurveTo(x + width, y, x + width, y + r);
+    ctx.lineTo(x + width, y + height - r);
+    ctx.quadraticCurveTo(x + width, y + height, x + width - r, y + height);
+    ctx.lineTo(x + r, y + height);
+    ctx.quadraticCurveTo(x, y + height, x, y + height - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  drawTruncatedText(ctx, text, x, y, maxWidth) {
+    if (ctx.measureText(text).width <= maxWidth) {
+      ctx.fillText(text, x, y);
+      return;
+    }
+
+    let truncated = text;
+    while (ctx.measureText(`${truncated}…`).width > maxWidth && truncated.length > 0) {
+      truncated = truncated.slice(0, -1);
+    }
+    ctx.fillText(`${truncated}…`, x, y);
+  }
+
+  drawShareChart(ctx, data, options) {
+    const { x, y, width, title, unit, emptyText } = options;
+    ctx.save();
+    ctx.fillStyle = "#cbd5e1";
+    ctx.font = "18px Inter, sans-serif";
+    ctx.fillText(title, x, y);
+
+    const items = data.slice(0, 5);
+    if (!items.length || items.every((item) => !item.value)) {
+      ctx.fillStyle = "#6b7280";
+      ctx.font = "16px Inter, sans-serif";
+      ctx.fillText(emptyText, x, y + 32);
+      ctx.restore();
+      return;
+    }
+
+    const maxValue = Math.max(...items.map((item) => item.value), 1);
+    const totalValue = items.reduce((sum, item) => sum + item.value, 0);
+    const barHeight = 26;
+    const spacing = 52;
+
+    items.forEach((item, index) => {
+      const barY = y + 30 + index * spacing;
+      const gradient = ctx.createLinearGradient(x, barY, x + width, barY);
+      gradient.addColorStop(0, `hsl(${200 + index * 18}, 82%, 72%)`);
+      gradient.addColorStop(1, `hsl(${280 + index * 16}, 88%, 74%)`);
+
+      const label = this.truncateForWidth(ctx, item.muscle, width - 80);
+      ctx.fillStyle = "#e2e8f0";
+      ctx.font = "17px Inter, sans-serif";
+      ctx.fillText(label, x, barY);
+
+      ctx.font = "14px Inter, sans-serif";
+      ctx.fillStyle = "#cbd5e1";
+      const valueText =
+        unit === "reps" ? `${Math.round(item.value)} ${unit}` : `${item.value.toFixed(1)} ${unit}`;
+      ctx.fillText(valueText, x + width - 140, barY);
+
+      // Track
+      ctx.fillStyle = "rgba(255,255,255,0.06)";
+      this.drawRoundedRect(ctx, x, barY + 10, width, barHeight, 10);
+
+      // Fill
+      ctx.fillStyle = gradient;
+      this.drawRoundedRect(
+        ctx,
+        x,
+        barY + 10,
+        Math.max((item.value / maxValue) * width, 6),
+        barHeight,
+        10
+      );
+
+      ctx.fillStyle = "#f8fafc";
+      ctx.font = "14px Inter, sans-serif";
+      ctx.fillText(`${Math.round((item.value / totalValue) * 100)}%`, x + width - 48, barY + 28);
+    });
+    ctx.restore();
+  }
+
+  truncateForWidth(ctx, text, maxWidth) {
+    if (ctx.measureText(text).width <= maxWidth) return text;
+
+    let truncated = text;
+    while (ctx.measureText(`${truncated}…`).width > maxWidth && truncated.length > 0) {
+      truncated = truncated.slice(0, -1);
+    }
+    return `${truncated}…`;
+  }
+
+  drawExerciseGrid(ctx, exercises, options) {
+    const { x, y, width } = options;
+    ctx.save();
+    ctx.font = "18px Inter, sans-serif";
+
+    if (!exercises.length) {
+      ctx.fillStyle = "#6b7280";
+      ctx.fillText("No exercises logged yet", x, y + 20);
+      ctx.restore();
+      return;
+    }
+
+    const colWidth = (width - 24) / 2;
+    const rowHeight = 82;
+
+    exercises.forEach((exercise, index) => {
+      const col = index % 2;
+      const row = Math.floor(index / 2);
+      const cardX = x + col * (colWidth + 24);
+      const cardY = y + row * rowHeight;
+
+      ctx.fillStyle = "rgba(255,255,255,0.04)";
+      this.drawRoundedRect(ctx, cardX, cardY, colWidth, rowHeight - 16, 14);
+
+      ctx.fillStyle = "#f8fafc";
+      ctx.font = "20px Inter, sans-serif";
+      this.drawTruncatedText(ctx, exercise.name, cardX + 14, cardY + 30, colWidth - 28);
+
+      ctx.font = "14px Inter, sans-serif";
+      ctx.fillStyle = "#cbd5e1";
+      ctx.fillText(exercise.muscleGroup || "", cardX + 14, cardY + 52);
+
+      ctx.fillStyle = "#e5e7eb";
+      const meta = `${exercise.sets || 0} sets • ${exercise.reps || 0} reps • ${(exercise.volume || 0).toFixed(1)} kg-reps`;
+      this.drawTruncatedText(ctx, meta, cardX + 14, cardY + 72, colWidth - 28);
+    });
+
+    ctx.restore();
   }
 
   // ============================================
@@ -2803,8 +2957,76 @@ class WorkoutTracker {
     });
 
     return Array.from(totals.entries())
-      .map(([muscle, volume]) => ({ muscle, volume }))
+      .map(([muscle, volume]) => ({ muscle, volume, value: volume }))
       .sort((a, b) => b.volume - a.volume);
+  }
+
+  getRepsByMuscle(exercises = []) {
+    const totals = new Map();
+
+    exercises.forEach((exercise) => {
+      const key = exercise.muscleGroup || "Full body";
+      totals.set(key, (totals.get(key) || 0) + (exercise.reps || 0));
+    });
+
+    return Array.from(totals.entries())
+      .map(([muscle, reps]) => ({ muscle, reps, value: reps }))
+      .sort((a, b) => b.reps - a.reps);
+  }
+
+  renderMuscleChart(
+    container,
+    legendEl,
+    breakdown,
+    unitLabel,
+    emptyMessage = "Log sets to see the muscle breakdown."
+  ) {
+    if (!container) return;
+
+    container.innerHTML = "";
+    if (legendEl) legendEl.textContent = "";
+
+    if (!breakdown.length || breakdown.every((item) => !item.value)) {
+      container.innerHTML = `<p class="chart-caption">${emptyMessage}</p>`;
+      return;
+    }
+
+    const maxValue = Math.max(...breakdown.map((v) => v.value), 1);
+    const totalValue = breakdown.reduce((sum, item) => sum + item.value, 0);
+
+    breakdown.forEach((item, index) => {
+      const bar = document.createElement("div");
+      bar.className = "volume-bar-item";
+      const gradient = `linear-gradient(120deg, hsl(${200 + index * 18}, 82%, 72%), hsl(${280 + index * 16}, 88%, 74%))`;
+      const pct = Math.round((item.value / totalValue) * 100);
+
+      const formattedValue =
+        unitLabel === "reps" ? Math.round(item.value) : item.value.toFixed(1);
+
+      bar.innerHTML = `
+        <div class="volume-bar-row">
+          <div class="volume-bar-info">
+            <span class="volume-swatch" style="background: ${gradient}"></span>
+            <div>
+              <p class="volume-bar-name">${item.muscle}</p>
+              <p class="volume-bar-sub">${formattedValue} ${unitLabel}</p>
+            </div>
+          </div>
+          <span class="volume-bar-value">${pct}%</span>
+        </div>
+        <div class="volume-bar-track">
+          <div class="volume-bar-fill" style="width: ${(item.value / maxValue) * 100}%; background: ${gradient}"></div>
+        </div>
+      `;
+
+      container.appendChild(bar);
+    });
+
+    if (legendEl) {
+      const top = breakdown[0];
+      const share = Math.round((top.value / totalValue) * 100);
+      legendEl.textContent = `${top.muscle} carried the day (${share}% of ${unitLabel})`;
+    }
   }
 
   formatRelativeDay(dateString, referenceDate = new Date()) {
