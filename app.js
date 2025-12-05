@@ -754,6 +754,20 @@ class WorkoutTracker {
 
     card.appendChild(meta);
 
+    const muscleBadges = document.createElement("div");
+    muscleBadges.className = "workout-muscle-badges";
+
+    this.getWorkoutMuscleGroups(workout).forEach((muscle) => {
+      const badge = document.createElement("span");
+      badge.className = "workout-muscle-badge";
+      badge.textContent = muscle;
+      muscleBadges.appendChild(badge);
+    });
+
+    if (muscleBadges.childElementCount > 0) {
+      card.appendChild(muscleBadges);
+    }
+
     const actions = document.createElement("div");
     actions.className = "workout-card-actions";
 
@@ -788,6 +802,28 @@ class WorkoutTracker {
     });
 
     return card;
+  }
+
+  getWorkoutMuscleGroups(workout) {
+    const muscles = new Set();
+
+    workout.exercises.forEach((exercise) => {
+      if (!exercise.muscle_group) return;
+
+      const parts = exercise.muscle_group
+        .split(/[·,/&]+/)
+        .map((part) => part.trim())
+        .filter(Boolean);
+
+      if (parts.length === 0) {
+        muscles.add(exercise.muscle_group.trim());
+        return;
+      }
+
+      parts.forEach((part) => muscles.add(part));
+    });
+
+    return Array.from(muscles).sort((a, b) => a.localeCompare(b));
   }
 
   toggleFavorite(workout) {

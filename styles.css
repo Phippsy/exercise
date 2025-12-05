@@ -746,6 +746,26 @@ button {
   color: var(--text-muted);
 }
 
+.workout-muscle-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: var(--spacing-sm) 0;
+}
+
+.workout-muscle-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--state-hover);
+  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1;
+}
+
 .workout-completed-today {
   border-color: rgba(123, 153, 60, 0.8);
   box-shadow: 0 4px 16px rgba(123, 153, 60, 0.25);
