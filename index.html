@@ -12,7 +12,7 @@
     <meta name="theme-color" content="#0a0a0a" />
     <title>Workout Tracker</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <link rel="stylesheet" href="styles.css?v=1.2.0" />
+    <link rel="stylesheet" href="styles.css?v=1.3.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -691,10 +691,26 @@
                   <div class="history-visual-card">
                     <div class="history-visual-header">
                       <p class="section-kicker">Body focus</p>
-                      <h4 class="card-title-sm">Volume by muscle group</h4>
+                      <h4 class="card-title-sm">Weight vs reps balance</h4>
                     </div>
-                    <div id="historyVolumeChart" class="volume-bar-list"></div>
-                    <p id="historyVolumeLegend" class="chart-caption"></p>
+                    <div class="history-volume-wrapper">
+                      <div class="history-volume-block">
+                        <div class="history-visual-subheader">
+                          <span class="pill pill-soft">Kg-reps</span>
+                          <span class="chart-caption">Weighted lifts</span>
+                        </div>
+                        <div id="historyVolumeChart" class="volume-bar-list"></div>
+                        <p id="historyVolumeLegend" class="chart-caption"></p>
+                      </div>
+                      <div class="history-volume-block">
+                        <div class="history-visual-subheader">
+                          <span class="pill pill-soft">Reps</span>
+                          <span class="chart-caption">Bodyweight & endurance</span>
+                        </div>
+                        <div id="historyRepsChart" class="volume-bar-list"></div>
+                        <p id="historyRepsLegend" class="chart-caption"></p>
+                      </div>
+                    </div>
                   </div>
 
                   <div class="history-visual-card stat-card">
@@ -1411,6 +1427,6 @@
       </div>
     </div>
 
-    <script src="app.js?v=1.2.0"></script>
+    <script src="app.js?v=1.3.0"></script>
   </body>
 </html>
