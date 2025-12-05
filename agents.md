@@ -49,8 +49,9 @@ Examples:
 
 ### Current Version
 
-**Current Version: 1.0.2** (as of 2025-12-05)
+**Current Version: 1.1.0** (as of 2025-12-05)
 
+- 1.1.0: Added workout history view, shareable recap cards, and finish-workout flow
 - 1.0.2: Made exercise highlight persistent until user takes new action
 - 1.0.1: Added visual highlight feedback when exercises are reordered
 - 1.0.0: Initial versioned release

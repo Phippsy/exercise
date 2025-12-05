@@ -12,7 +12,7 @@
     <meta name="theme-color" content="#0a0a0a" />
     <title>Workout Tracker</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <link rel="stylesheet" href="styles.css?v=1.0.2" />
+    <link rel="stylesheet" href="styles.css?v=1.1.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -91,6 +91,23 @@
                   d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
               <span class="header-action-label">Manage</span>
+            </button>
+            <button
+              id="historyBtn"
+              class="btn-secondary btn-icon header-action-btn"
+              aria-label="Open workout history">
+              <svg
+                class="icon icon-sm"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M12 6v6l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span class="header-action-label">History</span>
             </button>
             <button
               id="exportDataBtn"
@@ -314,6 +331,23 @@
                 class="session-checklist"
                 aria-live="polite"></div>
               <button
+                id="endWorkoutBtn"
+                class="btn-primary btn-icon"
+                aria-label="Mark workout complete">
+                <svg
+                  class="icon icon-sm"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M5 13l4 4L19 7" />
+                </svg>
+                Finish Workout
+              </button>
+              <button
                 id="editWorkoutBtn"
                 class="btn-secondary btn-icon"
                 aria-label="Edit current workout">
@@ -496,8 +530,8 @@
             </div>
           </div>
 
-          <!-- Paired Exercise View -->
-          <div id="pairedExerciseView" class="paired-exercise-container hidden">
+        <!-- Paired Exercise View -->
+        <div id="pairedExerciseView" class="paired-exercise-container hidden">
             <div class="paired-exercises-grid">
               <!-- Exercise 1 -->
               <div class="paired-exercise-column">
@@ -587,6 +621,100 @@
               <button id="savePairedSessionBtn" class="btn-primary btn-full">
                 Save Both Sessions
               </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Workout History View -->
+        <section id="workoutHistoryView" class="view hidden">
+          <div class="section-header">
+            <button
+              id="backToDashboard"
+              class="btn-back"
+              aria-label="Back to dashboard">
+              <svg
+                class="icon icon-md"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M15 19l-7-7 7-7" />
+              </svg>
+              Back to Dashboard
+            </button>
+            <div>
+              <p class="section-kicker">Shareable recap</p>
+              <h2 class="section-title">Workout History</h2>
+              <p class="section-subtitle">
+                Tap a day to relive the highlights, view stats, and export a
+                share-ready recap.
+              </p>
+            </div>
+          </div>
+
+          <div class="history-layout">
+            <div class="card history-list-card">
+              <div class="card-header-row">
+                <div>
+                  <h3 class="card-title-sm">Saved sessions</h3>
+                  <p class="card-subtitle">Latest first · Tap to open</p>
+                </div>
+                <span id="historyCount" class="pill pill-soft"></span>
+              </div>
+              <div id="workoutHistoryList" class="history-list"></div>
+            </div>
+
+            <div class="card history-detail-card">
+              <div id="historyEmptyState" class="history-empty">
+                <p class="history-empty-title">No workouts saved yet</p>
+                <p class="history-empty-body">
+                  End a workout to capture a recap here. We'll bundle sets,
+                  volume, and every exercise you touched.
+                </p>
+              </div>
+              <div id="historyDetail" class="hidden">
+                <div class="history-detail-header">
+                  <div>
+                    <p class="section-kicker" id="historyDetailMood"></p>
+                    <h3 id="historyDetailTitle" class="card-title"></h3>
+                    <p id="historyDetailDate" class="card-subtitle"></p>
+                  </div>
+                  <div class="history-stat-chips" id="historyStatChips"></div>
+                </div>
+
+                <div class="history-highlights" id="historyFunFact"></div>
+
+                <div class="history-exercise-grid" id="historyExerciseGrid"></div>
+
+                <div class="share-row">
+                  <div>
+                    <p class="section-kicker">Share it</p>
+                    <p class="card-subtitle">
+                      Download a recap image that works for WhatsApp, iMessage,
+                      or Stories.
+                    </p>
+                    <div class="share-actions">
+                      <button id="shareWorkoutCardBtn" class="btn-primary">
+                        Export recap image
+                      </button>
+                      <button id="copyShareLink" class="btn-soft">
+                        Copy data URL
+                      </button>
+                    </div>
+                  </div>
+                  <div class="share-preview">
+                    <img
+                      id="historySharePreview"
+                      alt="Workout share preview"
+                      class="share-preview-img"
+                      loading="lazy"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -1263,6 +1391,6 @@
       </div>
     </div>
 
-    <script src="app.js?v=1.0.3"></script>
+    <script src="app.js?v=1.1.0"></script>
   </body>
 </html>
