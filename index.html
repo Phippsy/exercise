@@ -12,7 +12,7 @@
     <meta name="theme-color" content="#0a0a0a" />
     <title>Workout Tracker</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=1.0.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -274,10 +274,10 @@
 
         <!-- Exercise List View -->
         <section id="exerciseListView" class="view hidden">
-            <div class="section-header">
-              <button
-                id="backToWorkouts"
-                class="btn-back"
+          <div class="section-header">
+            <button
+              id="backToWorkouts"
+              class="btn-back"
               aria-label="Back to workouts">
               <svg
                 class="icon icon-md"
@@ -305,38 +305,38 @@
               style="display: none">
               <p id="workoutNotesContent"></p>
             </div>
-              <div class="section-header-actions">
-                <p class="section-subtitle">
-                  Select an exercise to view history and log progress
-                </p>
-                <div
-                  id="sessionChecklist"
-                  class="session-checklist"
-                  aria-live="polite"></div>
-                <button
-                  id="editWorkoutBtn"
-                  class="btn-secondary btn-icon"
-                  aria-label="Edit current workout">
-                  <svg
-                    class="icon icon-sm"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.862 4.487z" />
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M18.375 5.988l-2.363-2.363" />
-                  </svg>
-                  Edit Workout
-                </button>
-                <button id="pairModeToggle" class="btn-secondary btn-icon">
-                  <svg
-                    class="icon icon-sm"
+            <div class="section-header-actions">
+              <p class="section-subtitle">
+                Select an exercise to view history and log progress
+              </p>
+              <div
+                id="sessionChecklist"
+                class="session-checklist"
+                aria-live="polite"></div>
+              <button
+                id="editWorkoutBtn"
+                class="btn-secondary btn-icon"
+                aria-label="Edit current workout">
+                <svg
+                  class="icon icon-sm"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.862 4.487z" />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M18.375 5.988l-2.363-2.363" />
+                </svg>
+                Edit Workout
+              </button>
+              <button id="pairModeToggle" class="btn-secondary btn-icon">
+                <svg
+                  class="icon icon-sm"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -1263,6 +1263,6 @@
       </div>
     </div>
 
-    <script src="app.js"></script>
+    <script src="app.js?v=1.0.0"></script>
   </body>
 </html>
