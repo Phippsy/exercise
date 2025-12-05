@@ -1148,7 +1148,7 @@ class WorkoutTracker {
     exercises.splice(toIndex, 0, moved);
     this.saveWorkouts();
     this.renderExerciseList();
-    
+
     // Highlight the moved exercise at its new position
     this.highlightExerciseAtIndex(toIndex);
   }
@@ -1166,18 +1166,20 @@ class WorkoutTracker {
     setTimeout(() => {
       const exerciseList = document.getElementById("exerciseList");
       if (!exerciseList) return;
-      
+
       // Remove any existing highlights
-      exerciseList.querySelectorAll('.exercise-item-highlight').forEach(item => {
-        item.classList.remove('exercise-item-highlight');
-      });
-      
+      exerciseList
+        .querySelectorAll(".exercise-item-highlight")
+        .forEach((item) => {
+          item.classList.remove("exercise-item-highlight");
+        });
+
       const exerciseItem = exerciseList.children[index];
       if (!exerciseItem) return;
-      
+
       // Add highlight class (stays until next action)
       exerciseItem.classList.add("exercise-item-highlight");
-      
+
       // Scroll the item into view smoothly
       exerciseItem.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }, 50);
@@ -1191,13 +1193,15 @@ class WorkoutTracker {
     this.currentExercise = exercise;
     this.pairedExercises = null;
     this.warmupAdded = false;
-    
+
     // Clear any exercise highlights
     const exerciseList = document.getElementById("exerciseList");
     if (exerciseList) {
-      exerciseList.querySelectorAll('.exercise-item-highlight').forEach(item => {
-        item.classList.remove('exercise-item-highlight');
-      });
+      exerciseList
+        .querySelectorAll(".exercise-item-highlight")
+        .forEach((item) => {
+          item.classList.remove("exercise-item-highlight");
+        });
     }
 
     document.getElementById("exerciseName").textContent = exercise.name;
