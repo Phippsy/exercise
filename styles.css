@@ -130,6 +130,7 @@ html,
 body {
   overflow-x: hidden;
   width: 100%;
+  height: 100%;
 }
 
 body {
@@ -138,6 +139,7 @@ body {
   line-height: var(--line-height-normal);
   color: var(--text-primary);
   background-color: var(--bg-page);
+  -webkit-overflow-scrolling: touch;
   background-image: radial-gradient(
       1000px circle at 10% 10%,
       rgba(133, 102, 179, 0.18),
@@ -165,11 +167,12 @@ body {
 .app-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 80px var(--spacing-lg) 96px;
+  padding: calc(80px + env(safe-area-inset-top)) var(--spacing-lg) 96px;
   width: 100%;
   overflow-x: hidden;
   position: relative;
   isolation: isolate;
+  min-height: 100vh;
 }
 
 .app-header {
@@ -177,8 +180,8 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  z-index: 100;
-  padding: 10px 14px;
+  z-index: 9999;
+  padding: calc(10px + env(safe-area-inset-top)) 14px 10px;
   background: var(--bg-surface);
   border-bottom: 1px solid var(--border-subtle);
   backdrop-filter: blur(14px);
