@@ -794,15 +794,16 @@ class WorkoutTracker {
   }
 
   updateHeaderContextTitle() {
-    const headerContextRow = document.getElementById("headerContextTitle")?.parentElement;
+    const headerContextRow =
+      document.getElementById("headerContextTitle")?.parentElement;
     const headerContextTitle = document.getElementById("headerContextTitle");
     const headerContextBadges = document.getElementById("headerContextBadges");
-    
+
     if (!headerContextTitle || !headerContextRow) return;
 
     const views = document.querySelectorAll(".view");
     let currentView = null;
-    
+
     views.forEach((view) => {
       if (!view.classList.contains("hidden")) {
         currentView = view.id;
@@ -816,15 +817,15 @@ class WorkoutTracker {
     } else if (currentView === "exerciseDetailView") {
       const exerciseName = document.getElementById("exerciseName");
       const muscleGroup = document.getElementById("muscleGroup");
-      
+
       if (exerciseName) {
         headerContextTitle.textContent = exerciseName.textContent;
-        
+
         // Copy muscle badge to header
         if (muscleGroup && headerContextBadges) {
           headerContextBadges.innerHTML = muscleGroup.outerHTML;
         }
-        
+
         headerContextRow.style.display = "flex";
       }
     } else {
@@ -837,7 +838,7 @@ class WorkoutTracker {
     const bottomBackBtnText = document.getElementById("bottomBackBtnText");
     const bottomActionBtn = document.getElementById("bottomActionBtn");
     const bottomActionBtnText = document.getElementById("bottomActionBtnText");
-    
+
     if (!bottomBackBar) return;
 
     // Show back bar for non-main views
@@ -871,7 +872,7 @@ class WorkoutTracker {
   handleBottomBackClick() {
     const views = document.querySelectorAll(".view");
     let currentView = null;
-    
+
     views.forEach((view) => {
       if (!view.classList.contains("hidden")) {
         currentView = view.id;
@@ -891,7 +892,7 @@ class WorkoutTracker {
   handleBottomActionClick() {
     const views = document.querySelectorAll(".view");
     let currentView = null;
-    
+
     views.forEach((view) => {
       if (!view.classList.contains("hidden")) {
         currentView = view.id;
@@ -1541,21 +1542,22 @@ class WorkoutTracker {
     this.renderPairedSessionForm(exercise2, "pairedSetsContainer2", 2);
 
     this.showView("exerciseDetailView");
-    
+
     // Update header context title for paired exercises
-    const headerContextRow = document.getElementById("headerContextTitle")?.parentElement;
+    const headerContextRow =
+      document.getElementById("headerContextTitle")?.parentElement;
     const headerContextTitle = document.getElementById("headerContextTitle");
     const headerContextBadges = document.getElementById("headerContextBadges");
-    
+
     if (headerContextTitle && headerContextRow && headerContextBadges) {
       headerContextTitle.textContent = `${exercise1.name} + ${exercise2.name}`;
-      
+
       // Add both muscle badges
       headerContextBadges.innerHTML = `
         <span class="muscle-badge">${exercise1.muscle_group}</span>
         <span class="muscle-badge">${exercise2.muscle_group}</span>
       `;
-      
+
       headerContextRow.style.display = "flex";
     }
   }
@@ -2233,14 +2235,15 @@ class WorkoutTracker {
       date: new Date().toISOString(),
       exercises,
       totalSets: exercises.reduce((sum, ex) => sum + ex.sets, 0),
-      totalVolume: Math.round(
-        exercises.reduce((sum, ex) => sum + ex.volume, 0) * 10
-      ) / 10,
+      totalVolume:
+        Math.round(exercises.reduce((sum, ex) => sum + ex.volume, 0) * 10) / 10,
       totalReps: exercises.reduce((sum, ex) => sum + ex.reps, 0),
       completionPct:
         this.currentWorkout.exercises.length === 0
           ? 0
-          : Math.round((exercises.length / this.currentWorkout.exercises.length) * 100),
+          : Math.round(
+              (exercises.length / this.currentWorkout.exercises.length) * 100
+            ),
     };
 
     summary.headline = this.buildWorkoutHeadline(summary);
@@ -2267,7 +2270,9 @@ class WorkoutTracker {
 
   buildWorkoutHeadline(summary) {
     if (summary.totalVolume > 0) {
-      return `Moved ${summary.totalVolume.toFixed(1)} kg-reps across ${summary.totalSets} sets`;
+      return `Moved ${summary.totalVolume.toFixed(1)} kg-reps across ${
+        summary.totalSets
+      } sets`;
     }
 
     if (summary.totalSets > 0) {
@@ -2340,9 +2345,9 @@ class WorkoutTracker {
 
       const meta = document.createElement("div");
       meta.className = "history-list-meta";
-      meta.textContent = `${this.formatDate(new Date(entry.date))} · ${
-        exerciseCount
-      } exercise${exerciseCount === 1 ? "" : "s"}`;
+      meta.textContent = `${this.formatDate(
+        new Date(entry.date)
+      )} · ${exerciseCount} exercise${exerciseCount === 1 ? "" : "s"}`;
 
       const stats = document.createElement("div");
       stats.className = "history-list-stats";
@@ -2450,10 +2455,7 @@ class WorkoutTracker {
       const stats = [
         {
           label: "Session count",
-          value:
-            totalRuns === 1
-              ? "Debut session"
-              : `${totalRuns} total runs`,
+          value: totalRuns === 1 ? "Debut session" : `${totalRuns} total runs`,
           sub: firstRun
             ? `Started ${this.formatDate(new Date(firstRun.date))}`
             : "Log this workout to start tracking",
@@ -2573,7 +2575,13 @@ class WorkoutTracker {
 
     ctx.fillStyle = "#f8fafc";
     ctx.font = "42px Inter, sans-serif";
-    this.drawTruncatedText(ctx, entry.workoutName, padding, 108, width - padding * 2);
+    this.drawTruncatedText(
+      ctx,
+      entry.workoutName,
+      padding,
+      108,
+      width - padding * 2
+    );
 
     ctx.font = "22px Inter, sans-serif";
     ctx.fillStyle = "#cbd5e1";
@@ -2588,7 +2596,10 @@ class WorkoutTracker {
     // Stats row
     const stats = [
       { label: "Sets", value: entry.totalSets || 0 },
-      { label: "Volume", value: `${(entry.totalVolume || 0).toFixed(1)} kg-reps` },
+      {
+        label: "Volume",
+        value: `${(entry.totalVolume || 0).toFixed(1)} kg-reps`,
+      },
       {
         label: "Exercises",
         value: `${entry.exercises.length} ${
@@ -2716,7 +2727,10 @@ class WorkoutTracker {
     }
 
     let truncated = text;
-    while (ctx.measureText(`${truncated}…`).width > maxWidth && truncated.length > 0) {
+    while (
+      ctx.measureText(`${truncated}…`).width > maxWidth &&
+      truncated.length > 0
+    ) {
       truncated = truncated.slice(0, -1);
     }
     ctx.fillText(`${truncated}…`, x, y);
@@ -2757,7 +2771,9 @@ class WorkoutTracker {
       ctx.font = "14px Inter, sans-serif";
       ctx.fillStyle = "#cbd5e1";
       const valueText =
-        unit === "reps" ? `${Math.round(item.value)} ${unit}` : `${item.value.toFixed(1)} ${unit}`;
+        unit === "reps"
+          ? `${Math.round(item.value)} ${unit}`
+          : `${item.value.toFixed(1)} ${unit}`;
       ctx.fillText(valueText, x + width - 140, barY);
 
       // Track
@@ -2777,7 +2793,11 @@ class WorkoutTracker {
 
       ctx.fillStyle = "#f8fafc";
       ctx.font = "14px Inter, sans-serif";
-      ctx.fillText(`${Math.round((item.value / totalValue) * 100)}%`, x + width - 48, barY + 28);
+      ctx.fillText(
+        `${Math.round((item.value / totalValue) * 100)}%`,
+        x + width - 48,
+        barY + 28
+      );
     });
     ctx.restore();
   }
@@ -2786,7 +2806,10 @@ class WorkoutTracker {
     if (ctx.measureText(text).width <= maxWidth) return text;
 
     let truncated = text;
-    while (ctx.measureText(`${truncated}…`).width > maxWidth && truncated.length > 0) {
+    while (
+      ctx.measureText(`${truncated}…`).width > maxWidth &&
+      truncated.length > 0
+    ) {
       truncated = truncated.slice(0, -1);
     }
     return `${truncated}…`;
@@ -2818,14 +2841,22 @@ class WorkoutTracker {
 
       ctx.fillStyle = "#f8fafc";
       ctx.font = "20px Inter, sans-serif";
-      this.drawTruncatedText(ctx, exercise.name, cardX + 14, cardY + 30, colWidth - 28);
+      this.drawTruncatedText(
+        ctx,
+        exercise.name,
+        cardX + 14,
+        cardY + 30,
+        colWidth - 28
+      );
 
       ctx.font = "14px Inter, sans-serif";
       ctx.fillStyle = "#cbd5e1";
       ctx.fillText(exercise.muscleGroup || "", cardX + 14, cardY + 52);
 
       ctx.fillStyle = "#e5e7eb";
-      const meta = `${exercise.sets || 0} sets • ${exercise.reps || 0} reps • ${(exercise.volume || 0).toFixed(1)} kg-reps`;
+      const meta = `${exercise.sets || 0} sets • ${
+        exercise.reps || 0
+      } reps • ${(exercise.volume || 0).toFixed(1)} kg-reps`;
       this.drawTruncatedText(ctx, meta, cardX + 14, cardY + 72, colWidth - 28);
     });
 
@@ -3216,7 +3247,9 @@ class WorkoutTracker {
     breakdown.forEach((item, index) => {
       const bar = document.createElement("div");
       bar.className = "volume-bar-item";
-      const gradient = `linear-gradient(120deg, hsl(${200 + index * 18}, 82%, 72%), hsl(${280 + index * 16}, 88%, 74%))`;
+      const gradient = `linear-gradient(120deg, hsl(${
+        200 + index * 18
+      }, 82%, 72%), hsl(${280 + index * 16}, 88%, 74%))`;
       const pct = Math.round((item.value / totalValue) * 100);
 
       const formattedValue =
@@ -3234,7 +3267,9 @@ class WorkoutTracker {
           <span class="volume-bar-value">${pct}%</span>
         </div>
         <div class="volume-bar-track">
-          <div class="volume-bar-fill" style="width: ${(item.value / maxValue) * 100}%; background: ${gradient}"></div>
+          <div class="volume-bar-fill" style="width: ${
+            (item.value / maxValue) * 100
+          }%; background: ${gradient}"></div>
         </div>
       `;
 
@@ -4251,8 +4286,9 @@ class WorkoutTracker {
     }
 
     const selectedEntry =
-      this.workoutHistory.find((entry) => entry.id === this.selectedHistoryId) ||
-      this.workoutHistory[0];
+      this.workoutHistory.find(
+        (entry) => entry.id === this.selectedHistoryId
+      ) || this.workoutHistory[0];
 
     if (!selectedEntry) {
       alert("Select a workout from history to export");
@@ -4289,7 +4325,9 @@ class WorkoutTracker {
     const sanitizedName = selectedEntry.workoutName
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-");
-    link.download = `workout-session-${sanitizedName || "export"}-${sessionDateKey}.json`;
+    link.download = `workout-session-${
+      sanitizedName || "export"
+    }-${sessionDateKey}.json`;
 
     document.body.appendChild(link);
     link.click();
@@ -4351,7 +4389,8 @@ class WorkoutTracker {
 
         const isWorkoutSessionImport =
           importedData.exportType === "workout-session" ||
-          (!!importedData.workoutSummary && Array.isArray(importedData.sessions));
+          (!!importedData.workoutSummary &&
+            Array.isArray(importedData.sessions));
 
         if (isWorkoutImport) {
           const workout = { ...importedData.workout };
@@ -4415,7 +4454,9 @@ class WorkoutTracker {
 
           const sessionDate = new Date(summary.date);
           let confirmMsg =
-            `Import workout session "${summary.workoutName}" from ${this.formatDate(sessionDate)}?` +
+            `Import workout session "${
+              summary.workoutName
+            }" from ${this.formatDate(sessionDate)}?` +
             `\n\nIncludes ${importedData.sessions.length} exercise log${
               importedData.sessions.length === 1 ? "" : "s"
             }.`;
@@ -4460,7 +4501,8 @@ class WorkoutTracker {
           importedData.sessions.forEach((session, index) => {
             const sessionCopy = { ...session };
             sessionCopy.workoutId = targetWorkoutId || sessionCopy.workoutId;
-            sessionCopy.workoutName = summary.workoutName || sessionCopy.workoutName;
+            sessionCopy.workoutName =
+              summary.workoutName || sessionCopy.workoutName;
 
             if (!sessionCopy.id || existingSessionIds.has(sessionCopy.id)) {
               sessionCopy.id = Date.now() + index;
