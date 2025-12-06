@@ -22,6 +22,7 @@ class WorkoutTracker {
     this.latestShareDataUrl = null;
     this.exerciseLibraryFilters = { search: "", muscles: new Set() };
     this.workoutFilters = new Set();
+    this.workoutSearchTerm = "";
     this.favoriteFilterOnly =
       JSON.parse(localStorage.getItem("favoriteFilterOnly")) || false;
     this.quoteStartDate = new Date("2024-01-01T00:00:00");
@@ -178,6 +179,8 @@ class WorkoutTracker {
     if (theme === "light") {
       document.body.classList.add("light-mode");
       this.updateThemeToggle(true);
+    } else {
+      this.updateThemeToggle(false);
     }
   }
 
@@ -202,19 +205,52 @@ class WorkoutTracker {
   }
 
   updateThemeToggle(isLight) {
-    const darkIcon = document.getElementById("themeIconDark");
-    const lightIcon = document.getElementById("themeIconLight");
-    const toggleText = document.getElementById("themeToggleText");
+    const toggleConfigs = [
+      {
+        dark: "themeIconDark",
+        light: "themeIconLight",
+        text: "themeToggleText",
+      },
+      {
+        dark: "mobileThemeIconDark",
+        light: "mobileThemeIconLight",
+        text: "mobileThemeToggleText",
+      },
+    ];
 
-    if (isLight) {
-      darkIcon.classList.add("hidden");
-      lightIcon.classList.remove("hidden");
-      toggleText.textContent = "Dark";
-    } else {
-      darkIcon.classList.remove("hidden");
-      lightIcon.classList.add("hidden");
-      toggleText.textContent = "Light";
-    }
+    toggleConfigs.forEach(({ dark, light, text }) => {
+      const darkIcon = document.getElementById(dark);
+      const lightIcon = document.getElementById(light);
+      const toggleText = document.getElementById(text);
+
+      if (!darkIcon || !lightIcon || !toggleText) return;
+
+      if (isLight) {
+        darkIcon.classList.add("hidden");
+        lightIcon.classList.remove("hidden");
+        toggleText.textContent = "Dark";
+      } else {
+        darkIcon.classList.remove("hidden");
+        lightIcon.classList.add("hidden");
+        toggleText.textContent = "Light";
+      }
+    });
+
+    ["themeToggleBtn", "mobileThemeToggleBtn"].forEach((id) => {
+      const button = document.getElementById(id);
+      if (button) {
+        button.setAttribute("aria-pressed", isLight);
+      }
+    });
+  }
+
+  bindButtons(buttonIds, handler) {
+    buttonIds.forEach((id) => {
+      const button = document.getElementById(id);
+      if (button) {
+        button.addEventListener("click", handler);
+      }
+    });
   }
 
   // ============================================
@@ -223,11 +259,20 @@ class WorkoutTracker {
 
   setupEventListeners() {
     // Theme toggle
-    document.getElementById("themeToggleBtn").addEventListener("click", () => {
+    this.bindButtons(["themeToggleBtn", "mobileThemeToggleBtn"], () => {
       this.toggleTheme();
     });
 
     // Daily quote - no interactions needed
+
+    // Workout search
+    const workoutSearchInput = document.getElementById("workoutSearchInput");
+    if (workoutSearchInput) {
+      workoutSearchInput.addEventListener("input", (event) => {
+        this.workoutSearchTerm = event.target.value.toLowerCase().trim();
+        this.renderWorkoutList();
+      });
+    }
 
     // Navigation buttons
     document.getElementById("backToWorkouts").addEventListener("click", () => {
@@ -278,24 +323,24 @@ class WorkoutTracker {
       });
 
     // Export/Import functionality
-    document.getElementById("exportDataBtn").addEventListener("click", () => {
+    this.bindButtons(["exportDataBtn", "mobileExportDataBtn"], () => {
       this.exportData();
     });
 
-    document.getElementById("importDataBtn").addEventListener("click", () => {
+    this.bindButtons(["importDataBtn", "mobileImportDataBtn"], () => {
       document.getElementById("fileInput").click();
     });
 
-    document.getElementById("fileInput").addEventListener("change", (e) => {
-      this.importData(e);
-    });
-
-    const historyBtn = document.getElementById("historyBtn");
-    if (historyBtn) {
-      historyBtn.addEventListener("click", () => {
-        this.openHistoryView();
+    const fileInput = document.getElementById("fileInput");
+    if (fileInput) {
+      fileInput.addEventListener("change", (e) => {
+        this.importData(e);
       });
     }
+
+    this.bindButtons(["historyBtn", "mobileHistoryBtn"], () => {
+      this.openHistoryView();
+    });
 
     const backToDashboard = document.getElementById("backToDashboard");
     if (backToDashboard) {
@@ -333,7 +378,7 @@ class WorkoutTracker {
     }
 
     // Management view
-    document.getElementById("manageBtn").addEventListener("click", () => {
+    this.bindButtons(["manageBtn", "mobileManageBtn"], () => {
       this.showManagementView();
     });
 
@@ -740,6 +785,7 @@ class WorkoutTracker {
     container.innerHTML = "";
     const activeFilters = this.workoutFilters;
     const favoritesOnly = this.favoriteFilterOnly;
+    const searchTerm = this.workoutSearchTerm?.toLowerCase() || "";
 
     const sortedWorkouts = [
       ...this.workouts.filter((w) => w.favorite),
@@ -750,10 +796,15 @@ class WorkoutTracker {
       return workoutMuscles.some((muscle) => activeFilters.has(muscle));
     });
 
-    const filteredWorkouts = sortedWorkouts.filter((workout) => {
-      if (!favoritesOnly) return true;
-      return workout.favorite;
-    });
+    const filteredWorkouts = sortedWorkouts
+      .filter((workout) => {
+        if (!favoritesOnly) return true;
+        return workout.favorite;
+      })
+      .filter((workout) => {
+        if (!searchTerm) return true;
+        return workout.name.toLowerCase().includes(searchTerm);
+      });
 
     filteredWorkouts.forEach((workout) => {
       const card = this.createWorkoutCard(workout);

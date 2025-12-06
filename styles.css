@@ -193,6 +193,33 @@ body {
   flex-wrap: wrap;
 }
 
+.mobile-bottom-nav {
+  display: none;
+}
+
+.mobile-nav-btn {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+}
+
+.mobile-nav-btn .icon {
+  width: 22px;
+  height: 22px;
+}
+
+.mobile-nav-label {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
 .app-title {
   font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-bold);
@@ -874,6 +901,34 @@ button {
   font-size: 14px;
   color: var(--text-muted);
   font-weight: 600;
+}
+
+.workout-search {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.search-input {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+  box-shadow: var(--elevation-low);
+}
+
+.search-input input {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  width: 100%;
+}
+
+.search-input input:focus {
+  outline: none;
 }
 
 .favorite-filter-btn {
@@ -2119,13 +2174,7 @@ input[type="number"]::-webkit-outer-spin-button {
   }
 
   .header-actions {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    width: 100%;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding: 4px 0;
+    display: none;
   }
 
   .header-actions::-webkit-scrollbar {
@@ -2171,6 +2220,25 @@ input[type="number"]::-webkit-outer-spin-button {
   .btn-icon .icon {
     width: 16px;
     height: 16px;
+  }
+
+  .mobile-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 10px 14px calc(12px + env(safe-area-inset-bottom));
+    justify-content: space-between;
+    background: var(--bg-surface);
+    border-top: 1px solid var(--border-subtle);
+    backdrop-filter: blur(14px);
+    z-index: 20;
+    box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .app-container {
+    padding-bottom: 140px;
   }
 
   /* Section headers */
@@ -2560,6 +2628,12 @@ input[type="number"]::-webkit-outer-spin-button {
   /* Fix for iOS safe areas */
   .app-container {
     padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  @media (max-width: 768px) {
+    .app-container {
+      padding-bottom: calc(env(safe-area-inset-bottom) + 140px);
+    }
   }
 
   .management-panel {
