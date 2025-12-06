@@ -12,7 +12,7 @@
     <meta name="theme-color" content="#0a0a0a" />
     <title>Workout Tracker</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <link rel="stylesheet" href="styles.css?v=1.5.0" />
+    <link rel="stylesheet" href="styles.css?v=1.5.7" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -283,7 +283,10 @@
             <label class="workout-search" for="workoutSearchInput">
               <span class="filter-label">Search workouts</span>
               <div class="search-input">
-                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
+                <svg
+                  class="icon icon-sm"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true">
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
@@ -547,7 +550,7 @@
           <div class="section-header">
             <button
               id="backToExercises"
-              class="btn-primary btn-sm section-back-btn"
+              class="btn-back"
               aria-label="Back to exercises">
               <svg
                 class="icon icon-md"
@@ -658,8 +661,8 @@
             </div>
           </div>
 
-        <!-- Paired Exercise View -->
-        <div id="pairedExerciseView" class="paired-exercise-container hidden">
+          <!-- Paired Exercise View -->
+          <div id="pairedExerciseView" class="paired-exercise-container hidden">
             <div class="paired-exercises-grid">
               <!-- Exercise 1 -->
               <div class="paired-exercise-column">
@@ -827,15 +830,21 @@
                           <span class="pill pill-soft">Kg-reps</span>
                           <span class="chart-caption">Weighted lifts</span>
                         </div>
-                        <div id="historyVolumeChart" class="volume-bar-list"></div>
+                        <div
+                          id="historyVolumeChart"
+                          class="volume-bar-list"></div>
                         <p id="historyVolumeLegend" class="chart-caption"></p>
                       </div>
                       <div class="history-volume-block">
                         <div class="history-visual-subheader">
                           <span class="pill pill-soft">Reps</span>
-                          <span class="chart-caption">Bodyweight & endurance</span>
+                          <span class="chart-caption"
+                            >Bodyweight & endurance</span
+                          >
                         </div>
-                        <div id="historyRepsChart" class="volume-bar-list"></div>
+                        <div
+                          id="historyRepsChart"
+                          class="volume-bar-list"></div>
                         <p id="historyRepsLegend" class="chart-caption"></p>
                       </div>
                     </div>
@@ -851,7 +860,9 @@
                   </div>
                 </div>
 
-                <div class="history-exercise-grid" id="historyExerciseGrid"></div>
+                <div
+                  class="history-exercise-grid"
+                  id="historyExerciseGrid"></div>
 
                 <div class="share-row">
                   <div>
@@ -877,8 +888,7 @@
                       id="historySharePreview"
                       alt="Workout share preview"
                       class="share-preview-img"
-                      loading="lazy"
-                    />
+                      loading="lazy" />
                   </div>
                 </div>
               </div>
@@ -1558,6 +1568,6 @@
       </div>
     </div>
 
-    <script src="app.js?v=1.5.0"></script>
+    <script src="app.js?v=1.5.1"></script>
   </body>
 </html>
