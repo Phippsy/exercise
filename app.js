@@ -791,7 +791,7 @@ class WorkoutTracker {
     document.getElementById(viewId).classList.remove("hidden");
     this.updateBottomBackBar(viewId);
     this.updateHeaderContextTitle();
-    
+
     // Force scroll to top - use multiple approaches to ensure it works
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
