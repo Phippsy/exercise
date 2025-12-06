@@ -1215,6 +1215,52 @@ class WorkoutTracker {
     this.updateSessionChecklist(workout);
     this.renderExerciseList();
     this.showView("exerciseListView");
+
+    // Smart scroll: Find first incomplete exercise or scroll to top
+    this.scrollToNextExercise(workout);
+  }
+
+  scrollToNextExercise(workout) {
+    // Find the first incomplete exercise
+    let firstIncompleteIndex = -1;
+
+    for (let i = 0; i < workout.exercises.length; i++) {
+      if (!this.isExerciseCompletedToday(workout.exercises[i], workout.id)) {
+        firstIncompleteIndex = i;
+        break;
+      }
+    }
+
+    // If no exercises completed yet, scroll to top
+    if (firstIncompleteIndex === 0) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
+    // If some exercises are completed, scroll to the first incomplete one
+    if (firstIncompleteIndex > 0) {
+      // Wait for DOM to render
+      setTimeout(() => {
+        const exerciseItems = document.querySelectorAll(".exercise-item");
+        if (exerciseItems[firstIncompleteIndex]) {
+          const item = exerciseItems[firstIncompleteIndex];
+          const headerHeight =
+            document.querySelector(".app-header")?.offsetHeight || 100;
+          const itemTop = item.getBoundingClientRect().top + window.scrollY;
+
+          // Scroll so the item is visible with some padding, ensuring 3rd item is in view
+          // Add extra offset to show the item below it clearly
+          const offset = headerHeight + 20;
+          window.scrollTo({
+            top: Math.max(0, itemTop - offset),
+            behavior: "smooth",
+          });
+        }
+      }, 100);
+    } else {
+      // All exercises completed, scroll to top
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   }
 
   updateSessionChecklist(workout) {
