@@ -349,6 +349,21 @@ class WorkoutTracker {
       });
     }
 
+    // Bottom back button bar (mobile)
+    const bottomBackBtn = document.getElementById("bottomBackBtn");
+    if (bottomBackBtn) {
+      bottomBackBtn.addEventListener("click", () => {
+        this.handleBottomBackClick();
+      });
+    }
+
+    const bottomActionBtn = document.getElementById("bottomActionBtn");
+    if (bottomActionBtn) {
+      bottomActionBtn.addEventListener("click", () => {
+        this.handleBottomActionClick();
+      });
+    }
+
     const endWorkoutBtn = document.getElementById("endWorkoutBtn");
     if (endWorkoutBtn) {
       endWorkoutBtn.addEventListener("click", () => {
@@ -774,6 +789,88 @@ class WorkoutTracker {
     const views = document.querySelectorAll(".view");
     views.forEach((view) => view.classList.add("hidden"));
     document.getElementById(viewId).classList.remove("hidden");
+    this.updateBottomBackBar(viewId);
+  }
+
+  updateBottomBackBar(viewId) {
+    const bottomBackBar = document.getElementById("bottomBackBar");
+    const bottomBackBtnText = document.getElementById("bottomBackBtnText");
+    const bottomActionBtn = document.getElementById("bottomActionBtn");
+    const bottomActionBtnText = document.getElementById("bottomActionBtnText");
+    
+    if (!bottomBackBar) return;
+
+    // Show back bar for non-main views
+    if (viewId === "workoutListView") {
+      bottomBackBar.classList.add("hidden");
+      if (bottomActionBtn) bottomActionBtn.classList.add("hidden");
+    } else if (viewId === "exerciseListView") {
+      bottomBackBar.classList.remove("hidden");
+      bottomBackBtnText.textContent = "Back to Workouts";
+      if (bottomActionBtn) {
+        bottomActionBtn.classList.remove("hidden");
+        bottomActionBtnText.textContent = "Finish Workout";
+      }
+    } else if (viewId === "exerciseDetailView") {
+      bottomBackBar.classList.remove("hidden");
+      bottomBackBtnText.textContent = "Back to Exercises";
+      if (bottomActionBtn) {
+        bottomActionBtn.classList.remove("hidden");
+        bottomActionBtnText.textContent = "Save Session";
+      }
+    } else if (viewId === "workoutHistoryView") {
+      bottomBackBar.classList.remove("hidden");
+      bottomBackBtnText.textContent = "Back to Dashboard";
+      if (bottomActionBtn) bottomActionBtn.classList.add("hidden");
+    } else {
+      bottomBackBar.classList.add("hidden");
+      if (bottomActionBtn) bottomActionBtn.classList.add("hidden");
+    }
+  }
+
+  handleBottomBackClick() {
+    const views = document.querySelectorAll(".view");
+    let currentView = null;
+    
+    views.forEach((view) => {
+      if (!view.classList.contains("hidden")) {
+        currentView = view.id;
+      }
+    });
+
+    if (currentView === "exerciseListView") {
+      this.showView("workoutListView");
+    } else if (currentView === "exerciseDetailView") {
+      this.pairedExercises = null;
+      this.showExerciseList(this.currentWorkout);
+    } else if (currentView === "workoutHistoryView") {
+      this.showView("workoutListView");
+    }
+  }
+
+  handleBottomActionClick() {
+    const views = document.querySelectorAll(".view");
+    let currentView = null;
+    
+    views.forEach((view) => {
+      if (!view.classList.contains("hidden")) {
+        currentView = view.id;
+      }
+    });
+
+    if (currentView === "exerciseListView") {
+      // Trigger "Finish Workout" action
+      const endWorkoutBtn = document.getElementById("endWorkoutBtn");
+      if (endWorkoutBtn) {
+        endWorkoutBtn.click();
+      }
+    } else if (currentView === "exerciseDetailView") {
+      // Trigger "Save Session" action
+      const saveSessionBtn = document.getElementById("saveSessionBtn");
+      if (saveSessionBtn) {
+        saveSessionBtn.click();
+      }
+    }
   }
 
   // ============================================

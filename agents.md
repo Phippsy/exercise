@@ -49,8 +49,14 @@ Examples:
 
 ### Current Version
 
-**Current Version: 1.1.0** (as of 2025-12-05)
+**Current Version: 1.6.1** (as of 2025-12-05)
 
+- 1.6.1: Added bottom bar action buttons (Finish Workout/Save Session) on mobile
+- 1.6.0: Reduced border radiuses, made back buttons purple outlined, improved mobile spacing
+- 1.5.0: Fixed exercises.json data types, git rollback to stable export version
+- 1.4.0: Made exercise highlight persistent
+- 1.3.0: Added muscle group badges to exercise lists
+- 1.2.0: Made weight field optional for sessions
 - 1.1.0: Added workout history view, shareable recap cards, and finish-workout flow
 - 1.0.2: Made exercise highlight persistent until user takes new action
 - 1.0.1: Added visual highlight feedback when exercises are reordered

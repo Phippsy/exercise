@@ -567,6 +567,70 @@ button {
   outline-offset: 2px;
 }
 
+/* Bottom Back Button Bar */
+.bottom-back-bar {
+  display: none;
+  position: fixed;
+  bottom: 70px;
+  left: 0;
+  right: 0;
+  padding: 8px 14px;
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-subtle);
+  backdrop-filter: blur(14px);
+  z-index: 19;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.bottom-back-bar-content {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.bottom-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: 8px 14px;
+  background-color: transparent;
+  color: var(--color-accent);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  border: 2px solid var(--color-accent);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+  flex: 1;
+  justify-content: center;
+}
+
+.bottom-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: 8px 14px;
+  background-color: var(--color-accent);
+  color: white;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  border: 2px solid var(--color-accent);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+  flex: 1;
+  justify-content: center;
+}
+
+.bottom-back-btn:hover {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+  color: white;
+}
+
+.bottom-action-btn:hover {
+  background-color: rgba(133, 102, 179, 0.85);
+  border-color: rgba(133, 102, 179, 0.85);
+}
+
 .btn-increment,
 .btn-decrement,
 .btn-remove {
@@ -2238,6 +2302,23 @@ input[type="number"]::-webkit-outer-spin-button {
     height: 12px;
   }
 
+  /* Hide inline back buttons on mobile, show bottom bar instead */
+  .btn-back {
+    display: none;
+  }
+
+  /* Hide inline action buttons on mobile - shown in bottom bar instead */
+  #endWorkoutBtn,
+  #saveSessionBtn {
+    display: none !important;
+  }
+
+  .bottom-back-bar {
+    display: block;
+    bottom: 76px;
+    padding: 10px 14px;
+  }
+
   /* Pin onboarding to bottom on mobile */
   .onboarding-overlay {
     align-items: flex-end;
@@ -2272,7 +2353,7 @@ input[type="number"]::-webkit-outer-spin-button {
   }
 
   .app-container {
-    padding-bottom: 140px;
+    padding-bottom: 160px;
   }
 
   /* Section headers */
@@ -2282,6 +2363,7 @@ input[type="number"]::-webkit-outer-spin-button {
 
   .section-title {
     font-size: 20px;
+    margin-top: var(--spacing-lg);
   }
 
   .section-subtitle {

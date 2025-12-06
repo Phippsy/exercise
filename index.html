@@ -12,7 +12,7 @@
     <meta name="theme-color" content="#0a0a0a" />
     <title>Workout Tracker</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <link rel="stylesheet" href="styles.css?v=1.5.7" />
+    <link rel="stylesheet" href="styles.css?v=1.6.1" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -149,6 +149,47 @@
 
       <!-- Hidden file input for import -->
       <input type="file" id="fileInput" accept=".json" style="display: none" />
+
+      <!-- Fixed Bottom Back Button Bar -->
+      <div id="bottomBackBar" class="bottom-back-bar hidden">
+        <div class="bottom-back-bar-content">
+          <button
+            id="bottomBackBtn"
+            class="bottom-back-btn"
+            aria-label="Go back">
+            <svg
+              class="icon icon-sm"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15 19l-7-7 7-7" />
+            </svg>
+            <span id="bottomBackBtnText">Back</span>
+          </button>
+          <button
+            id="bottomActionBtn"
+            class="bottom-action-btn hidden"
+            aria-label="Action">
+            <svg
+              id="bottomActionIcon"
+              class="icon icon-sm"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M5 13l4 4L19 7" />
+            </svg>
+            <span id="bottomActionBtnText">Action</span>
+          </button>
+        </div>
+      </div>
 
       <nav class="mobile-bottom-nav" aria-label="Quick actions">
         <button
@@ -615,7 +656,7 @@
                     </svg>
                     Add Set
                   </button>
-                  <button type="submit" class="btn-primary">
+                  <button type="submit" id="saveSessionBtn" class="btn-primary">
                     Save Session
                   </button>
                 </div>
@@ -1568,6 +1609,6 @@
       </div>
     </div>
 
-    <script src="app.js?v=1.5.1"></script>
+    <script src="app.js?v=1.6.1"></script>
   </body>
 </html>
