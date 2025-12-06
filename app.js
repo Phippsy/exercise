@@ -791,6 +791,11 @@ class WorkoutTracker {
     document.getElementById(viewId).classList.remove("hidden");
     this.updateBottomBackBar(viewId);
     this.updateHeaderContextTitle();
+    
+    // Force scroll to top - use multiple approaches to ensure it works
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    window.scrollTo(0, 0);
   }
 
   updateHeaderContextTitle() {
@@ -1554,9 +1559,6 @@ class WorkoutTracker {
 
     // Update header context title after view is shown
     this.updateHeaderContextTitle();
-
-    // Scroll to top of page to ensure "Log Today's Session" is visible
-    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   showPairedExerciseDetail(exercise1, exercise2) {
