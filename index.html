@@ -5,13 +5,14 @@
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta
       name="apple-mobile-web-app-status-bar-style"
       content="black-translucent" />
     <meta name="theme-color" content="#0a0a0a" />
     <title>Workout Tracker</title>
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <link rel="stylesheet" href="styles.css?v=1.6.1" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -24,7 +25,7 @@
       <!-- Header -->
       <header class="app-header">
         <div class="header-top">
-          <div>
+          <div class="header-title-section">
             <h1 class="app-title">
               <span
                 id="userNameDisplay"
@@ -36,6 +37,10 @@
                 >'s</span
               ><span class="title-suffix"> Workout Tracker</span>
             </h1>
+            <div class="header-context-row">
+              <div class="header-context-title" id="headerContextTitle"></div>
+              <div class="header-context-badges" id="headerContextBadges"></div>
+            </div>
             <div class="header-meta" id="currentDate"></div>
           </div>
           <div class="header-actions">
@@ -481,13 +486,35 @@
               </svg>
               Back to Workouts
             </button>
-            <h2 class="section-title">
-              <span
-                id="currentWorkoutName"
-                class="workout-name-editable"
-                contenteditable="true"
-                spellcheck="false"></span>
-            </h2>
+            <div class="section-title-row">
+              <h2 class="section-title">
+                <span
+                  id="currentWorkoutName"
+                  class="workout-name-editable"
+                  contenteditable="true"
+                  spellcheck="false"></span>
+              </h2>
+              <button
+                id="editWorkoutBtn"
+                class="icon-btn"
+                aria-label="Edit workout">
+                <svg
+                  class="icon icon-sm"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.862 4.487z" />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M18.375 5.988l-2.363-2.363" />
+                </svg>
+              </button>
+            </div>
             <div
               id="workoutNotesDisplay"
               class="workout-notes"
@@ -518,27 +545,6 @@
                     d="M5 13l4 4L19 7" />
                 </svg>
                 Finish Workout
-              </button>
-              <button
-                id="editWorkoutBtn"
-                class="btn-secondary btn-icon"
-                aria-label="Edit current workout">
-                <svg
-                  class="icon icon-sm"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2">
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.862 4.487z" />
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M18.375 5.988l-2.363-2.363" />
-                </svg>
-                Edit Workout
               </button>
               <button id="pairModeToggle" class="btn-secondary btn-icon">
                 <svg

@@ -790,6 +790,46 @@ class WorkoutTracker {
     views.forEach((view) => view.classList.add("hidden"));
     document.getElementById(viewId).classList.remove("hidden");
     this.updateBottomBackBar(viewId);
+    this.updateHeaderContextTitle();
+  }
+
+  updateHeaderContextTitle() {
+    const headerContextRow = document.getElementById("headerContextTitle")?.parentElement;
+    const headerContextTitle = document.getElementById("headerContextTitle");
+    const headerContextBadges = document.getElementById("headerContextBadges");
+    
+    if (!headerContextTitle || !headerContextRow) return;
+
+    const views = document.querySelectorAll(".view");
+    let currentView = null;
+    
+    views.forEach((view) => {
+      if (!view.classList.contains("hidden")) {
+        currentView = view.id;
+      }
+    });
+
+    if (currentView === "exerciseListView" && this.currentWorkout) {
+      headerContextTitle.textContent = this.currentWorkout.name;
+      headerContextBadges.innerHTML = "";
+      headerContextRow.style.display = "flex";
+    } else if (currentView === "exerciseDetailView") {
+      const exerciseName = document.getElementById("exerciseName");
+      const muscleGroup = document.getElementById("muscleGroup");
+      
+      if (exerciseName) {
+        headerContextTitle.textContent = exerciseName.textContent;
+        
+        // Copy muscle badge to header
+        if (muscleGroup && headerContextBadges) {
+          headerContextBadges.innerHTML = muscleGroup.outerHTML;
+        }
+        
+        headerContextRow.style.display = "flex";
+      }
+    } else {
+      headerContextRow.style.display = "none";
+    }
   }
 
   updateBottomBackBar(viewId) {
@@ -1465,6 +1505,9 @@ class WorkoutTracker {
 
     this.showView("exerciseDetailView");
 
+    // Update header context title after view is shown
+    this.updateHeaderContextTitle();
+
     // Scroll to top of page to ensure "Log Today's Session" is visible
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -1498,6 +1541,23 @@ class WorkoutTracker {
     this.renderPairedSessionForm(exercise2, "pairedSetsContainer2", 2);
 
     this.showView("exerciseDetailView");
+    
+    // Update header context title for paired exercises
+    const headerContextRow = document.getElementById("headerContextTitle")?.parentElement;
+    const headerContextTitle = document.getElementById("headerContextTitle");
+    const headerContextBadges = document.getElementById("headerContextBadges");
+    
+    if (headerContextTitle && headerContextRow && headerContextBadges) {
+      headerContextTitle.textContent = `${exercise1.name} + ${exercise2.name}`;
+      
+      // Add both muscle badges
+      headerContextBadges.innerHTML = `
+        <span class="muscle-badge">${exercise1.muscle_group}</span>
+        <span class="muscle-badge">${exercise2.muscle_group}</span>
+      `;
+      
+      headerContextRow.style.display = "flex";
+    }
   }
 
   renderPairedPreviousSession(exercise, containerId) {
