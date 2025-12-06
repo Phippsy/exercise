@@ -325,6 +325,13 @@ class WorkoutTracker {
       });
     }
 
+    const exportSessionBtn = document.getElementById("exportSessionBtn");
+    if (exportSessionBtn) {
+      exportSessionBtn.addEventListener("click", () => {
+        this.exportSelectedWorkoutSession();
+      });
+    }
+
     // Management view
     document.getElementById("manageBtn").addEventListener("click", () => {
       this.showManagementView();
@@ -4029,6 +4036,63 @@ class WorkoutTracker {
     );
   }
 
+  exportSelectedWorkoutSession() {
+    if (!this.workoutHistory.length) {
+      alert("No workout sessions to export yet");
+      return;
+    }
+
+    const selectedEntry =
+      this.workoutHistory.find((entry) => entry.id === this.selectedHistoryId) ||
+      this.workoutHistory[0];
+
+    if (!selectedEntry) {
+      alert("Select a workout from history to export");
+      return;
+    }
+
+    const sessionDateKey = this.getLocalDateKey(new Date(selectedEntry.date));
+    const sessionsForDay = this.sessions.filter(
+      (session) =>
+        session.workoutId === selectedEntry.workoutId &&
+        this.getLocalDateKey(new Date(session.date)) === sessionDateKey
+    );
+
+    const matchingWorkout = this.workouts.find(
+      (workout) => workout.id === selectedEntry.workoutId
+    );
+
+    const exportPayload = {
+      version: "2.1",
+      exportType: "workout-session",
+      exportDate: new Date().toISOString(),
+      workoutSummary: selectedEntry,
+      sessions: sessionsForDay,
+      ...(matchingWorkout ? { workout: matchingWorkout } : {}),
+    };
+
+    const dataStr = JSON.stringify(exportPayload, null, 2);
+    const dataBlob = new Blob([dataStr], { type: "application/json" });
+
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement("a");
+    link.href = url;
+
+    const sanitizedName = selectedEntry.workoutName
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-");
+    link.download = `workout-session-${sanitizedName || "export"}-${sessionDateKey}.json`;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    this.showSuccessMessage(
+      `Session for "${selectedEntry.workoutName}" exported with ${sessionsForDay.length} exercise logs.`
+    );
+  }
+
   exportWorkout(workoutId) {
     const workout = this.workouts.find((w) => w.id === workoutId);
     if (!workout) {
@@ -4077,6 +4141,10 @@ class WorkoutTracker {
           importedData.exportType === "workout" ||
           (!!importedData.workout && !importedData.sessions);
 
+        const isWorkoutSessionImport =
+          importedData.exportType === "workout-session" ||
+          (!!importedData.workoutSummary && Array.isArray(importedData.sessions));
+
         if (isWorkoutImport) {
           const workout = { ...importedData.workout };
 
@@ -4122,6 +4190,133 @@ class WorkoutTracker {
             );
           }
 
+          event.target.value = "";
+          return;
+        }
+
+        if (isWorkoutSessionImport) {
+          const summary = importedData.workoutSummary;
+
+          if (!summary || !summary.workoutName || !summary.date) {
+            throw new Error("Invalid workout session export format");
+          }
+
+          if (!importedData.sessions || !Array.isArray(importedData.sessions)) {
+            throw new Error("Invalid workout session export format");
+          }
+
+          const sessionDate = new Date(summary.date);
+          let confirmMsg =
+            `Import workout session "${summary.workoutName}" from ${this.formatDate(sessionDate)}?` +
+            `\n\nIncludes ${importedData.sessions.length} exercise log${
+              importedData.sessions.length === 1 ? "" : "s"
+            }.`;
+
+          if (importedData.workout) {
+            confirmMsg += "\nAdds the workout template if it's new.";
+          }
+
+          if (!confirm(confirmMsg)) {
+            event.target.value = "";
+            return;
+          }
+
+          const results = {
+            sessions: { added: 0, skipped: 0 },
+            workouts: { added: 0, skipped: 0 },
+            history: { added: 0, skipped: 0 },
+          };
+
+          let targetWorkoutId = summary.workoutId;
+
+          if (importedData.workout) {
+            const workoutName =
+              importedData.workout.name || summary.workoutName || "Imported";
+            const existingWorkout = this.workouts.find(
+              (w) => w.name.toLowerCase() === workoutName.toLowerCase()
+            );
+
+            if (existingWorkout) {
+              targetWorkoutId = existingWorkout.id;
+              results.workouts.skipped = 1;
+            } else {
+              const workoutToAdd = { ...importedData.workout };
+              workoutToAdd.id = Date.now();
+              this.workouts.push(workoutToAdd);
+              targetWorkoutId = workoutToAdd.id;
+              results.workouts.added = 1;
+            }
+          }
+
+          const existingSessionIds = new Set(this.sessions.map((s) => s.id));
+          importedData.sessions.forEach((session, index) => {
+            const sessionCopy = { ...session };
+            sessionCopy.workoutId = targetWorkoutId || sessionCopy.workoutId;
+            sessionCopy.workoutName = summary.workoutName || sessionCopy.workoutName;
+
+            if (!sessionCopy.id || existingSessionIds.has(sessionCopy.id)) {
+              sessionCopy.id = Date.now() + index;
+            }
+
+            this.sessions.push(sessionCopy);
+            results.sessions.added++;
+          });
+
+          const summaryToAdd = { ...summary };
+          summaryToAdd.workoutId = targetWorkoutId || summaryToAdd.workoutId;
+
+          const hasDuplicateHistory = this.workoutHistory.some(
+            (entry) =>
+              this.getLocalDateKey(new Date(entry.date)) ===
+                this.getLocalDateKey(new Date(summaryToAdd.date)) &&
+              entry.workoutId === summaryToAdd.workoutId
+          );
+
+          if (hasDuplicateHistory) {
+            results.history.skipped = 1;
+          } else {
+            if (
+              !summaryToAdd.id ||
+              this.workoutHistory.some((entry) => entry.id === summaryToAdd.id)
+            ) {
+              summaryToAdd.id = Date.now();
+            }
+
+            this.workoutHistory.unshift(summaryToAdd);
+            this.workoutHistory.sort(
+              (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+            );
+            this.selectedHistoryId = summaryToAdd.id;
+            results.history.added = 1;
+          }
+
+          this.sessions.sort((a, b) => new Date(b.date) - new Date(a.date));
+          this.saveSessions();
+          this.saveWorkouts();
+          this.saveWorkoutHistory();
+
+          this.renderWorkoutList();
+          this.refreshInsights();
+          this.renderWorkoutHistoryList(this.selectedHistoryId);
+
+          let message = "Session import complete!\n\n";
+          message += `Sessions: ${results.sessions.added} added`;
+          if (results.sessions.skipped > 0)
+            message += `, ${results.sessions.skipped} skipped`;
+
+          if (importedData.workout) {
+            message += `\nWorkouts: ${results.workouts.added} added`;
+            if (results.workouts.skipped > 0)
+              message += `, ${results.workouts.skipped} skipped`;
+          }
+
+          if (results.history.added || results.history.skipped) {
+            message += `\nHistory: ${results.history.added} added`;
+            if (results.history.skipped > 0)
+              message += `, ${results.history.skipped} skipped`;
+          }
+
+          this.showSuccessMessage(message);
           event.target.value = "";
           return;
         }
