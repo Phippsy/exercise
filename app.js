@@ -550,6 +550,19 @@ class WorkoutTracker {
       }
     });
 
+    // Header context title editing
+    const headerContextTitle = document.getElementById("headerContextTitle");
+    headerContextTitle.addEventListener("blur", () => {
+      this.handleHeaderContextTitleBlur();
+    });
+
+    headerContextTitle.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        headerContextTitle.blur();
+      }
+    });
+
     // Onboarding wizard controls
     document.getElementById("onboardingNext").addEventListener("click", () => {
       this.advanceOnboarding();
@@ -806,6 +819,25 @@ class WorkoutTracker {
 
     if (!headerContextTitle || !headerContextRow) return;
 
+    const setEditable = (mode, workoutId = null) => {
+      headerContextTitle.contentEditable = "true";
+      headerContextTitle.spellcheck = false;
+      headerContextTitle.dataset.editMode = mode;
+      if (workoutId) {
+        headerContextTitle.dataset.workoutId = workoutId;
+      } else {
+        delete headerContextTitle.dataset.workoutId;
+      }
+      headerContextTitle.classList.add("header-context-title-editable");
+    };
+
+    const disableEditing = () => {
+      headerContextTitle.contentEditable = "false";
+      delete headerContextTitle.dataset.editMode;
+      delete headerContextTitle.dataset.workoutId;
+      headerContextTitle.classList.remove("header-context-title-editable");
+    };
+
     const views = document.querySelectorAll(".view");
     let currentView = null;
 
@@ -819,6 +851,7 @@ class WorkoutTracker {
       headerContextTitle.textContent = this.currentWorkout.name;
       headerContextBadges.innerHTML = "";
       headerContextRow.style.display = "flex";
+      setEditable("workout", this.currentWorkout.id);
     } else if (currentView === "exerciseDetailView") {
       const exerciseName = document.getElementById("exerciseName");
       const muscleGroup = document.getElementById("muscleGroup");
@@ -832,9 +865,103 @@ class WorkoutTracker {
         }
 
         headerContextRow.style.display = "flex";
+
+        if (this.pairedExercises) {
+          disableEditing();
+        } else {
+          setEditable("exercise");
+        }
       }
     } else {
       headerContextRow.style.display = "none";
+      disableEditing();
+    }
+  }
+
+  handleHeaderContextTitleBlur() {
+    const headerContextTitle = document.getElementById("headerContextTitle");
+    if (!headerContextTitle) return;
+
+    const mode = headerContextTitle.dataset.editMode;
+    const newName = headerContextTitle.textContent.trim();
+
+    if (mode === "workout") {
+      if (!this.currentWorkout) return;
+
+      const workoutNameElement = document.getElementById("currentWorkoutName");
+
+      if (!newName) {
+        headerContextTitle.textContent = this.currentWorkout.name;
+        if (workoutNameElement) {
+          workoutNameElement.textContent = this.currentWorkout.name;
+        }
+        return;
+      }
+
+      const workout = this.workouts.find(
+        (w) => w.id === this.currentWorkout.id
+      );
+      if (workout && workout.name !== newName) {
+        workout.name = newName;
+        this.currentWorkout.name = newName;
+
+        if (workoutNameElement) {
+          workoutNameElement.textContent = newName;
+        }
+
+        this.saveWorkouts();
+        this.renderWorkoutList();
+        this.renderExerciseList();
+      }
+    } else if (mode === "exercise") {
+      if (!this.currentExercise || this.pairedExercises) return;
+
+      const originalName = this.currentExercise.name;
+      const exerciseNameElement = document.getElementById("exerciseName");
+
+      if (!newName) {
+        headerContextTitle.textContent = originalName;
+        if (exerciseNameElement) {
+          exerciseNameElement.textContent = originalName;
+        }
+        return;
+      }
+
+      if (newName === originalName) return;
+
+      const duplicateName = this.exerciseLibrary.some(
+        (exercise) =>
+          exercise.name.toLowerCase() === newName.toLowerCase() &&
+          exercise.name !== originalName
+      );
+
+      if (duplicateName) {
+        alert("An exercise with this name already exists");
+        headerContextTitle.textContent = originalName;
+        if (exerciseNameElement) {
+          exerciseNameElement.textContent = originalName;
+        }
+        return;
+      }
+
+      const exercise = this.exerciseLibrary.find(
+        (ex) => ex.name === originalName
+      );
+      if (!exercise) return;
+
+      exercise.name = newName;
+      this.applyExerciseUpdates(originalName, exercise);
+
+      if (this.currentExercise && this.currentExercise.name === originalName) {
+        this.currentExercise =
+          this.currentWorkout?.exercises.find((ex) => ex.name === exercise.name) ||
+          exercise;
+      }
+
+      if (exerciseNameElement) {
+        exerciseNameElement.textContent = newName;
+      }
+      headerContextTitle.textContent = newName;
     }
   }
 
@@ -3684,6 +3811,9 @@ class WorkoutTracker {
     const exercise = this.exerciseLibrary.find((e) => e.name === originalName);
     if (!exercise) return;
 
+    const wasCurrentExercise =
+      this.currentExercise && this.currentExercise.name === originalName;
+
     exercise.name = newName;
     exercise.muscle_group = muscleGroup;
     exercise.sets = sets;
@@ -3692,14 +3822,9 @@ class WorkoutTracker {
     exercise.form_notes = formNotes;
     exercise.form_video = formVideo;
 
-    this.updateExerciseInWorkouts(originalName, exercise);
-    this.updateSessionsForExercise(originalName, exercise);
+    this.applyExerciseUpdates(originalName, exercise);
 
-    this.saveExerciseLibrary();
-    this.saveWorkouts();
-    this.saveSessions();
-
-    if (this.currentExercise && this.currentExercise.name === originalName) {
+    if (wasCurrentExercise) {
       const updated = this.currentWorkout?.exercises.find(
         (ex) => ex.name === exercise.name
       );
@@ -3707,16 +3832,7 @@ class WorkoutTracker {
       this.showExerciseDetail(this.currentExercise);
     }
 
-    this.renderExerciseLibrary();
-    this.renderExerciseSelector();
-    this.renderWorkoutManager();
-    this.renderWorkoutList();
-    if (this.currentWorkout) {
-      this.renderExerciseList();
-    }
-
     this.hideEditExerciseModal();
-    this.refreshInsights();
     this.showSuccessMessage(`Exercise "${newName}" updated`);
   }
 
@@ -3743,6 +3859,25 @@ class WorkoutTracker {
         session.muscleGroup = updatedExercise.muscle_group;
       }
     });
+  }
+
+  applyExerciseUpdates(originalName, updatedExercise) {
+    this.updateExerciseInWorkouts(originalName, updatedExercise);
+    this.updateSessionsForExercise(originalName, updatedExercise);
+
+    this.saveExerciseLibrary();
+    this.saveWorkouts();
+    this.saveSessions();
+
+    this.renderExerciseLibrary();
+    this.renderExerciseSelector();
+    this.renderWorkoutManager();
+    this.renderWorkoutList();
+    if (this.currentWorkout) {
+      this.renderExerciseList();
+    }
+
+    this.refreshInsights();
   }
 
   deleteExercise(exerciseName) {
