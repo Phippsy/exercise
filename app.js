@@ -20,6 +20,7 @@ class WorkoutTracker {
     this.dailyQuoteExpanded = false;
     this.selectedHistoryId = null;
     this.latestShareDataUrl = null;
+    this.currentSession = null;
     this.exerciseLibraryFilters = { search: "", muscles: new Set() };
     this.workoutFilters = new Set();
     this.workoutSearchTerm = "";
@@ -297,6 +298,21 @@ class WorkoutTracker {
     document.getElementById("addWarmupBlock").addEventListener("click", () => {
       this.addWarmupSets();
     });
+
+    this.bindButtons(["openSessionAddPanel"], () => {
+      this.showSessionAddPanel();
+    });
+
+    this.bindButtons(["closeSessionAddPanel"], () => {
+      this.hideSessionAddPanel();
+    });
+
+    const sessionAddSearch = document.getElementById("sessionAddSearch");
+    if (sessionAddSearch) {
+      sessionAddSearch.addEventListener("input", () => {
+        this.renderSessionAddList();
+      });
+    }
 
     // Pair mode
     document.getElementById("pairModeToggle").addEventListener("click", () => {
@@ -1300,8 +1316,12 @@ class WorkoutTracker {
   }
 
   getWorkoutCompletion(workout) {
-    const total = workout.exercises.length;
-    const completed = workout.exercises.filter((exercise) =>
+    const exercises =
+      this.currentSession && this.currentWorkout?.id === workout.id
+        ? this.getActiveSessionExercises()
+        : workout.exercises || [];
+    const total = exercises.length;
+    const completed = exercises.filter((exercise) =>
       this.isExerciseCompletedToday(exercise, workout.id)
     ).length;
 
@@ -1314,8 +1334,10 @@ class WorkoutTracker {
 
   showExerciseList(workout) {
     this.currentWorkout = workout;
+    this.currentSession = this.createSessionFromWorkout(workout);
     this.pairMode = false;
     this.selectedExercises = [];
+    this.hideSessionAddPanel();
 
     // Reset pair mode UI
     const toggleBtn = document.getElementById("pairModeToggle");
@@ -1350,6 +1372,19 @@ class WorkoutTracker {
 
     // Smart scroll: Find first incomplete exercise or scroll to top
     this.scrollToNextExercise(workout);
+  }
+
+  getActiveSessionExercises() {
+    if (this.currentSession?.exercises) return this.currentSession.exercises;
+    return this.currentWorkout?.exercises || [];
+  }
+
+  createSessionFromWorkout(workout) {
+    return {
+      workoutId: workout.id,
+      workoutName: workout.name,
+      exercises: (workout.exercises || []).map((exercise) => ({ ...exercise })),
+    };
   }
 
   scrollToNextExercise(workout) {
@@ -1412,7 +1447,7 @@ class WorkoutTracker {
     const container = document.getElementById("exerciseList");
     container.innerHTML = "";
 
-    this.currentWorkout.exercises.forEach((exercise, index) => {
+    this.getActiveSessionExercises().forEach((exercise, index) => {
       const item = this.createExerciseItem(exercise, index);
       container.appendChild(item);
     });
@@ -1528,7 +1563,7 @@ class WorkoutTracker {
       </svg>
     `;
     moveDownBtn.disabled =
-      index === (this.currentWorkout?.exercises?.length || 0) - 1;
+      index === (this.getActiveSessionExercises().length || 0) - 1;
     moveDownBtn.addEventListener("click", (e) => {
       e.stopPropagation();
       this.moveExercise(index, 1);
@@ -1536,6 +1571,26 @@ class WorkoutTracker {
 
     reorderControls.appendChild(moveUpBtn);
     reorderControls.appendChild(moveDownBtn);
+
+    if (this.currentSession) {
+      const removeBtn = document.createElement("button");
+      removeBtn.className = "btn-icon reorder-btn danger";
+      removeBtn.type = "button";
+      removeBtn.setAttribute(
+        "aria-label",
+        `Remove ${exercise.name} from this session`
+      );
+      removeBtn.innerHTML = `
+        <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      `;
+      removeBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        this.removeExerciseFromSession(index);
+      });
+      reorderControls.appendChild(removeBtn);
+    }
 
     const chevron = document.createElement("div");
     chevron.className = "exercise-item-chevron";
@@ -1565,13 +1620,15 @@ class WorkoutTracker {
   }
 
   reorderExercises(fromIndex, toIndex) {
-    const exercises = this.currentWorkout.exercises;
+    const exercises = this.getActiveSessionExercises();
     if (!Array.isArray(exercises)) return;
     if (toIndex < 0 || toIndex >= exercises.length) return;
 
     const [moved] = exercises.splice(fromIndex, 1);
     exercises.splice(toIndex, 0, moved);
-    this.saveWorkouts();
+    if (!this.currentSession) {
+      this.saveWorkouts();
+    }
     this.renderExerciseList();
 
     // Highlight the moved exercise at its new position
@@ -1580,10 +1637,120 @@ class WorkoutTracker {
 
   moveExercise(index, direction) {
     const newIndex = index + direction;
-    if (!this.currentWorkout?.exercises) return;
-    if (newIndex < 0 || newIndex >= this.currentWorkout.exercises.length)
-      return;
+    const exercises = this.getActiveSessionExercises();
+    if (!exercises.length) return;
+    if (newIndex < 0 || newIndex >= exercises.length) return;
     this.reorderExercises(index, newIndex);
+  }
+
+  removeExerciseFromSession(index) {
+    if (!this.currentSession?.exercises) return;
+    const removed = this.currentSession.exercises.splice(index, 1);
+    this.renderExerciseList();
+    this.updateSessionChecklist(this.currentWorkout);
+    if (removed[0]) {
+      this.showSuccessMessage(
+        `${removed[0].name} removed from this session only`
+      );
+    }
+  }
+
+  showSessionAddPanel() {
+    const panel = document.getElementById("sessionAddPanel");
+    if (!panel) return;
+    panel.classList.remove("hidden");
+    const search = document.getElementById("sessionAddSearch");
+    if (search) {
+      search.value = "";
+      setTimeout(() => search.focus(), 50);
+    }
+    this.renderSessionAddList();
+  }
+
+  hideSessionAddPanel() {
+    const panel = document.getElementById("sessionAddPanel");
+    if (!panel) return;
+    panel.classList.add("hidden");
+  }
+
+  renderSessionAddList() {
+    const list = document.getElementById("sessionAddList");
+    if (!list) return;
+
+    const searchTerm = document
+      .getElementById("sessionAddSearch")
+      ?.value.toLowerCase()
+      .trim();
+
+    const existingNames = new Set(
+      this.getActiveSessionExercises().map((ex) => ex.name)
+    );
+
+    let available = this.exerciseLibrary.filter(
+      (exercise) => !existingNames.has(exercise.name)
+    );
+
+    if (searchTerm) {
+      available = available.filter(
+        (exercise) =>
+          exercise.name.toLowerCase().includes(searchTerm) ||
+          exercise.muscle_group.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    list.innerHTML = "";
+
+    if (available.length === 0) {
+      list.innerHTML =
+        '<p class="text-muted">No exercises found. Try a different search.</p>';
+      return;
+    }
+
+    available.slice(0, 25).forEach((exercise) => {
+      const item = document.createElement("div");
+      item.className = "session-add-item";
+
+      const meta = document.createElement("div");
+      meta.className = "session-add-meta";
+
+      const name = document.createElement("div");
+      name.className = "session-add-name";
+      name.textContent = exercise.name;
+
+      const muscle = document.createElement("div");
+      muscle.className = "session-add-muscle";
+      muscle.textContent = exercise.muscle_group;
+
+      meta.appendChild(name);
+      meta.appendChild(muscle);
+
+      const addBtn = document.createElement("button");
+      addBtn.type = "button";
+      addBtn.className = "btn-secondary btn-sm";
+      addBtn.textContent = "Add to session";
+      addBtn.addEventListener("click", () => {
+        this.addExerciseToSession(exercise);
+      });
+
+      item.appendChild(meta);
+      item.appendChild(addBtn);
+      list.appendChild(item);
+    });
+  }
+
+  addExerciseToSession(exercise) {
+    if (!this.currentSession?.exercises) return;
+    if (
+      this.currentSession.exercises.some((existing) => existing.name === exercise.name)
+    ) {
+      this.showSuccessMessage("Already in this session");
+      return;
+    }
+
+    this.currentSession.exercises.push({ ...exercise });
+    this.renderExerciseList();
+    this.updateSessionChecklist(this.currentWorkout);
+    this.showSuccessMessage(`${exercise.name} added to this session`);
   }
 
   highlightExerciseAtIndex(index) {
@@ -2488,6 +2655,8 @@ class WorkoutTracker {
 
     const exercises = Array.from(exerciseMap.values());
 
+    const sessionExercises = this.getActiveSessionExercises();
+
     const summary = {
       id: Date.now(),
       workoutId: this.currentWorkout.id,
@@ -2499,11 +2668,9 @@ class WorkoutTracker {
         Math.round(exercises.reduce((sum, ex) => sum + ex.volume, 0) * 10) / 10,
       totalReps: exercises.reduce((sum, ex) => sum + ex.reps, 0),
       completionPct:
-        this.currentWorkout.exercises.length === 0
+        sessionExercises.length === 0
           ? 0
-          : Math.round(
-              (exercises.length / this.currentWorkout.exercises.length) * 100
-            ),
+          : Math.round((exercises.length / sessionExercises.length) * 100),
     };
 
     summary.headline = this.buildWorkoutHeadline(summary);
@@ -4433,6 +4600,7 @@ class WorkoutTracker {
 
     if (this.currentWorkout && this.currentWorkout.id === workoutId) {
       this.currentWorkout = updatedWorkout;
+      this.currentSession = this.createSessionFromWorkout(updatedWorkout);
 
       const workoutNameElement = document.getElementById("currentWorkoutName");
       if (workoutNameElement) {
