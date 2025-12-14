@@ -1742,6 +1742,37 @@ button {
   border-radius: var(--radius-sm);
 }
 
+.selected-exercise-remove {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  background-color: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.selected-exercise-remove:hover {
+  color: var(--text-primary);
+  background-color: var(--state-hover);
+  border-color: var(--border-strong);
+}
+
+.selected-exercise-remove:focus-visible {
+  outline: 2px solid var(--state-focus);
+  outline-offset: 2px;
+}
+
+.selected-exercise-remove .icon {
+  width: 16px;
+  height: 16px;
+}
+
 .exercise-library {
   display: flex;
   flex-direction: column;
