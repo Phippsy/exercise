@@ -4505,6 +4505,31 @@ class WorkoutTracker {
         <span class="selected-exercise-muscle">${exercise.muscle_group}</span>
       `;
 
+      const removeBtn = document.createElement("button");
+      removeBtn.type = "button";
+      removeBtn.className = "selected-exercise-remove";
+      removeBtn.setAttribute("aria-label", `Remove ${exercise.name}`);
+      removeBtn.innerHTML = `
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M6 18L18 6" />
+        </svg>
+      `;
+
+      removeBtn.addEventListener("click", (event) => {
+        event.stopPropagation();
+        const checkbox = document.getElementById(`edit-select-${exercise.name}`);
+        if (checkbox) {
+          checkbox.checked = false;
+        }
+        this.updateEditSelectedExercises();
+      });
+
+      removeBtn.addEventListener("mousedown", (event) => {
+        event.stopPropagation();
+      });
+
+      item.appendChild(removeBtn);
+
       // Drag events
       item.addEventListener("dragstart", (e) => {
         e.dataTransfer.effectAllowed = "move";
