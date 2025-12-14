@@ -2034,6 +2034,35 @@ class WorkoutTracker {
     const currentSetCount = container.children.length;
     const setNum = setNumber || currentSetCount + 1;
 
+    const nearestPreviousRow = container.lastElementChild;
+
+    let repsValue = defaultReps;
+    let weightValue = defaultWeight;
+
+    if (
+      setNumber === null &&
+      (repsValue === null || repsValue === undefined || repsValue === "") &&
+      nearestPreviousRow
+    ) {
+      const prevSetNum = nearestPreviousRow.getAttribute("data-set-number");
+      const prevRepsInput = document.getElementById(
+        `paired${exerciseNum}-reps-${prevSetNum}`
+      );
+      repsValue = prevRepsInput ? prevRepsInput.value : "";
+    }
+
+    if (
+      setNumber === null &&
+      (weightValue === null || weightValue === undefined || weightValue === "") &&
+      nearestPreviousRow
+    ) {
+      const prevSetNum = nearestPreviousRow.getAttribute("data-set-number");
+      const prevWeightInput = document.getElementById(
+        `paired${exerciseNum}-weight-${prevSetNum}`
+      );
+      weightValue = prevWeightInput ? prevWeightInput.value : "";
+    }
+
     const row = document.createElement("div");
     row.className = "set-row";
     row.setAttribute("data-set-number", setNum);
@@ -2049,10 +2078,22 @@ class WorkoutTracker {
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14"/>
                         </svg>
                     </button>
-                    <input type="number" id="paired${exerciseNum}-reps-${setNum}" value="${defaultReps}" min="0" step="1" required>
+                    <input type="number" id="paired${exerciseNum}-reps-${setNum}" value="${repsValue}" min="0" step="1" required>
                     <button type="button" class="btn-increment" data-target="paired${exerciseNum}-reps-${setNum}" aria-label="Increase reps">
                         <svg class="icon icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14"/>
+                        </svg>
+                    </button>
+                    <button
+                      type="button"
+                      class="btn-fill-down"
+                      data-fill-type="reps"
+                      data-set="${setNum}"
+                      data-exercise="${exerciseNum}"
+                      aria-label="Fill reps from set ${setNum} down">
+                        <svg class="icon icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v10"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 11l4 4 4-4"/>
                         </svg>
                     </button>
                 </div>
@@ -2065,10 +2106,22 @@ class WorkoutTracker {
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14"/>
                         </svg>
                     </button>
-                    <input type="number" id="paired${exerciseNum}-weight-${setNum}" value="${defaultWeight}" min="0" step="0.5">
+                    <input type="number" id="paired${exerciseNum}-weight-${setNum}" value="${weightValue}" min="0" step="0.5">
                     <button type="button" class="btn-increment" data-target="paired${exerciseNum}-weight-${setNum}" aria-label="Increase weight">
                         <svg class="icon icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14"/>
+                        </svg>
+                    </button>
+                    <button
+                      type="button"
+                      class="btn-fill-down"
+                      data-fill-type="weight"
+                      data-set="${setNum}"
+                      data-exercise="${exerciseNum}"
+                      aria-label="Fill weight from set ${setNum} down">
+                        <svg class="icon icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v10"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 11l4 4 4-4"/>
                         </svg>
                     </button>
                 </div>
@@ -2107,6 +2160,15 @@ class WorkoutTracker {
       row.remove();
       this.renumberPairedSets(exerciseNum);
     });
+
+    // Add event listeners for fill-down buttons
+    row.querySelectorAll(".btn-fill-down").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const setIndex = parseInt(btn.dataset.set, 10);
+        const exerciseIndex = parseInt(btn.dataset.exercise, 10);
+        this.fillDownPairedValue(btn.dataset.fillType, setIndex, exerciseIndex);
+      });
+    });
   }
 
   renumberPairedSets(exerciseNum) {
@@ -2117,6 +2179,74 @@ class WorkoutTracker {
       const setNum = index + 1;
       row.setAttribute("data-set-number", setNum);
       row.querySelector(".set-label").textContent = `Set ${setNum}`;
+
+      const repsInput = row.querySelector(
+        `input[id^="paired${exerciseNum}-reps-"]`
+      );
+      const weightInput = row.querySelector(
+        `input[id^="paired${exerciseNum}-weight-"]`
+      );
+
+      if (repsInput) {
+        repsInput.id = `paired${exerciseNum}-reps-${setNum}`;
+      }
+
+      if (weightInput) {
+        weightInput.id = `paired${exerciseNum}-weight-${setNum}`;
+      }
+
+      row
+        .querySelectorAll('[data-target^="paired' + exerciseNum + '-reps-"]')
+        .forEach((btn) => {
+          btn.setAttribute("data-target", `paired${exerciseNum}-reps-${setNum}`);
+        });
+
+      row
+        .querySelectorAll('[data-target^="paired' + exerciseNum + '-weight-"]')
+        .forEach((btn) => {
+          btn.setAttribute(
+            "data-target",
+            `paired${exerciseNum}-weight-${setNum}`
+          );
+        });
+
+      const removeBtn = row.querySelector(".btn-remove");
+      if (removeBtn) {
+        removeBtn.setAttribute("data-set", setNum);
+      }
+
+      row.querySelectorAll(".btn-fill-down").forEach((btn) => {
+        btn.setAttribute("data-set", setNum);
+        btn.setAttribute("data-exercise", exerciseNum);
+        const labelType = btn.dataset.fillType === "weight" ? "weight" : "reps";
+        btn.setAttribute(
+          "aria-label",
+          `Fill ${labelType} from set ${setNum} down`
+        );
+      });
+    });
+  }
+
+  fillDownPairedValue(inputType, startSetNum, exerciseNum) {
+    const startIndex = parseInt(startSetNum, 10);
+    const sourceInput = document.getElementById(
+      `paired${exerciseNum}-${inputType}-${startIndex}`
+    );
+    if (!sourceInput || Number.isNaN(startIndex)) return;
+
+    const value = sourceInput.value;
+    const container = document.getElementById(`pairedSetsContainer${exerciseNum}`);
+
+    Array.from(container.children).forEach((row) => {
+      const rowNum = parseInt(row.getAttribute("data-set-number"), 10);
+      if (rowNum > startIndex) {
+        const targetInput = row.querySelector(
+          `#paired${exerciseNum}-${inputType}-${rowNum}`
+        );
+        if (targetInput) {
+          targetInput.value = value;
+        }
+      }
     });
   }
 
@@ -2162,6 +2292,10 @@ class WorkoutTracker {
     this.saveSessions();
 
     this.refreshInsights();
+
+    this.updateSessionChecklist(this.currentWorkout);
+    this.renderExerciseList();
+    this.persistCurrentSession();
 
     this.showSuccessMessage("Both sessions saved successfully!");
 
