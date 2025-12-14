@@ -11,6 +11,7 @@ class WorkoutTracker {
     this.quotes = [];
     this.currentWorkout = null;
     this.currentExercise = null;
+    this.activeSessionDrafts = {};
     this.pairMode = false;
     this.selectedExercises = [];
     this.pairedExercises = null;
@@ -36,6 +37,7 @@ class WorkoutTracker {
     await this.loadWorkouts();
     await this.loadQuotes();
     this.loadSessions();
+    this.loadActiveSessionDrafts();
     this.loadWorkoutHistory();
     this.loadUserName();
     this.loadTheme();
@@ -143,6 +145,18 @@ class WorkoutTracker {
 
   saveSessions() {
     localStorage.setItem("workoutSessions", JSON.stringify(this.sessions));
+  }
+
+  loadActiveSessionDrafts() {
+    const stored = localStorage.getItem("activeSessionDrafts");
+    this.activeSessionDrafts = stored ? JSON.parse(stored) : {};
+  }
+
+  saveActiveSessionDrafts() {
+    localStorage.setItem(
+      "activeSessionDrafts",
+      JSON.stringify(this.activeSessionDrafts || {})
+    );
   }
 
   loadWorkoutHistory() {
@@ -1334,7 +1348,7 @@ class WorkoutTracker {
 
   showExerciseList(workout) {
     this.currentWorkout = workout;
-    this.currentSession = this.createSessionFromWorkout(workout);
+    this.setCurrentSessionForWorkout(workout);
     this.pairMode = false;
     this.selectedExercises = [];
     this.hideSessionAddPanel();
@@ -1385,6 +1399,44 @@ class WorkoutTracker {
       workoutName: workout.name,
       exercises: (workout.exercises || []).map((exercise) => ({ ...exercise })),
     };
+  }
+
+  setCurrentSessionForWorkout(workout) {
+    const persisted = this.activeSessionDrafts?.[workout.id];
+
+    if (persisted?.exercises?.length) {
+      this.currentSession = {
+        ...persisted,
+        workoutId: workout.id,
+        workoutName: workout.name,
+        exercises: persisted.exercises.map((exercise) => ({ ...exercise })),
+      };
+    } else {
+      this.currentSession = this.createSessionFromWorkout(workout);
+    }
+
+    this.persistCurrentSession();
+  }
+
+  persistCurrentSession() {
+    if (!this.currentSession?.workoutId) return;
+
+    this.activeSessionDrafts[this.currentSession.workoutId] = {
+      ...this.currentSession,
+      workoutName: this.currentWorkout?.name || this.currentSession.workoutName,
+      exercises: (this.currentSession.exercises || []).map((exercise) => ({
+        ...exercise,
+      })),
+      updatedAt: new Date().toISOString(),
+    };
+
+    this.saveActiveSessionDrafts();
+  }
+
+  clearPersistedSession(workoutId) {
+    if (!this.activeSessionDrafts?.[workoutId]) return;
+    delete this.activeSessionDrafts[workoutId];
+    this.saveActiveSessionDrafts();
   }
 
   scrollToNextExercise(workout) {
@@ -1631,6 +1683,10 @@ class WorkoutTracker {
     }
     this.renderExerciseList();
 
+    if (this.currentSession) {
+      this.persistCurrentSession();
+    }
+
     // Highlight the moved exercise at its new position
     this.highlightExerciseAtIndex(toIndex);
   }
@@ -1648,6 +1704,7 @@ class WorkoutTracker {
     const removed = this.currentSession.exercises.splice(index, 1);
     this.renderExerciseList();
     this.updateSessionChecklist(this.currentWorkout);
+    this.persistCurrentSession();
     if (removed[0]) {
       this.showSuccessMessage(
         `${removed[0].name} removed from this session only`
@@ -1750,6 +1807,7 @@ class WorkoutTracker {
     this.currentSession.exercises.push({ ...exercise });
     this.renderExerciseList();
     this.updateSessionChecklist(this.currentWorkout);
+    this.persistCurrentSession();
     this.showSuccessMessage(`${exercise.name} added to this session`);
   }
 
@@ -2692,6 +2750,7 @@ class WorkoutTracker {
     this.refreshInsights();
 
     this.showSuccessMessage("Workout saved to history");
+    this.clearPersistedSession(this.currentWorkout.id);
     this.openHistoryView(summary.id);
   }
 
@@ -4346,6 +4405,8 @@ class WorkoutTracker {
     this.workouts = this.workouts.filter((w) => w.id !== workoutId);
     this.saveWorkouts();
 
+    this.clearPersistedSession(workoutId);
+
     this.renderWorkoutManager();
     this.renderWorkoutList();
 
@@ -4625,7 +4686,7 @@ class WorkoutTracker {
 
     if (this.currentWorkout && this.currentWorkout.id === workoutId) {
       this.currentWorkout = updatedWorkout;
-      this.currentSession = this.createSessionFromWorkout(updatedWorkout);
+      this.setCurrentSessionForWorkout(updatedWorkout);
 
       const workoutNameElement = document.getElementById("currentWorkoutName");
       if (workoutNameElement) {
