@@ -13,7 +13,7 @@
     <meta name="theme-color" content="#0a0a0a" />
     <title>Workout Tracker</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-    <link rel="stylesheet" href="styles.css?v=1.9.2" />
+    <link rel="stylesheet" href="styles.css?v=1.10.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -1032,6 +1032,7 @@
               Exercises
             </button>
             <button class="management-tab" data-tab="workouts">Workouts</button>
+            <button class="management-tab" data-tab="coach">Coach</button>
           </div>
 
           <!-- Exercises Tab -->
@@ -1344,6 +1345,38 @@
             <div class="management-section">
               <h3 class="management-section-title">Your Workouts</h3>
               <div id="workoutManager" class="workout-manager"></div>
+            </div>
+          </div>
+
+          <!-- Coach Tab -->
+          <div id="coachTab" class="management-tab-content">
+            <div class="management-section">
+              <h3 class="management-section-title">Coach Performance Summary</h3>
+              <p class="section-subtext">
+                Generate a structured markdown brief you can hand to a coach so
+                they can quickly learn an athlete's history, training focus, and
+                recent momentum. This export is text-only to keep it portable.
+              </p>
+              <div class="coach-summary-actions">
+                <button id="generateCoachSummaryBtn" class="btn-primary">
+                  Refresh summary
+                </button>
+                <button id="copyCoachSummaryBtn" class="btn-secondary">
+                  Copy to clipboard
+                </button>
+                <button id="downloadCoachSummaryBtn" class="btn-soft">
+                  Download .md
+                </button>
+              </div>
+              <label for="coachSummaryOutput" class="sr-only"
+                >Coach performance summary output</label
+              >
+              <textarea
+                id="coachSummaryOutput"
+                class="coach-summary-output"
+                rows="16"
+                readonly
+              ></textarea>
             </div>
           </div>
         </div>
@@ -1674,6 +1707,6 @@
       </div>
     </div>
 
-    <script src="app.js?v=1.9.2"></script>
+    <script src="app.js?v=1.10.0"></script>
   </body>
 </html>
