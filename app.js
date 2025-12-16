@@ -446,6 +446,31 @@ class WorkoutTracker {
       });
     });
 
+    const generateCoachSummaryBtn = document.getElementById(
+      "generateCoachSummaryBtn"
+    );
+    if (generateCoachSummaryBtn) {
+      generateCoachSummaryBtn.addEventListener("click", () => {
+        this.updateCoachSummaryOutput(true);
+      });
+    }
+
+    const copyCoachSummaryBtn = document.getElementById("copyCoachSummaryBtn");
+    if (copyCoachSummaryBtn) {
+      copyCoachSummaryBtn.addEventListener("click", () => {
+        this.copyCoachSummary();
+      });
+    }
+
+    const downloadCoachSummaryBtn = document.getElementById(
+      "downloadCoachSummaryBtn"
+    );
+    if (downloadCoachSummaryBtn) {
+      downloadCoachSummaryBtn.addEventListener("click", () => {
+        this.downloadCoachSummary();
+      });
+    }
+
     // Exercise creation
     document
       .getElementById("createExerciseForm")
@@ -4117,6 +4142,7 @@ class WorkoutTracker {
     this.renderExerciseLibrary();
     this.renderWorkoutManager();
     this.renderExerciseSelector();
+    this.updateCoachSummaryOutput();
   }
 
   hideManagementView() {
@@ -4142,6 +4168,9 @@ class WorkoutTracker {
     } else if (tabName === "workouts") {
       document.getElementById("workoutsTab").classList.add("active");
       this.renderExerciseSelector();
+    } else if (tabName === "coach") {
+      document.getElementById("coachTab").classList.add("active");
+      this.updateCoachSummaryOutput();
     }
   }
 
@@ -4925,6 +4954,416 @@ class WorkoutTracker {
       item.appendChild(header);
       item.appendChild(exercises);
       container.appendChild(item);
+    });
+  }
+
+  // ============================================
+  // Coach Performance Summary
+  // ============================================
+
+  updateCoachSummaryOutput(showToast = false) {
+    const output = document.getElementById("coachSummaryOutput");
+    if (!output) return;
+
+    output.value = this.buildCoachPerformanceSummary();
+    output.scrollTop = 0;
+
+    if (showToast) {
+      this.showSuccessMessage("Coach summary refreshed");
+    }
+  }
+
+  copyCoachSummary() {
+    const output = document.getElementById("coachSummaryOutput");
+    const summary = output?.value || this.buildCoachPerformanceSummary();
+
+    if (!summary) return;
+
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard
+        .writeText(summary)
+        .then(() => {
+          this.showSuccessMessage("Coach summary copied");
+        })
+        .catch(() => {
+          if (output) {
+            output.select();
+            document.execCommand("copy");
+            this.showSuccessMessage("Coach summary copied");
+          }
+        });
+      return;
+    }
+
+    if (output) {
+      output.select();
+      document.execCommand("copy");
+      this.showSuccessMessage("Coach summary copied");
+    }
+  }
+
+  downloadCoachSummary() {
+    const summary = this.buildCoachPerformanceSummary();
+    const blob = new Blob([summary], { type: "text/markdown" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `coach-performance-summary-${this.getLocalDateKey()}.md`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    this.showSuccessMessage("Coach summary downloaded");
+  }
+
+  buildCoachPerformanceSummary() {
+    const athleteName =
+      localStorage.getItem("userName")?.trim() || "Athlete";
+    const sessions = [...this.sessions];
+    const history = [...this.workoutHistory];
+    const totalSets = sessions.reduce(
+      (sum, session) => sum + (session.sets?.length || 0),
+      0
+    );
+    const totalVolume = sessions.reduce(
+      (sum, session) => sum + this.calculateVolume(session.sets || []),
+      0
+    );
+    const distinctExercises = new Set(
+      sessions.map((session) => session.exerciseName)
+    ).size;
+
+    const recentWindowDays = 30;
+    const recentCutoff = new Date();
+    recentCutoff.setDate(recentCutoff.getDate() - recentWindowDays);
+
+    const recentSessions = sessions.filter(
+      (session) => new Date(session.date) >= recentCutoff
+    );
+    const recentWorkouts = history.filter(
+      (entry) => new Date(entry.date) >= recentCutoff
+    );
+
+    const recentSets = recentSessions.reduce(
+      (sum, session) => sum + (session.sets?.length || 0),
+      0
+    );
+    const recentVolume = recentSessions.reduce(
+      (sum, session) => sum + this.calculateVolume(session.sets || []),
+      0
+    );
+
+    const recentWorkoutCount =
+      recentWorkouts.length ||
+      this.countUniqueWorkoutsFromSessions(recentSessions);
+    const workoutsLogged = history.length || this.estimateWorkoutsLogged();
+    const averageWorkoutsPerWeek =
+      recentWorkoutCount === 0
+        ? "0.0"
+        : (recentWorkoutCount / (recentWindowDays / 7)).toFixed(1);
+
+    const streaks = this.getStreaksFromDates(this.getActivityDateKeys());
+    const prCounts = this.getPrCounts(sessions, recentSessions);
+
+    const firstLog = this.getBoundaryDate(
+      [...history.map((h) => h.date), ...sessions.map((s) => s.date)],
+      "min"
+    );
+    const latestLog = this.getBoundaryDate(
+      [...history.map((h) => h.date), ...sessions.map((s) => s.date)],
+      "max"
+    );
+
+    const muscleFocus = this.describeTopCounts(
+      recentSessions.map((session) => session.muscleGroup)
+    );
+    const exerciseFocus = this.describeTopCounts(
+      recentSessions.map((session) => session.exerciseName)
+    );
+    const templateFocus = this.describeTopCounts(
+      history.length
+        ? history.map((entry) => entry.workoutName)
+        : sessions.map((session) => session.workoutName || "Unlabeled workout"),
+      3,
+      "Not enough workouts logged yet"
+    );
+
+    const averageSetsPerWorkout = this.calculateAverageSetsPerWorkout();
+    const exerciseHighlights = this.buildExerciseHighlights();
+    const lastWorkoutLine = this.describeLatestWorkout();
+
+    return `# Coach Performance Summary\n\n` +
+      `**Athlete:** ${athleteName}\n` +
+      `**Last updated:** ${this.formatDate(new Date())}\n\n` +
+      `## Lifetime Snapshot\n` +
+      `- Workouts logged: ${workoutsLogged}\n` +
+      `- Exercise sessions logged: ${sessions.length}\n` +
+      `- Sets captured: ${totalSets}\n` +
+      `- Training volume moved: ${this.formatNumber(totalVolume)} kg-reps\n` +
+      `- Distinct exercises trained: ${distinctExercises}\n` +
+      `- First log: ${firstLog || "—"} | Most recent: ${latestLog || "—"}\n` +
+      `- Consistency: current streak ${streaks.current} day${
+        streaks.current === 1 ? "" : "s"
+      } · best streak ${streaks.best} day${streaks.best === 1 ? "" : "s"}\n\n` +
+      `## Recent Focus (last ${recentWindowDays} days)\n` +
+      `- Workouts completed: ${recentWorkoutCount} (~${averageWorkoutsPerWeek}/wk)\n` +
+      `- Sets logged: ${recentSets} | Volume: ${this.formatNumber(
+        recentVolume
+      )} kg-reps\n` +
+      `- Most-used muscle groups: ${muscleFocus}\n` +
+      `- Frequently trained exercises: ${exerciseFocus}\n` +
+      `- PR highlights: ${prCounts.recentWeight} weight · ${
+        prCounts.recentVolume
+      } volume in the window\n` +
+      `- Latest activity: ${lastWorkoutLine}\n\n` +
+      `## Workout Patterns\n` +
+      `- Favorite templates: ${templateFocus}\n` +
+      `- Typical sets per workout: ${averageSetsPerWorkout}\n` +
+      `- Total PRs to date: ${prCounts.weight} weight | ${
+        prCounts.volume
+      } volume\n\n` +
+      `## Exercise Highlights\n${exerciseHighlights}`;
+  }
+
+  getActivityDateKeys() {
+    const keys = new Set();
+
+    this.workoutHistory.forEach((entry) => {
+      if (entry.date) {
+        keys.add(this.getLocalDateKey(new Date(entry.date)));
+      }
+    });
+
+    this.sessions.forEach((session) => {
+      if (session.date) {
+        keys.add(this.getLocalDateKey(new Date(session.date)));
+      }
+    });
+
+    return keys;
+  }
+
+  getStreaksFromDates(dateKeys) {
+    if (!dateKeys || dateKeys.size === 0) {
+      return { current: 0, best: 0 };
+    }
+
+    const sorted = Array.from(dateKeys)
+      .map((key) => new Date(key))
+      .sort((a, b) => a.getTime() - b.getTime());
+
+    let best = 1;
+    let currentRun = 1;
+
+    for (let i = 1; i < sorted.length; i++) {
+      const diffDays =
+        (sorted[i].getTime() - sorted[i - 1].getTime()) / 86400000;
+      if (Math.round(diffDays) === 1) {
+        currentRun += 1;
+        best = Math.max(best, currentRun);
+      } else {
+        currentRun = 1;
+      }
+    }
+
+    let current = 0;
+    const today = new Date();
+    while (dateKeys.has(this.getLocalDateKey(today))) {
+      current += 1;
+      today.setDate(today.getDate() - 1);
+    }
+
+    return { current, best };
+  }
+
+  getBoundaryDate(dateStrings, direction = "min") {
+    const validDates = dateStrings
+      .map((d) => (d ? new Date(d) : null))
+      .filter((d) => d && !isNaN(d));
+
+    if (validDates.length === 0) return null;
+
+    const target = validDates.reduce((acc, current) => {
+      if (direction === "min") {
+        return current < acc ? current : acc;
+      }
+      return current > acc ? current : acc;
+    });
+
+    return this.formatDate(target);
+  }
+
+  describeTopCounts(items, limit = 3, fallback = "No data yet") {
+    const counts = new Map();
+
+    items
+      .filter(Boolean)
+      .forEach((item) => counts.set(item, (counts.get(item) || 0) + 1));
+
+    if (counts.size === 0) return fallback;
+
+    const sorted = Array.from(counts.entries()).sort(
+      (a, b) => b[1] - a[1] || a[0].localeCompare(b[0])
+    );
+
+    return sorted
+      .slice(0, limit)
+      .map(([name, count]) => `${name} (${count})`)
+      .join(", ");
+  }
+
+  estimateWorkoutsLogged() {
+    if (!this.sessions.length) return 0;
+
+    const uniqueDays = new Set(
+      this.sessions.map((session) =>
+        `${this.getLocalDateKey(new Date(session.date))}-${
+          session.workoutId || session.workoutName || "workout"
+        }`
+      )
+    );
+
+    return uniqueDays.size;
+  }
+
+  countUniqueWorkoutsFromSessions(sessionList) {
+    if (!sessionList?.length) return 0;
+
+    const uniqueDays = new Set(
+      sessionList.map((session) =>
+        `${this.getLocalDateKey(new Date(session.date))}-${
+          session.workoutId || session.workoutName || "workout"
+        }`
+      )
+    );
+
+    return uniqueDays.size;
+  }
+
+  calculateAverageSetsPerWorkout() {
+    if (this.workoutHistory.length) {
+      const totals = this.workoutHistory.reduce(
+        (sum, entry) => sum + (entry.totalSets || 0),
+        0
+      );
+      return `${(
+        totals / Math.max(1, this.workoutHistory.length)
+      ).toFixed(1)} sets`;
+    }
+
+    if (!this.sessions.length) return "—";
+
+    const grouped = new Map();
+
+    this.sessions.forEach((session) => {
+      const key = `${this.getLocalDateKey(new Date(session.date))}-${
+        session.workoutId || session.workoutName || "workout"
+      }`;
+      const current = grouped.get(key) || 0;
+      grouped.set(key, current + (session.sets?.length || 0));
+    });
+
+    const average =
+      Array.from(grouped.values()).reduce((sum, sets) => sum + sets, 0) /
+      Math.max(1, grouped.size);
+
+    return `${average.toFixed(1)} sets`;
+  }
+
+  getPrCounts(allSessions, recentSessions) {
+    const lifetime = { weight: 0, volume: 0 };
+    const recent = { weight: 0, volume: 0 };
+
+    allSessions.forEach((session) => {
+      if (session.pr?.weight) lifetime.weight += 1;
+      if (session.pr?.volume) lifetime.volume += 1;
+    });
+
+    recentSessions.forEach((session) => {
+      if (session.pr?.weight) recent.weight += 1;
+      if (session.pr?.volume) recent.volume += 1;
+    });
+
+    return {
+      weight: lifetime.weight,
+      volume: lifetime.volume,
+      recentWeight: recent.weight,
+      recentVolume: recent.volume,
+    };
+  }
+
+  buildExerciseHighlights() {
+    if (!this.sessions.length) return "- No exercise data logged yet\n";
+
+    const stats = new Map();
+
+    this.sessions.forEach((session) => {
+      const key = session.exerciseName || "Exercise";
+      const entry = stats.get(key) || {
+        count: 0,
+        totalVolume: 0,
+        heaviest: 0,
+        lastDate: null,
+      };
+
+      entry.count += 1;
+      entry.totalVolume += this.calculateVolume(session.sets || []);
+
+      const sessionHeaviest = Math.max(
+        0,
+        ...(session.sets || []).map((set) => set.weight_kg || 0)
+      );
+      entry.heaviest = Math.max(entry.heaviest, sessionHeaviest);
+
+      const sessionDate = session.date ? new Date(session.date) : null;
+      if (sessionDate && (!entry.lastDate || sessionDate > entry.lastDate)) {
+        entry.lastDate = sessionDate;
+      }
+
+      stats.set(key, entry);
+    });
+
+    const sorted = Array.from(stats.entries()).sort(
+      (a, b) => b[1].heaviest - a[1].heaviest || b[1].count - a[1].count
+    );
+
+    return sorted
+      .slice(0, 5)
+      .map(([name, data]) => {
+        const averageVolume = data.totalVolume / Math.max(1, data.count);
+        return `- ${name}: last on ${
+          data.lastDate ? this.formatDate(data.lastDate) : "—"
+        }, heaviest set ${data.heaviest ? `${data.heaviest} kg` : "—"}, avg volume ${
+          this.formatNumber(averageVolume)
+        } kg-reps/session`;
+      })
+      .join("\n") + "\n";
+  }
+
+  describeLatestWorkout() {
+    if (this.workoutHistory.length > 0) {
+      const latest = this.workoutHistory[0];
+      return `${latest.workoutName || "Workout"} on ${this.formatDate(
+        new Date(latest.date)
+      )}`;
+    }
+
+    if (this.sessions.length > 0) {
+      const latest = this.sessions
+        .slice()
+        .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+      return `${latest.workoutName || latest.exerciseName || "Workout"} on ${
+        this.formatDate(new Date(latest.date))
+      }`;
+    }
+
+    return "No workouts logged yet";
+  }
+
+  formatNumber(value) {
+    return value.toLocaleString("en-US", {
+      maximumFractionDigits: 1,
+      minimumFractionDigits: 1,
     });
   }
 
