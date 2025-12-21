@@ -5091,6 +5091,16 @@ class WorkoutTracker {
     const averageSetsPerWorkout = this.calculateAverageSetsPerWorkout();
     const exerciseHighlights = this.buildExerciseHighlights();
     const lastWorkoutLine = this.describeLatestWorkout();
+    const frequencySummary = this.buildTrainingFrequencySection();
+    const exposureWeek = this.buildMuscleExposureSection(7);
+    const exposure28Days = this.buildMuscleExposureSection(28, true);
+    const intensitySection = this.buildIntensitySection();
+    const densitySection = this.buildDensitySection();
+    const lowerBodySection = this.buildLowerBodySection();
+    const progressSection = this.buildProgressQualitySection();
+    const coreSection = this.buildCoreTrainingSection();
+    const recencySection = this.buildRecencyInsightsSection();
+    const transparencySection = this.buildTransparencySection();
 
     return `# Coach Performance Summary\n\n` +
       `**Athlete:** ${athleteName}\n` +
@@ -5122,7 +5132,517 @@ class WorkoutTracker {
       `- Total PRs to date: ${prCounts.weight} weight | ${
         prCounts.volume
       } volume\n\n` +
-      `## Exercise Highlights\n${exerciseHighlights}`;
+      `## Training Frequency & Consistency\n${frequencySummary}\n` +
+      `\n## Weekly Muscle Exposure (last 7 days)\n${exposureWeek}\n` +
+      `\n## Muscle Exposure (last 28 days)\n${exposure28Days}\n` +
+      `\n## Intensity & Effort\n${intensitySection}\n` +
+      `\n## Session Density & Recoverability\n${densitySection}\n` +
+      `\n## Lower-Body Representation & Balance\n${lowerBodySection}\n` +
+      `\n## Progress Quality\n${progressSection}\n` +
+      `\n## Core Training Classification\n${coreSection}\n` +
+      `\n## Recency-Weighted Insights\n${recencySection}\n` +
+      `\n## Transparency & Confidence\n${transparencySection}\n` +
+      `\n## Exercise Highlights\n${exerciseHighlights}`;
+  }
+
+  buildTrainingFrequencySection() {
+    const freq7 = this.getTrainingFrequencyMetrics(7);
+    const freq14 = this.getTrainingFrequencyMetrics(14);
+    const freq28 = this.getTrainingFrequencyMetrics(28);
+
+    const consistencyBand = this.getConsistencyBand(freq7.sessionsPerWeek, freq28.sessionsPerWeek);
+
+    return [
+      `- Sessions per week (rolling): ${freq7.sessionsPerWeek} (7d) · ${freq14.sessionsPerWeek} (14d) · ${freq28.sessionsPerWeek} (28d)`,
+      `- Upper vs lower (7d): ${freq7.upperPerWeek} upper · ${freq7.lowerPerWeek} lower · ${freq7.mixedPerWeek} mixed`,
+      `- Upper vs lower (28d): ${freq28.upperPerWeek} upper · ${freq28.lowerPerWeek} lower · ${freq28.mixedPerWeek} mixed`,
+      `- Consistency band: ${consistencyBand}`,
+    ].join("\n");
+  }
+
+  getTrainingFrequencyMetrics(windowDays) {
+    const sessionsInWindow = this.getSessionsWithinDays(windowDays);
+    const workouts = this.groupSessionsByWorkout(sessionsInWindow);
+    const weeks = Math.max(1, windowDays / 7);
+
+    const sessionPerWeek = (workouts.length / weeks).toFixed(1);
+    const focusCounts = workouts.reduce(
+      (acc, workout) => {
+        if (workout.focus === "upper") acc.upper += 1;
+        else if (workout.focus === "lower") acc.lower += 1;
+        else acc.mixed += 1;
+        return acc;
+      },
+      { upper: 0, lower: 0, mixed: 0 }
+    );
+
+    return {
+      sessionsPerWeek: sessionPerWeek,
+      upperPerWeek: (focusCounts.upper / weeks).toFixed(1),
+      lowerPerWeek: (focusCounts.lower / weeks).toFixed(1),
+      mixedPerWeek: (focusCounts.mixed / weeks).toFixed(1),
+    };
+  }
+
+  getConsistencyBand(current, baseline) {
+    if (!baseline || baseline === "0.0") return "Not enough data";
+    const currentNum = parseFloat(current);
+    const baselineNum = parseFloat(baseline);
+    if (currentNum >= baselineNum * 0.9) return "High (tracking to baseline)";
+    if (currentNum >= baselineNum * 0.6) return "Moderate (slightly under baseline)";
+    return "Low (below typical cadence)";
+  }
+
+  buildMuscleExposureSection(windowDays, includeWindowLabel = false) {
+    const sessionsInWindow = this.getSessionsWithinDays(windowDays);
+    if (!sessionsInWindow.length) return "- No sessions logged in this window";
+
+    const exposure = this.getMuscleExposureBreakdown(sessionsInWindow);
+    const totalVolume = exposure.reduce((sum, item) => sum + item.volume, 0);
+
+    const rows = exposure
+      .sort((a, b) => b.sets - a.sets)
+      .map((item) => {
+        const pct = totalVolume > 0 ? Math.round((item.volume / totalVolume) * 100) : 0;
+        return `- ${item.muscle}: ${item.sets} sets (${pct}% volume) across ${item.sessions} sessions — ${item.status}`;
+      });
+
+    if (includeWindowLabel) {
+      rows.unshift(`Window: last ${windowDays} days`);
+    }
+
+    return rows.join("\n");
+  }
+
+  getMuscleExposureBreakdown(sessionList) {
+    const thresholds = { under: 6, productive: 12, high: 20 };
+    const exposureMap = new Map();
+
+    sessionList.forEach((session) => {
+      const muscle = session.muscleGroup || "Unspecified";
+      const sets = session.sets?.length || 0;
+      const volume = this.calculateVolume(session.sets || []);
+      const current = exposureMap.get(muscle) || { sets: 0, volume: 0, sessions: 0 };
+      exposureMap.set(muscle, {
+        sets: current.sets + sets,
+        volume: current.volume + volume,
+        sessions: current.sessions + 1,
+      });
+    });
+
+    return Array.from(exposureMap.entries()).map(([muscle, stats]) => ({
+      muscle,
+      ...stats,
+      status: this.classifyExposureStatus(stats.sets, thresholds),
+    }));
+  }
+
+  classifyExposureStatus(sets, thresholds) {
+    if (sets === 0) return "No exposure";
+    if (sets < thresholds.under) return "Underexposed";
+    if (sets < thresholds.productive) return "Productive";
+    if (sets < thresholds.high) return "High";
+    return "Excessive";
+  }
+
+  buildIntensitySection() {
+    const summary7 = this.getEffortDistribution(7);
+    const summary28 = this.getEffortDistribution(28);
+
+    return [
+      `- Effort per workout uses inferred banding from rep drop-off and load; RPE not logged.`,
+      `- Distribution (7d): ${summary7}`,
+      `- Distribution (28d): ${summary28}`,
+    ].join("\n");
+  }
+
+  getEffortDistribution(windowDays) {
+    const sessionsInWindow = this.getSessionsWithinDays(windowDays);
+    const workouts = this.groupSessionsByWorkout(sessionsInWindow);
+    if (!workouts.length) return "no data";
+
+    const counts = { Easy: 0, Moderate: 0, Hard: 0, "Very Hard": 0 };
+
+    workouts.forEach((workout) => {
+      const band = this.getWorkoutEffortBand(workout);
+      counts[band] += 1;
+    });
+
+    const total = workouts.length;
+    return Object.entries(counts)
+      .map(([band, count]) => `${band} ${Math.round((count / total) * 100)}%`)
+      .join(" · ");
+  }
+
+  getWorkoutEffortBand(workout) {
+    if (!workout.sets) return "Easy";
+    const allSets = workout.sets;
+    if (!allSets.length) return "Easy";
+
+    const reps = allSets.map((set) => set.reps || 0).filter((r) => r > 0);
+    const weights = allSets.map((set) => set.weight_kg || 0);
+    const volume = workout.volume || 0;
+    const avgLoad = reps.length ? volume / reps.reduce((sum, r) => sum + r, 0) : 0;
+    const maxReps = reps.length ? Math.max(...reps) : 0;
+    const minReps = reps.length ? Math.min(...reps) : 0;
+    const repDrop = maxReps - minReps;
+    const maxWeight = weights.length ? Math.max(...weights) : 0;
+
+    if (repDrop >= 4 || avgLoad >= 90 || maxWeight >= 120) return "Very Hard";
+    if (repDrop >= 3 || avgLoad >= 65 || maxWeight >= 90) return "Hard";
+    if (repDrop >= 1 || avgLoad >= 40 || maxWeight >= 60) return "Moderate";
+    return "Easy";
+  }
+
+  buildDensitySection() {
+    const last7 = this.getSessionDensityMetrics(7);
+    const prior7 = this.getSessionDensityMetrics(7, 7);
+
+    const trend = this.describeDensityTrend(last7.setsPerHour, prior7.setsPerHour);
+
+    return [
+      `- Avg session duration (estimated): ${last7.avgDuration} min`,
+      `- Sets per hour: ${last7.setsPerHour} | Volume per minute: ${last7.volumePerMinute} kg`,
+      `- Density trend vs prior week: ${trend}`,
+    ].join("\n");
+  }
+
+  getSessionDensityMetrics(windowDays, offsetDays = 0) {
+    const end = new Date();
+    end.setDate(end.getDate() - offsetDays);
+    const start = new Date();
+    start.setDate(start.getDate() - windowDays - offsetDays);
+
+    const sessionsInWindow = this.sessions.filter((session) => {
+      if (!session.date) return false;
+      const sessionDate = new Date(session.date);
+      return sessionDate >= start && sessionDate < end;
+    });
+
+    const workouts = this.groupSessionsByWorkout(sessionsInWindow);
+    if (!workouts.length) {
+      return { avgDuration: "—", setsPerHour: "0.0", volumePerMinute: "0.0" };
+    }
+
+    const totals = workouts.reduce(
+      (acc, workout) => {
+        const estimatedDuration = Math.max(20, workout.setCount * 3);
+        acc.duration += estimatedDuration;
+        acc.sets += workout.setCount;
+        acc.volume += workout.volume;
+        return acc;
+      },
+      { duration: 0, sets: 0, volume: 0 }
+    );
+
+    const avgDuration = Math.round(totals.duration / workouts.length);
+    const setsPerHour = ((totals.sets / Math.max(1, totals.duration)) * 60).toFixed(1);
+    const volumePerMinute = (totals.volume / Math.max(1, totals.duration)).toFixed(1);
+
+    return { avgDuration, setsPerHour, volumePerMinute };
+  }
+
+  describeDensityTrend(current, prior) {
+    const currentNum = parseFloat(current || "0");
+    const priorNum = parseFloat(prior || "0");
+    if (!priorNum) return "Not enough data";
+    if (currentNum > priorNum * 1.05) return "↑ denser than last week";
+    if (currentNum < priorNum * 0.95) return "↓ lighter density";
+    return "→ steady";
+  }
+
+  buildLowerBodySection() {
+    const last7 = this.getTrainingFrequencyMetrics(7);
+    const ratio = this.getUpperLowerVolumeRatio(28);
+
+    const warning = parseFloat(last7.lowerPerWeek) <= 1
+      ? "⚠ Legs trained once or less in the last 7 days"
+      : "Lower-body frequency on track";
+
+    return [
+      `- Lower-body frequency flag: ${warning}`,
+      `- Upper vs lower volume ratio (28d): ${ratio.ratio} — ${ratio.label}`,
+    ].join("\n");
+  }
+
+  getUpperLowerVolumeRatio(windowDays) {
+    const sessionsInWindow = this.getSessionsWithinDays(windowDays);
+    let upperVolume = 0;
+    let lowerVolume = 0;
+
+    sessionsInWindow.forEach((session) => {
+      const volume = this.calculateVolume(session.sets || []);
+      const bucket = this.classifyMuscleGroup(session.muscleGroup);
+      if (bucket === "upper") upperVolume += volume;
+      else if (bucket === "lower") lowerVolume += volume;
+    });
+
+    const ratioValue = upperVolume === 0 && lowerVolume === 0
+      ? 1
+      : lowerVolume / Math.max(upperVolume, 1);
+
+    let label = "Balanced";
+    if (ratioValue < 0.65) label = "Upper-dominant";
+    else if (ratioValue > 1.35) label = "Lower-dominant";
+
+    return { ratio: ratioValue.toFixed(2), label };
+  }
+
+  buildProgressQualitySection() {
+    const insights = this.getProgressQualityInsights(28);
+    if (!insights.length) return "- Not enough repeated sessions to judge progress";
+    return insights.map((line) => `- ${line}`).join("\n");
+  }
+
+  getProgressQualityInsights(windowDays) {
+    const sessionsInWindow = this.getSessionsWithinDays(windowDays);
+    const byExercise = new Map();
+
+    sessionsInWindow.forEach((session) => {
+      const key = session.exerciseName || "Exercise";
+      const list = byExercise.get(key) || [];
+      list.push(session);
+      byExercise.set(key, list);
+    });
+
+    const insights = [];
+
+    byExercise.forEach((list, exercise) => {
+      if (list.length < 2) return;
+      const sorted = list.sort((a, b) => new Date(a.date) - new Date(b.date));
+      const latest = sorted[sorted.length - 1];
+      const previous = sorted[sorted.length - 2];
+
+      const latestVolume = this.calculateVolume(latest.sets || []);
+      const previousVolume = this.calculateVolume(previous.sets || []);
+      const volumeChange = previousVolume ? (latestVolume - previousVolume) / previousVolume : 0;
+
+      const latestAvgReps = this.getAverageReps(latest.sets || []);
+      const previousAvgReps = this.getAverageReps(previous.sets || []);
+      const repChange = latestAvgReps - previousAvgReps;
+
+      if (Math.abs(volumeChange) < 0.05) {
+        insights.push(`${exercise}: loads stable (repeat performance) over last two sessions`);
+      } else if (volumeChange > 0.1) {
+        insights.push(`${exercise}: volume trending up ${Math.round(volumeChange * 100)}% over last outing`);
+      }
+
+      if (repChange > 1) {
+        insights.push(`${exercise}: reps before failure increasing (inferred)`);
+      }
+    });
+
+    return insights.slice(0, 6);
+  }
+
+  getAverageReps(sets) {
+    if (!sets?.length) return 0;
+    const totalReps = sets.reduce((sum, set) => sum + (set.reps || 0), 0);
+    return totalReps / sets.length;
+  }
+
+  buildCoreTrainingSection() {
+    const summary7 = this.getCoreExposureSummary(7);
+    const summary28 = this.getCoreExposureSummary(28);
+
+    const redundancyFlag = summary7.dominantShare > 0.5
+      ? `⚠ ${summary7.dominantFunction} dominates (~${Math.round(summary7.dominantShare * 100)}%)`
+      : "Balanced mix across functions";
+
+    const describe = (summary, label) =>
+      `${label}: ${summary.lines.length ? summary.lines.join(" · ") : "No core work logged"}`;
+
+    return [
+      describe(summary7, "7d"),
+      describe(summary28, "28d"),
+      `Redundancy check: ${redundancyFlag}`,
+    ].join("\n");
+  }
+
+  getCoreExposureSummary(windowDays) {
+    const sessionsInWindow = this.getSessionsWithinDays(windowDays);
+    const buckets = new Map();
+
+    sessionsInWindow.forEach((session) => {
+      const fn = this.classifyCoreFunction(session.exerciseName || "");
+      if (!fn) return;
+      const sets = session.sets?.length || 0;
+      buckets.set(fn, (buckets.get(fn) || 0) + sets);
+    });
+
+    const total = Array.from(buckets.values()).reduce((sum, v) => sum + v, 0);
+    const lines = Array.from(buckets.entries()).map(([fn, sets]) => {
+      const pct = total ? Math.round((sets / total) * 100) : 0;
+      return `${fn}: ${sets} sets (${pct}%)`;
+    });
+
+    const dominant = lines.length
+      ? lines
+          .map((line) => {
+            const [fn, rest] = line.split(": ");
+            const pctMatch = rest.match(/(\d+)%/);
+            const pct = pctMatch ? parseInt(pctMatch[1], 10) / 100 : 0;
+            return { fn, pct };
+          })
+          .sort((a, b) => b.pct - a.pct)[0]
+      : { fn: "", pct: 0 };
+
+    return {
+      lines,
+      dominantFunction: dominant.fn,
+      dominantShare: dominant.pct,
+    };
+  }
+
+  classifyCoreFunction(exerciseName) {
+    const name = exerciseName.toLowerCase();
+    if (name.includes("pallof") || name.includes("anti-rotation")) return "Anti-rotation";
+    if (name.includes("plank") || name.includes("rollout") || name.includes("dead bug")) return "Anti-extension";
+    if (name.includes("carry") || name.includes("farmers")) return "Anti-extension";
+    if (name.includes("side bend") || name.includes("side plank") || name.includes("windmill")) return "Lateral flexion";
+    if (name.includes("crunch") || name.includes("sit-up") || name.includes("leg raise") || name.includes("toes to bar"))
+      return "Flexion/hip flexion";
+    return "";
+  }
+
+  buildRecencyInsightsSection() {
+    const sessions = this.getSessionsWithinDays(10);
+    if (!sessions.length) return "- No activity in the last 10 days";
+
+    const muscleExposure = this.getMuscleExposureBreakdown(sessions)
+      .sort((a, b) => b.sets - a.sets)
+      .slice(0, 3)
+      .map((item) => `${item.muscle} (${item.sets} sets)`)
+      .join(", ");
+
+    const effort = this.getEffortDistribution(10);
+
+    const gaps = this.getMuscleExposureBreakdown(sessions)
+      .filter((item) => item.status === "Underexposed")
+      .map((item) => item.muscle)
+      .slice(0, 2)
+      .join(", ");
+
+    return [
+      `- Recent microcycle (10d): focus on ${muscleExposure || "n/a"}`,
+      `- Intensity mix: ${effort}`,
+      `- Gaps/overloads: ${gaps || "none flagged"}`,
+    ].join("\n");
+  }
+
+  buildTransparencySection() {
+    const completeness = this.getDataCompleteness(28);
+    const underReporting = completeness.flag;
+
+    return [
+      `- Data completeness: ${completeness.score}% (${completeness.confidence} confidence)`,
+      `- Under-reporting watch: ${underReporting}`,
+    ].join("\n");
+  }
+
+  getDataCompleteness(windowDays) {
+    const sessionsInWindow = this.getSessionsWithinDays(windowDays);
+    const workouts = this.groupSessionsByWorkout(sessionsInWindow);
+    const uniqueDays = new Set(workouts.map((workout) => this.getLocalDateKey(workout.date)));
+    const expectedPerWeek = 4;
+    const expectedTotal = expectedPerWeek * (windowDays / 7);
+    const score = Math.min(100, Math.round((uniqueDays.size / expectedTotal) * 100));
+
+    let confidence = "Low";
+    if (score >= 75) confidence = "High";
+    else if (score >= 40) confidence = "Medium";
+
+    const weekly28 = this.getTrainingFrequencyMetrics(28);
+    const weekly7 = this.getTrainingFrequencyMetrics(7);
+    const flag = parseFloat(weekly7.sessionsPerWeek) < parseFloat(weekly28.sessionsPerWeek) * 0.5
+      ? "⚠ Recent logging well below baseline"
+      : "No obvious under-reporting";
+
+    return { score, confidence, flag };
+  }
+
+  groupSessionsByWorkout(sessionList) {
+    const grouped = new Map();
+    sessionList.forEach((session) => {
+      if (!session.date) return;
+      const key = `${this.getLocalDateKey(new Date(session.date))}-${
+        session.workoutId || session.workoutName || "workout"
+      }`;
+      const entry = grouped.get(key) || {
+        id: key,
+        date: new Date(session.date),
+        workoutName: session.workoutName || "Unlabeled workout",
+        setCount: 0,
+        volume: 0,
+        focusCounts: { upper: 0, lower: 0, core: 0, other: 0 },
+        sets: [],
+        sessions: [],
+      };
+
+      const muscleBucket = this.classifyMuscleGroup(session.muscleGroup);
+      entry.focusCounts[muscleBucket] = (entry.focusCounts[muscleBucket] || 0) + 1;
+      entry.setCount += session.sets?.length || 0;
+      entry.volume += this.calculateVolume(session.sets || []);
+      entry.sets.push(...(session.sets || []));
+      entry.sessions.push(session);
+
+      grouped.set(key, entry);
+    });
+
+    return Array.from(grouped.values()).map((entry) => ({
+      ...entry,
+      focus: this.getWorkoutFocus(entry.focusCounts),
+    }));
+  }
+
+  classifyMuscleGroup(muscle) {
+    const name = (muscle || "").toLowerCase();
+    const lowerGroups = [
+      "quads",
+      "hamstrings",
+      "glutes",
+      "calves",
+      "legs",
+      "lower back",
+      "adductors",
+      "abductors",
+      "hips",
+    ];
+    const upperGroups = [
+      "back",
+      "chest",
+      "shoulders",
+      "traps",
+      "trapezius",
+      "triceps",
+      "biceps",
+      "forearms",
+      "upper",
+    ];
+    const coreGroups = ["core", "abs", "obliques"];
+
+    if (lowerGroups.some((group) => name.includes(group))) return "lower";
+    if (upperGroups.some((group) => name.includes(group))) return "upper";
+    if (coreGroups.some((group) => name.includes(group))) return "core";
+    return "other";
+  }
+
+  getWorkoutFocus(counts) {
+    const { upper = 0, lower = 0, core = 0, other = 0 } = counts || {};
+    if (upper > lower && upper >= core && upper >= other) return "upper";
+    if (lower > upper && lower >= core && lower >= other) return "lower";
+    if (core > upper && core > lower) return "core";
+    return "mixed";
+  }
+
+  getSessionsWithinDays(windowDays) {
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - windowDays);
+    return this.sessions.filter((session) => {
+      if (!session.date) return false;
+      const sessionDate = new Date(session.date);
+      return sessionDate >= cutoff;
+    });
   }
 
   getActivityDateKeys() {
