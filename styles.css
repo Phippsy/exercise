@@ -167,7 +167,9 @@ body {
 .app-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: calc(80px + env(safe-area-inset-top)) var(--spacing-lg) 96px;
+  padding: var(--app-header-height, calc(80px + env(safe-area-inset-top)))
+    var(--spacing-lg)
+    var(--app-bottom-padding, calc(96px + env(safe-area-inset-bottom)));
   width: 100%;
   overflow-x: hidden;
   position: relative;
@@ -246,8 +248,9 @@ body {
 
 .header-context-row {
   display: none;
-  align-items: center;
-  gap: var(--spacing-sm);
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs) var(--spacing-sm);
   margin-top: var(--spacing-sm);
   padding-top: var(--spacing-sm);
   border-top: 1px solid var(--border-subtle);
@@ -259,6 +262,7 @@ body {
   font-weight: var(--font-weight-bold);
   flex: 1;
   min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .header-context-title-editable {
@@ -1386,6 +1390,19 @@ button {
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
   line-height: var(--line-height-tight);
+  overflow-wrap: anywhere;
+}
+
+.title-auto-fit {
+  display: block;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+.title-auto-fit.title-clamped {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 /* ============================================
@@ -2501,7 +2518,9 @@ input[type="number"]::-webkit-outer-spin-button {
 @media (max-width: 768px) {
   /* Tighter spacing on mobile */
   .app-container {
-    padding: 70px var(--spacing-sm) var(--spacing-sm);
+    padding: var(--app-header-height, calc(70px + env(safe-area-inset-top)))
+      var(--spacing-sm)
+      var(--app-bottom-padding, calc(var(--spacing-sm) + env(safe-area-inset-bottom)));
   }
 
   /* Keep header visible at top without covering content */
@@ -2607,7 +2626,7 @@ input[type="number"]::-webkit-outer-spin-button {
   }
 
   .app-container {
-    padding-bottom: 160px;
+    padding-bottom: var(--app-bottom-padding, calc(160px + env(safe-area-inset-bottom)));
   }
 
   /* Section headers */

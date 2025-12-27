@@ -50,6 +50,8 @@ class WorkoutTracker {
     this.setupOnboarding();
     this.updateCurrentDate();
     this.initializeDailyQuoteCard();
+    this.updateLayoutOffsets();
+    this.autoResizeExerciseTitles();
   }
 
   // ============================================
@@ -414,6 +416,11 @@ class WorkoutTracker {
         this.copySelectedWorkoutShareCard();
       });
     }
+
+    window.addEventListener("resize", () => {
+      this.updateLayoutOffsets();
+      this.autoResizeExerciseTitles();
+    });
 
     const exportSessionBtn = document.getElementById("exportSessionBtn");
     if (exportSessionBtn) {
@@ -859,6 +866,8 @@ class WorkoutTracker {
     document.getElementById(viewId).classList.remove("hidden");
     this.updateBottomBackBar(viewId);
     this.updateHeaderContextTitle();
+    this.autoResizeExerciseTitles();
+    this.updateLayoutOffsets();
 
     // Force scroll to top - use multiple approaches to ensure it works
     document.documentElement.scrollTop = 0;
@@ -931,6 +940,90 @@ class WorkoutTracker {
       headerContextRow.style.display = "none";
       disableEditing();
     }
+
+    this.autoResizeExerciseTitles();
+    this.updateLayoutOffsets();
+  }
+
+  autoResizeTitle(element, { maxLines = 2, minFontSize = 14 } = {}) {
+    if (!element) return;
+
+    const computed = window.getComputedStyle(element);
+    const baseFontSize =
+      parseFloat(element.dataset.originalFontSize) ||
+      parseFloat(computed.fontSize);
+
+    if (!element.dataset.originalFontSize) {
+      element.dataset.originalFontSize = baseFontSize;
+    }
+
+    element.classList.remove("title-clamped");
+    element.style.maxHeight = "none";
+    element.style.fontSize = `${baseFontSize}px`;
+
+    let currentSize = baseFontSize;
+    let lineHeight = parseFloat(window.getComputedStyle(element).lineHeight);
+    if (!lineHeight || Number.isNaN(lineHeight)) {
+      lineHeight = currentSize * 1.2;
+    }
+    let maxHeight = lineHeight * maxLines;
+
+    while (currentSize > minFontSize && element.scrollHeight > maxHeight + 1) {
+      currentSize -= 1;
+      element.style.fontSize = `${currentSize}px`;
+      lineHeight = parseFloat(window.getComputedStyle(element).lineHeight);
+      if (!lineHeight || Number.isNaN(lineHeight)) {
+        lineHeight = currentSize * 1.2;
+      }
+      maxHeight = lineHeight * maxLines;
+    }
+
+    element.style.maxHeight = `${maxHeight}px`;
+
+    if (element.scrollHeight > maxHeight + 1) {
+      element.classList.add("title-clamped");
+    }
+  }
+
+  autoResizeExerciseTitles() {
+    const elements = [
+      document.getElementById("headerContextTitle"),
+      document.getElementById("exerciseName"),
+      document.getElementById("pairedExercise1Name"),
+      document.getElementById("pairedExercise2Name"),
+    ];
+
+    elements.forEach((element) => {
+      if (element) {
+        this.autoResizeTitle(element, { maxLines: 2, minFontSize: 14 });
+      }
+    });
+  }
+
+  updateLayoutOffsets() {
+    const header = document.querySelector(".app-header");
+    const bottomNav = document.querySelector(".mobile-bottom-nav");
+    const bottomBackBar = document.getElementById("bottomBackBar");
+    const headerHeight = header?.getBoundingClientRect().height || 80;
+    const bottomNavVisible =
+      bottomNav && window.getComputedStyle(bottomNav).display !== "none";
+    const bottomNavHeight = bottomNavVisible
+      ? bottomNav.getBoundingClientRect().height
+      : 0;
+    const bottomBackHeight =
+      bottomBackBar && !bottomBackBar.classList.contains("hidden")
+        ? bottomBackBar.getBoundingClientRect().height
+        : 0;
+    const bottomPadding = Math.max(96, bottomNavHeight + bottomBackHeight + 24);
+
+    document.documentElement.style.setProperty(
+      "--app-header-height",
+      `${headerHeight}px`
+    );
+    document.documentElement.style.setProperty(
+      "--app-bottom-padding",
+      `${bottomPadding}px`
+    );
   }
 
   handleHeaderContextTitleBlur() {
@@ -950,6 +1043,7 @@ class WorkoutTracker {
         if (workoutNameElement) {
           workoutNameElement.textContent = this.currentWorkout.name;
         }
+        this.autoResizeExerciseTitles();
         return;
       }
 
@@ -968,6 +1062,7 @@ class WorkoutTracker {
         this.renderWorkoutList();
         this.renderExerciseList();
       }
+      this.autoResizeExerciseTitles();
     } else if (mode === "exercise") {
       if (!this.currentExercise || this.pairedExercises) return;
 
@@ -979,6 +1074,7 @@ class WorkoutTracker {
         if (exerciseNameElement) {
           exerciseNameElement.textContent = originalName;
         }
+        this.autoResizeExerciseTitles();
         return;
       }
 
@@ -996,6 +1092,7 @@ class WorkoutTracker {
         if (exerciseNameElement) {
           exerciseNameElement.textContent = originalName;
         }
+        this.autoResizeExerciseTitles();
         return;
       }
 
@@ -1017,6 +1114,7 @@ class WorkoutTracker {
         exerciseNameElement.textContent = newName;
       }
       headerContextTitle.textContent = newName;
+      this.autoResizeExerciseTitles();
     }
   }
 
@@ -1093,6 +1191,14 @@ class WorkoutTracker {
         endWorkoutBtn.click();
       }
     } else if (currentView === "exerciseDetailView") {
+      if (this.pairedExercises && this.pairedExercises.length === 2) {
+        const savePairedBtn = document.getElementById("savePairedSessionBtn");
+        if (savePairedBtn) {
+          savePairedBtn.click();
+        }
+        return;
+      }
+
       // Trigger "Save Session" action
       const saveSessionBtn = document.getElementById("saveSessionBtn");
       if (saveSessionBtn) {
@@ -1985,6 +2091,9 @@ class WorkoutTracker {
 
       headerContextRow.style.display = "flex";
     }
+
+    this.autoResizeExerciseTitles();
+    this.updateLayoutOffsets();
   }
 
   renderPairedPreviousSession(exercise, containerId) {
