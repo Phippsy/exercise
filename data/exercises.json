@@ -518,6 +518,85 @@
                     "form_video": "https://www.youtube.com/shorts/w00oAfp_9xM"
                 }
             ]
+        },
+        {
+            "id": 7,
+            "name": "Secret Workout No. 5 (≈45 min)",
+            "date": null,
+            "exercises": [
+                {
+                    "name": "Chest Press - Flat Bench (Dumbbells)",
+                    "muscle_group": "Chest",
+                    "sets": 3,
+                    "reps": 3,
+                    "weight_kg": null,
+                    "notes": "Superset A1: Heavy, controlled presses for a full chest pump.",
+                    "form_video": "https://www.youtube.com/watch?v=pKZMNVbfUzQ"
+                },
+                {
+                    "name": "Rope Tricep Pushdown",
+                    "muscle_group": "Triceps",
+                    "sets": 3,
+                    "reps": 3,
+                    "weight_kg": null,
+                    "notes": "Superset A2: Keep elbows pinned and squeeze at full extension.",
+                    "form_video": "https://www.youtube.com/watch?v=vB5OHsJ3EME"
+                },
+                {
+                    "name": "Front-Facing Lat Pulldown",
+                    "muscle_group": "Back",
+                    "sets": 3,
+                    "reps": 3,
+                    "weight_kg": null,
+                    "notes": "Superset B1: Pull to upper chest for lat width.",
+                    "form_video": "https://www.youtube.com/watch?v=CAwf7n6Luuc"
+                },
+                {
+                    "name": "EZ Bar Curl",
+                    "muscle_group": "Biceps",
+                    "sets": 3,
+                    "reps": 3,
+                    "weight_kg": null,
+                    "notes": "Superset B2: Smooth tempo, elbows tucked for bicep peak.",
+                    "form_video": "https://www.youtube.com/watch?v=cdrd8DcMDwk"
+                },
+                {
+                    "name": "Angled Cable Chest Fly (High-to-Low)",
+                    "muscle_group": "Chest",
+                    "sets": 3,
+                    "reps": 3,
+                    "weight_kg": null,
+                    "notes": "Superset C1: High-to-low path to emphasize lower chest.",
+                    "form_video": "https://www.youtube.com/watch?v=Iweqb_Yd_14"
+                },
+                {
+                    "name": "Landmine Shoulder Press",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": 3,
+                    "weight_kg": null,
+                    "notes": "Superset C2: Lean slightly forward to light up the delts.",
+                    "form_video": "https://www.youtube.com/watch?v=M1k-y3X-xkc"
+                },
+                {
+                    "name": "Ab Crunch Machine (Cable or Selectorized)",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": 3,
+                    "weight_kg": null,
+                    "notes": "Superset D1: Exhale hard at the bottom for core focus.",
+                    "form_video": "https://www.youtube.com/watch?v=k9AlYRt-b0E"
+                },
+                {
+                    "name": "TRX Fallout",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": 3,
+                    "weight_kg": null,
+                    "notes": "Superset D2: Keep ribs down and reach long for deep core.",
+                    "form_video": "https://www.youtube.com/watch?v=O94yvafBw1w"
+                }
+            ]
         }
     ]
 }
