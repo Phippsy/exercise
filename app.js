@@ -5198,18 +5198,15 @@ class WorkoutTracker {
     );
 
     const averageSetsPerWorkout = this.calculateAverageSetsPerWorkout();
-    const exerciseHighlights = this.buildExerciseHighlights();
     const lastWorkoutLine = this.describeLatestWorkout();
     const frequencySummary = this.buildTrainingFrequencySection();
-    const exposureWeek = this.buildMuscleExposureSection(7);
-    const exposure28Days = this.buildMuscleExposureSection(28, true);
+    const exerciseCount7 = this.buildExerciseCountSection(7);
+    const exerciseCount28 = this.buildExerciseCountSection(28);
     const intensitySection = this.buildIntensitySection();
     const densitySection = this.buildDensitySection();
-    const lowerBodySection = this.buildLowerBodySection();
     const progressSection = this.buildProgressQualitySection();
     const coreSection = this.buildCoreTrainingSection();
     const recencySection = this.buildRecencyInsightsSection();
-    const transparencySection = this.buildTransparencySection();
 
     return `# Coach Performance Summary\n\n` +
       `**Athlete:** ${athleteName}\n` +
@@ -5235,6 +5232,8 @@ class WorkoutTracker {
         prCounts.recentVolume
       } volume in the window\n` +
       `- Latest activity: ${lastWorkoutLine}\n\n` +
+      `## Exercises count (7 days)\n${exerciseCount7}\n` +
+      `\n## Exercises count (28 days)\n${exerciseCount28}\n` +
       `## Workout Patterns\n` +
       `- Favorite templates: ${templateFocus}\n` +
       `- Typical sets per workout: ${averageSetsPerWorkout}\n` +
@@ -5242,16 +5241,11 @@ class WorkoutTracker {
         prCounts.volume
       } volume\n\n` +
       `## Training Frequency & Consistency\n${frequencySummary}\n` +
-      `\n## Weekly Muscle Exposure (last 7 days)\n${exposureWeek}\n` +
-      `\n## Muscle Exposure (last 28 days)\n${exposure28Days}\n` +
       `\n## Intensity & Effort\n${intensitySection}\n` +
       `\n## Session Density & Recoverability\n${densitySection}\n` +
-      `\n## Lower-Body Representation & Balance\n${lowerBodySection}\n` +
       `\n## Progress Quality\n${progressSection}\n` +
       `\n## Core Training Classification\n${coreSection}\n` +
-      `\n## Recency-Weighted Insights\n${recencySection}\n` +
-      `\n## Transparency & Confidence\n${transparencySection}\n` +
-      `\n## Exercise Highlights\n${exerciseHighlights}`;
+      `\n## Recency-Weighted Insights\n${recencySection}\n`;
   }
 
   buildTrainingFrequencySection() {
@@ -5321,6 +5315,36 @@ class WorkoutTracker {
     }
 
     return rows.join("\n");
+  }
+
+  buildExerciseCountSection(windowDays) {
+    const sessionsInWindow = this.getSessionsWithinDays(windowDays);
+    if (!sessionsInWindow.length) return "- No sessions logged in this window";
+
+    const totals = new Map();
+
+    sessionsInWindow.forEach((session) => {
+      const name = session.exerciseName || "Unspecified exercise";
+      const sets = session.sets || [];
+      const reps = sets.reduce((sum, set) => sum + (set.reps || 0), 0);
+      const volume = this.calculateVolume(sets);
+      const current = totals.get(name) || { reps: 0, volume: 0 };
+      totals.set(name, {
+        reps: current.reps + reps,
+        volume: current.volume + volume,
+      });
+    });
+
+    return Array.from(totals.entries())
+      .sort((a, b) => {
+        if (b[1].reps !== a[1].reps) return b[1].reps - a[1].reps;
+        return b[1].volume - a[1].volume;
+      })
+      .map(
+        ([name, stats]) =>
+          `- ${name}: ${stats.reps} reps | ${this.formatNumber(stats.volume)} kg`
+      )
+      .join("\n");
   }
 
   getMuscleExposureBreakdown(sessionList) {
