@@ -5145,6 +5145,7 @@ class WorkoutTracker {
 
     output.value = this.buildCoachPerformanceSummary();
     output.scrollTop = 0;
+    this.renderCoachPerformanceCharts();
 
     if (showToast) {
       this.showSuccessMessage("Coach summary refreshed");
