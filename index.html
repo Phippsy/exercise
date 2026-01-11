@@ -13,7 +13,7 @@
     <meta name="theme-color" content="#0a0a0a" />
     <title>Workout Tracker</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-    <link rel="stylesheet" href="styles.css?v=1.10.3" />
+    <link rel="stylesheet" href="styles.css?v=1.11.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -1380,6 +1380,34 @@
                 readonly
               ></textarea>
             </div>
+            <div class="management-section">
+              <h3 class="management-section-title">Sets by Exercise</h3>
+              <div class="insight-grid">
+                <div class="card compact-card">
+                  <div class="card-header-row">
+                    <div>
+                      <h3 class="card-title-sm">Last 7 Days</h3>
+                      <p class="card-subtitle">Sets per exercise</p>
+                    </div>
+                    <span id="coachSetsTotal7" class="pill pill-soft"></span>
+                  </div>
+                  <div id="coachSetsChart7" class="mini-bar-chart"></div>
+                  <div id="coachSetsTrend7" class="chart-caption"></div>
+                </div>
+
+                <div class="card compact-card">
+                  <div class="card-header-row">
+                    <div>
+                      <h3 class="card-title-sm">Last 28 Days</h3>
+                      <p class="card-subtitle">Sets per exercise</p>
+                    </div>
+                    <span id="coachSetsTotal28" class="pill pill-soft"></span>
+                  </div>
+                  <div id="coachSetsChart28" class="mini-bar-chart"></div>
+                  <div id="coachSetsTrend28" class="chart-caption"></div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </aside>
@@ -1709,6 +1737,6 @@
       </div>
     </div>
 
-    <script src="app.js?v=1.10.3"></script>
+    <script src="app.js?v=1.11.0"></script>
   </body>
 </html>

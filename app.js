@@ -3629,6 +3629,7 @@ class WorkoutTracker {
     }
     this.renderActivityOverview();
     this.renderWorkoutOverview();
+    this.renderCoachPerformanceCharts();
     if (this.currentWorkout) {
       this.renderWorkoutInsights(this.currentWorkout);
     }
@@ -3662,6 +3663,48 @@ class WorkoutTracker {
         value: day.value,
       }))
     );
+  }
+
+  renderCoachPerformanceCharts() {
+    const chart7 = document.getElementById("coachSetsChart7");
+    const chart28 = document.getElementById("coachSetsChart28");
+
+    if (!chart7 || !chart28) return;
+
+    const entries7 = this.getSetCountsByExercise(7);
+    const entries28 = this.getSetCountsByExercise(28);
+
+    const total7 = entries7.reduce((sum, entry) => sum + entry.value, 0);
+    const total28 = entries28.reduce((sum, entry) => sum + entry.value, 0);
+
+    const total7El = document.getElementById("coachSetsTotal7");
+    const total28El = document.getElementById("coachSetsTotal28");
+    const trend7El = document.getElementById("coachSetsTrend7");
+    const trend28El = document.getElementById("coachSetsTrend28");
+
+    if (total7El) {
+      total7El.textContent = `${total7} sets`;
+    }
+    if (total28El) {
+      total28El.textContent = `${total28} sets`;
+    }
+
+    if (trend7El) {
+      trend7El.textContent = entries7.length
+        ? `Across ${entries7.length} exercise${entries7.length === 1 ? "" : "s"}`
+        : "No sets logged in the last 7 days";
+    }
+
+    if (trend28El) {
+      trend28El.textContent = entries28.length
+        ? `Across ${entries28.length} exercise${
+            entries28.length === 1 ? "" : "s"
+          }`
+        : "No sets logged in the last 28 days";
+    }
+
+    this.renderMiniBarChart("coachSetsChart7", entries7);
+    this.renderMiniBarChart("coachSetsChart28", entries28);
   }
 
   renderWorkoutOverview() {
@@ -3860,6 +3903,32 @@ class WorkoutTracker {
     }
 
     return results;
+  }
+
+  getSetCountsByExercise(days = 7) {
+    const today = new Date();
+    const startDate = new Date(today);
+    startDate.setDate(today.getDate() - (days - 1));
+    startDate.setHours(0, 0, 0, 0);
+
+    const counts = new Map();
+
+    this.sessions.forEach((session) => {
+      const sessionDate = new Date(session.date);
+      if (Number.isNaN(sessionDate.getTime()) || sessionDate < startDate) {
+        return;
+      }
+
+      const exerciseName = session.exerciseName || "Unknown exercise";
+      const setCount = (session.sets || []).length;
+      if (!setCount) return;
+
+      counts.set(exerciseName, (counts.get(exerciseName) || 0) + setCount);
+    });
+
+    return Array.from(counts.entries())
+      .map(([label, value]) => ({ label, value }))
+      .sort((a, b) => b.value - a.value);
   }
 
   getWorkoutDailyCounts(workoutId, days = 14) {
