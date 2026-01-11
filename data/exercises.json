@@ -597,6 +597,77 @@
                     "form_video": "https://www.youtube.com/watch?v=O94yvafBw1w"
                 }
             ]
+        },
+        {
+            "id": 8,
+            "favorite": true,
+            "name": "Key 4: Lower A – Quads/Glutes/Core (Balanced)",
+            "date": null,
+            "exercises": [
+                {
+                    "name": "Leg Press (quad bias)",
+                    "muscle_group": "Quads",
+                    "sets": 3,
+                    "reps": 8,
+                    "weight_kg": null,
+                    "notes": "Feet low and narrow on the platform to bias quads.",
+                    "form_video": "https://www.youtube.com/watch?v=frwqnvFDdFc"
+                },
+                {
+                    "name": "Bulgarian Split Squat (DB/KB)",
+                    "muscle_group": "Quads/Glutes",
+                    "sets": 3,
+                    "reps": 8,
+                    "weight_kg": null,
+                    "notes": "Per leg. Keep torso upright for quad focus.",
+                    "form_video": "https://www.youtube.com/watch?v=o7yFuIR9XVU"
+                },
+                {
+                    "name": "Barbell Hip Thrust",
+                    "muscle_group": "Glutes",
+                    "sets": 3,
+                    "reps": 8,
+                    "weight_kg": null,
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=ZHM4n4aDgXg"
+                },
+                {
+                    "name": "Romanian Deadlift",
+                    "muscle_group": "Hamstrings",
+                    "sets": 3,
+                    "reps": 8,
+                    "weight_kg": null,
+                    "notes": "Or Seated/lying leg curl for less low-back fatigue.",
+                    "form_video": "https://www.youtube.com/watch?v=5zmlnbWb-g4"
+                },
+                {
+                    "name": "Calf Raise (standing or machine)",
+                    "muscle_group": "Calves",
+                    "sets": 2,
+                    "reps": 10,
+                    "weight_kg": null,
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=SVtg-1loH4c"
+                },
+                {
+                    "name": "Pallof Press",
+                    "muscle_group": "Core",
+                    "sets": 2,
+                    "reps": 12,
+                    "weight_kg": null,
+                    "notes": "Per side. Anti-rotation exercise.",
+                    "form_video": "https://www.youtube.com/watch?v=Te5VAYXy0wQ"
+                },
+                {
+                    "name": "Ab Wheel",
+                    "muscle_group": "Core",
+                    "sets": 2,
+                    "reps": 8,
+                    "weight_kg": null,
+                    "notes": "Or Hanging Knee Raise.",
+                    "form_video": "https://www.youtube.com/watch?v=SzUnH8UdO5U"
+                }
+            ]
         }
     ]
 }
