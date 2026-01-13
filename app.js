@@ -4328,8 +4328,11 @@ class WorkoutTracker {
   }
 
   switchManagementTab(tabName) {
+    const managementView = document.getElementById("managementView");
+    if (!managementView) return;
+
     // Update tab buttons
-    document.querySelectorAll(".management-tab").forEach((tab) => {
+    managementView.querySelectorAll(".management-tab").forEach((tab) => {
       tab.classList.remove("active");
       if (tab.dataset.tab === tabName) {
         tab.classList.add("active");
@@ -4337,9 +4340,11 @@ class WorkoutTracker {
     });
 
     // Update tab content
-    document.querySelectorAll(".management-tab-content").forEach((content) => {
-      content.classList.remove("active");
-    });
+    managementView
+      .querySelectorAll(".management-tab-content")
+      .forEach((content) => {
+        content.classList.remove("active");
+      });
 
     if (tabName === "exercises") {
       document.getElementById("exercisesTab").classList.add("active");
