@@ -33,6 +33,15 @@
                     "form_video": "https://www.youtube.com/watch?v=vB5OHsJ3EME"
                 },
                 {
+                    "name": "Skull Crushers",
+                    "muscle_group": "Triceps",
+                    "sets": 3,
+                    "reps": 10,
+                    "weight_kg": 20,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
                     "name": "Arm Curl (Barbell)",
                     "muscle_group": "Biceps",
                     "sets": null,
