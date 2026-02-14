@@ -677,6 +677,58 @@
                     "form_video": "https://www.youtube.com/watch?v=SzUnH8UdO5U"
                 }
             ]
+        },
+        {
+            "id": 9,
+            "name": "5-Minute Pincha Micro-Practice",
+            "date": null,
+            "exercises": [
+                {
+                    "name": "Dolphin Scap Push-Ups",
+                    "muscle_group": "Serratus Anterior",
+                    "sets": 3,
+                    "reps": 10,
+                    "weight_kg": null,
+                    "notes": "Scapular motion only — controlled retraction (1–2 cm) then strong protraction. Push floor away, ribs down, glutes engaged. Pause 1s at top. Don't bend elbows or arch lower back.",
+                    "form_video": null
+                },
+                {
+                    "name": "Wall-Facing Forearm Hold (Legs 90°)",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": null,
+                    "weight_kg": null,
+                    "notes": "Hold 20–40 seconds. Quality > duration. Stop if lower back starts arching.",
+                    "form_video": null
+                },
+                {
+                    "name": "Serratus Wall Slides",
+                    "muscle_group": "Serratus Anterior",
+                    "sets": 3,
+                    "reps": 10,
+                    "weight_kg": null,
+                    "notes": "Forearms on wall, elbows at ~90°. Slide arms up slowly feeling shoulder blades rotate upward. Keep ribs anchored, no back arch. Stop when ribs want to flare or shoulder control degrades.",
+                    "form_video": "https://www.youtube.com/watch?v=XwQEKFHYBHw"
+                },
+                {
+                    "name": "Hollow Body Mini Hold",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": null,
+                    "weight_kg": null,
+                    "notes": "Anti-extension anchor. Lie on back, arms overhead. Exhale fully before lifting to lock ribs down. Lift head and legs slightly, flatten lower back into floor. Regress (bend legs) if lower back lifts.",
+                    "form_video": null
+                },
+                {
+                    "name": "Dolphin Hold (Structured)",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": null,
+                    "weight_kg": null,
+                    "notes": "15 seconds strong protraction, 10 seconds rest, repeat 3 times. Push forearms down, lift shoulders toward ceiling, ribs down, hips high. Stop if shoulders collapse.",
+                    "form_video": null
+                }
+            ]
         }
     ]
 }

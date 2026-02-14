@@ -136,7 +136,7 @@ class WorkoutTracker {
   saveExerciseLibrary() {
     localStorage.setItem(
       "exerciseLibrary",
-      JSON.stringify(this.exerciseLibrary)
+      JSON.stringify(this.exerciseLibrary),
     );
   }
 
@@ -157,7 +157,7 @@ class WorkoutTracker {
   saveActiveSessionDrafts() {
     localStorage.setItem(
       "activeSessionDrafts",
-      JSON.stringify(this.activeSessionDrafts || {})
+      JSON.stringify(this.activeSessionDrafts || {}),
     );
   }
 
@@ -165,7 +165,7 @@ class WorkoutTracker {
     const stored = localStorage.getItem("workoutHistory");
     this.workoutHistory = stored ? JSON.parse(stored) : [];
     this.workoutHistory.sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
     );
   }
 
@@ -454,7 +454,7 @@ class WorkoutTracker {
     });
 
     const generateCoachSummaryBtn = document.getElementById(
-      "generateCoachSummaryBtn"
+      "generateCoachSummaryBtn",
     );
     if (generateCoachSummaryBtn) {
       generateCoachSummaryBtn.addEventListener("click", () => {
@@ -470,7 +470,7 @@ class WorkoutTracker {
     }
 
     const downloadCoachSummaryBtn = document.getElementById(
-      "downloadCoachSummaryBtn"
+      "downloadCoachSummaryBtn",
     );
     if (downloadCoachSummaryBtn) {
       downloadCoachSummaryBtn.addEventListener("click", () => {
@@ -560,7 +560,7 @@ class WorkoutTracker {
     // Exercise filtering for edit workout
     this.setupExerciseFiltering(
       "editExerciseSearchInput",
-      "editExerciseSelector"
+      "editExerciseSelector",
     );
 
     // User name editing
@@ -677,10 +677,10 @@ class WorkoutTracker {
           // Update "All" button state
           const allBtn = container.querySelector('[data-muscle="all"]');
           const otherBtns = Array.from(filterButtons).filter(
-            (b) => b.dataset.muscle !== "all"
+            (b) => b.dataset.muscle !== "all",
           );
           const allOthersActive = otherBtns.every((b) =>
-            b.classList.contains("active")
+            b.classList.contains("active"),
           );
 
           if (allOthersActive) {
@@ -716,16 +716,16 @@ class WorkoutTracker {
         if (muscle === "all") {
           const allActive = btn.classList.contains("active");
           filterButtons.forEach((button) =>
-            button.classList.toggle("active", !allActive)
+            button.classList.toggle("active", !allActive),
           );
         } else {
           btn.classList.toggle("active");
           const allBtn = filterContainer.querySelector('[data-muscle="all"]');
           const otherBtns = Array.from(filterButtons).filter(
-            (b) => b.dataset.muscle !== "all"
+            (b) => b.dataset.muscle !== "all",
           );
           const allOthersActive = otherBtns.every((b) =>
-            b.classList.contains("active")
+            b.classList.contains("active"),
           );
 
           if (allOthersActive) {
@@ -742,7 +742,7 @@ class WorkoutTracker {
 
   updateExerciseLibraryFilters(filterContainer) {
     const activeMuscles = Array.from(
-      filterContainer.querySelectorAll(".muscle-filter-btn.active")
+      filterContainer.querySelectorAll(".muscle-filter-btn.active"),
     )
       .filter((btn) => btn.dataset.muscle !== "all")
       .map((btn) => btn.dataset.muscle);
@@ -767,16 +767,16 @@ class WorkoutTracker {
         if (muscle === "all") {
           const allActive = btn.classList.contains("active");
           filterButtons.forEach((button) =>
-            button.classList.toggle("active", !allActive)
+            button.classList.toggle("active", !allActive),
           );
         } else {
           btn.classList.toggle("active");
           const allBtn = filterContainer.querySelector('[data-muscle="all"]');
           const otherBtns = Array.from(filterButtons).filter(
-            (b) => b.dataset.muscle !== "all"
+            (b) => b.dataset.muscle !== "all",
           );
           const allOthersActive = otherBtns.every((b) =>
-            b.classList.contains("active")
+            b.classList.contains("active"),
           );
 
           if (allOthersActive) {
@@ -800,7 +800,7 @@ class WorkoutTracker {
         favoriteToggle.setAttribute("aria-pressed", this.favoriteFilterOnly);
         localStorage.setItem(
           "favoriteFilterOnly",
-          JSON.stringify(this.favoriteFilterOnly)
+          JSON.stringify(this.favoriteFilterOnly),
         );
         this.updateWorkoutFilters(filterContainer);
       });
@@ -811,7 +811,7 @@ class WorkoutTracker {
 
   updateWorkoutFilters(filterContainer) {
     const activeMuscles = Array.from(
-      filterContainer.querySelectorAll(".muscle-filter-btn.active")
+      filterContainer.querySelectorAll(".muscle-filter-btn.active"),
     )
       .filter((btn) => btn.dataset.muscle !== "all")
       .map((btn) => btn.dataset.muscle);
@@ -828,7 +828,7 @@ class WorkoutTracker {
     // Get active muscle groups
     const container = searchInput.closest(".form-group");
     const activeFilters = Array.from(
-      container.querySelectorAll(".muscle-filter-btn.active")
+      container.querySelectorAll(".muscle-filter-btn.active"),
     )
       .filter((btn) => btn.dataset.muscle !== "all")
       .map((btn) => btn.dataset.muscle);
@@ -917,8 +917,8 @@ class WorkoutTracker {
       headerContextRow.style.display = "flex";
       setEditable("workout", this.currentWorkout.id);
     } else if (currentView === "exerciseDetailView") {
-      const exerciseName = document.getElementById("exerciseName");
-      const muscleGroup = document.getElementById("muscleGroup");
+      const exerciseName = document.getElementById("exerciseDetailName");
+      const muscleGroup = document.getElementById("exerciseDetailMuscleGroup");
 
       if (exerciseName) {
         headerContextTitle.textContent = exerciseName.textContent;
@@ -988,7 +988,7 @@ class WorkoutTracker {
   autoResizeExerciseTitles() {
     const elements = [
       document.getElementById("headerContextTitle"),
-      document.getElementById("exerciseName"),
+      document.getElementById("exerciseDetailName"),
       document.getElementById("pairedExercise1Name"),
       document.getElementById("pairedExercise2Name"),
     ];
@@ -1018,11 +1018,11 @@ class WorkoutTracker {
 
     document.documentElement.style.setProperty(
       "--app-header-height",
-      `${headerHeight}px`
+      `${headerHeight}px`,
     );
     document.documentElement.style.setProperty(
       "--app-bottom-padding",
-      `${bottomPadding}px`
+      `${bottomPadding}px`,
     );
   }
 
@@ -1048,7 +1048,7 @@ class WorkoutTracker {
       }
 
       const workout = this.workouts.find(
-        (w) => w.id === this.currentWorkout.id
+        (w) => w.id === this.currentWorkout.id,
       );
       if (workout && workout.name !== newName) {
         workout.name = newName;
@@ -1067,7 +1067,7 @@ class WorkoutTracker {
       if (!this.currentExercise || this.pairedExercises) return;
 
       const originalName = this.currentExercise.name;
-      const exerciseNameElement = document.getElementById("exerciseName");
+      const exerciseNameElement = document.getElementById("exerciseDetailName");
 
       if (!newName) {
         headerContextTitle.textContent = originalName;
@@ -1083,7 +1083,7 @@ class WorkoutTracker {
       const duplicateName = this.exerciseLibrary.some(
         (exercise) =>
           exercise.name.toLowerCase() === newName.toLowerCase() &&
-          exercise.name !== originalName
+          exercise.name !== originalName,
       );
 
       if (duplicateName) {
@@ -1097,7 +1097,7 @@ class WorkoutTracker {
       }
 
       const exercise = this.exerciseLibrary.find(
-        (ex) => ex.name === originalName
+        (ex) => ex.name === originalName,
       );
       if (!exercise) return;
 
@@ -1106,8 +1106,9 @@ class WorkoutTracker {
 
       if (this.currentExercise && this.currentExercise.name === originalName) {
         this.currentExercise =
-          this.currentWorkout?.exercises.find((ex) => ex.name === exercise.name) ||
-          exercise;
+          this.currentWorkout?.exercises.find(
+            (ex) => ex.name === exercise.name,
+          ) || exercise;
       }
 
       if (exerciseNameElement) {
@@ -1263,7 +1264,7 @@ class WorkoutTracker {
     favoriteToggle.setAttribute("aria-pressed", workout.favorite);
     favoriteToggle.setAttribute(
       "aria-label",
-      workout.favorite ? "Remove from favorites" : "Add to favorites"
+      workout.favorite ? "Remove from favorites" : "Add to favorites",
     );
     favoriteToggle.innerHTML = `
       <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -1373,7 +1374,7 @@ class WorkoutTracker {
     this.showSuccessMessage(
       workout.favorite
         ? "Added to favorites for quick launch"
-        : "Removed from favorites"
+        : "Removed from favorites",
     );
   }
 
@@ -1420,7 +1421,7 @@ class WorkoutTracker {
       this.selectedExercises.push(exercise);
     } else {
       this.selectedExercises = this.selectedExercises.filter(
-        (e) => e.name !== exercise.name
+        (e) => e.name !== exercise.name,
       );
     }
 
@@ -1436,7 +1437,7 @@ class WorkoutTracker {
       setTimeout(() => {
         this.showPairedExerciseDetail(
           this.selectedExercises[0],
-          this.selectedExercises[1]
+          this.selectedExercises[1],
         );
       }, 300);
     }
@@ -1456,7 +1457,7 @@ class WorkoutTracker {
       (session) =>
         session.exerciseName === exercise.name &&
         session.workoutId === workoutId &&
-        this.isToday(session.date)
+        this.isToday(session.date),
     );
   }
 
@@ -1467,7 +1468,7 @@ class WorkoutTracker {
         : workout.exercises || [];
     const total = exercises.length;
     const completed = exercises.filter((exercise) =>
-      this.isExerciseCompletedToday(exercise, workout.id)
+      this.isExerciseCompletedToday(exercise, workout.id),
     ).length;
 
     return {
@@ -1706,7 +1707,7 @@ class WorkoutTracker {
     status.className = "exercise-item-status";
     const completedToday = this.isExerciseCompletedToday(
       exercise,
-      this.currentWorkout.id
+      this.currentWorkout.id,
     );
 
     if (completedToday) {
@@ -1761,7 +1762,7 @@ class WorkoutTracker {
       removeBtn.type = "button";
       removeBtn.setAttribute(
         "aria-label",
-        `Remove ${exercise.name} from this session`
+        `Remove ${exercise.name} from this session`,
       );
       removeBtn.innerHTML = `
         <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1838,7 +1839,7 @@ class WorkoutTracker {
     this.persistCurrentSession();
     if (removed[0]) {
       this.showSuccessMessage(
-        `${removed[0].name} removed from this session only`
+        `${removed[0].name} removed from this session only`,
       );
     }
   }
@@ -1871,18 +1872,18 @@ class WorkoutTracker {
       .trim();
 
     const existingNames = new Set(
-      this.getActiveSessionExercises().map((ex) => ex.name)
+      this.getActiveSessionExercises().map((ex) => ex.name),
     );
 
     let available = this.exerciseLibrary.filter(
-      (exercise) => !existingNames.has(exercise.name)
+      (exercise) => !existingNames.has(exercise.name),
     );
 
     if (searchTerm) {
       available = available.filter(
         (exercise) =>
           exercise.name.toLowerCase().includes(searchTerm) ||
-          exercise.muscle_group.toLowerCase().includes(searchTerm)
+          exercise.muscle_group.toLowerCase().includes(searchTerm),
       );
     }
 
@@ -1929,7 +1930,9 @@ class WorkoutTracker {
   addExerciseToSession(exercise) {
     if (!this.currentSession?.exercises) return;
     if (
-      this.currentSession.exercises.some((existing) => existing.name === exercise.name)
+      this.currentSession.exercises.some(
+        (existing) => existing.name === exercise.name,
+      )
     ) {
       this.showSuccessMessage("Already in this session");
       return;
@@ -1985,16 +1988,17 @@ class WorkoutTracker {
         });
     }
 
-    document.getElementById("exerciseName").textContent = exercise.name;
-    document.getElementById("muscleGroup").textContent = exercise.muscle_group;
+    document.getElementById("exerciseDetailName").textContent = exercise.name;
+    document.getElementById("exerciseDetailMuscleGroup").textContent =
+      exercise.muscle_group;
 
     // Display form info if it exists
     const formInfoCard = document.getElementById("exerciseFormInfo");
     const formNotesDisplay = document.getElementById(
-      "exerciseFormNotesDisplay"
+      "exerciseFormNotesDisplay",
     );
     const formVideoDisplay = document.getElementById(
-      "exerciseFormVideoDisplay"
+      "exerciseFormVideoDisplay",
     );
 
     if (exercise.form_notes || exercise.form_video) {
@@ -2049,10 +2053,10 @@ class WorkoutTracker {
     this.pairMode = false;
     this.selectedExercises = [];
 
-    document.getElementById(
-      "exerciseName"
-    ).textContent = `${exercise1.name} + ${exercise2.name}`;
-    document.getElementById("muscleGroup").textContent = "Paired Exercises";
+    document.getElementById("exerciseDetailName").textContent =
+      `${exercise1.name} + ${exercise2.name}`;
+    document.getElementById("exerciseDetailMuscleGroup").textContent =
+      "Paired Exercises";
 
     // Hide single exercise view, show paired view
     document.getElementById("singleExerciseView").classList.add("hidden");
@@ -2161,7 +2165,7 @@ class WorkoutTracker {
     exerciseNum,
     setNumber = null,
     defaultReps = "",
-    defaultWeight = ""
+    defaultWeight = "",
   ) {
     const containerId = `pairedSetsContainer${exerciseNum}`;
     const container = document.getElementById(containerId);
@@ -2180,19 +2184,21 @@ class WorkoutTracker {
     ) {
       const prevSetNum = nearestPreviousRow.getAttribute("data-set-number");
       const prevRepsInput = document.getElementById(
-        `paired${exerciseNum}-reps-${prevSetNum}`
+        `paired${exerciseNum}-reps-${prevSetNum}`,
       );
       repsValue = prevRepsInput ? prevRepsInput.value : "";
     }
 
     if (
       setNumber === null &&
-      (weightValue === null || weightValue === undefined || weightValue === "") &&
+      (weightValue === null ||
+        weightValue === undefined ||
+        weightValue === "") &&
       nearestPreviousRow
     ) {
       const prevSetNum = nearestPreviousRow.getAttribute("data-set-number");
       const prevWeightInput = document.getElementById(
-        `paired${exerciseNum}-weight-${prevSetNum}`
+        `paired${exerciseNum}-weight-${prevSetNum}`,
       );
       weightValue = prevWeightInput ? prevWeightInput.value : "";
     }
@@ -2307,7 +2313,7 @@ class WorkoutTracker {
 
   renumberPairedSets(exerciseNum) {
     const container = document.getElementById(
-      `pairedSetsContainer${exerciseNum}`
+      `pairedSetsContainer${exerciseNum}`,
     );
     Array.from(container.children).forEach((row, index) => {
       const setNum = index + 1;
@@ -2315,10 +2321,10 @@ class WorkoutTracker {
       row.querySelector(".set-label").textContent = `Set ${setNum}`;
 
       const repsInput = row.querySelector(
-        `input[id^="paired${exerciseNum}-reps-"]`
+        `input[id^="paired${exerciseNum}-reps-"]`,
       );
       const weightInput = row.querySelector(
-        `input[id^="paired${exerciseNum}-weight-"]`
+        `input[id^="paired${exerciseNum}-weight-"]`,
       );
 
       if (repsInput) {
@@ -2332,7 +2338,10 @@ class WorkoutTracker {
       row
         .querySelectorAll('[data-target^="paired' + exerciseNum + '-reps-"]')
         .forEach((btn) => {
-          btn.setAttribute("data-target", `paired${exerciseNum}-reps-${setNum}`);
+          btn.setAttribute(
+            "data-target",
+            `paired${exerciseNum}-reps-${setNum}`,
+          );
         });
 
       row
@@ -2340,7 +2349,7 @@ class WorkoutTracker {
         .forEach((btn) => {
           btn.setAttribute(
             "data-target",
-            `paired${exerciseNum}-weight-${setNum}`
+            `paired${exerciseNum}-weight-${setNum}`,
           );
         });
 
@@ -2355,7 +2364,7 @@ class WorkoutTracker {
         const labelType = btn.dataset.fillType === "weight" ? "weight" : "reps";
         btn.setAttribute(
           "aria-label",
-          `Fill ${labelType} from set ${setNum} down`
+          `Fill ${labelType} from set ${setNum} down`,
         );
       });
     });
@@ -2364,18 +2373,20 @@ class WorkoutTracker {
   fillDownPairedValue(inputType, startSetNum, exerciseNum) {
     const startIndex = parseInt(startSetNum, 10);
     const sourceInput = document.getElementById(
-      `paired${exerciseNum}-${inputType}-${startIndex}`
+      `paired${exerciseNum}-${inputType}-${startIndex}`,
     );
     if (!sourceInput || Number.isNaN(startIndex)) return;
 
     const value = sourceInput.value;
-    const container = document.getElementById(`pairedSetsContainer${exerciseNum}`);
+    const container = document.getElementById(
+      `pairedSetsContainer${exerciseNum}`,
+    );
 
     Array.from(container.children).forEach((row) => {
       const rowNum = parseInt(row.getAttribute("data-set-number"), 10);
       if (rowNum > startIndex) {
         const targetInput = row.querySelector(
-          `#paired${exerciseNum}-${inputType}-${rowNum}`
+          `#paired${exerciseNum}-${inputType}-${rowNum}`,
         );
         if (targetInput) {
           targetInput.value = value;
@@ -2436,7 +2447,7 @@ class WorkoutTracker {
     // Refresh the paired view
     this.showPairedExerciseDetail(
       this.pairedExercises[0],
-      this.pairedExercises[1]
+      this.pairedExercises[1],
     );
 
     this.scrollToTop();
@@ -2444,17 +2455,17 @@ class WorkoutTracker {
 
   getPairedSets(exerciseNum) {
     const container = document.getElementById(
-      `pairedSetsContainer${exerciseNum}`
+      `pairedSetsContainer${exerciseNum}`,
     );
     const sets = [];
 
     Array.from(container.children).forEach((row) => {
       const setNum = row.getAttribute("data-set-number");
       const reps = parseInt(
-        document.getElementById(`paired${exerciseNum}-reps-${setNum}`).value
+        document.getElementById(`paired${exerciseNum}-reps-${setNum}`).value,
       );
       const weightValue = document.getElementById(
-        `paired${exerciseNum}-weight-${setNum}`
+        `paired${exerciseNum}-weight-${setNum}`,
       ).value;
       const weight = weightValue ? parseFloat(weightValue) : 0;
 
@@ -2548,7 +2559,7 @@ class WorkoutTracker {
       .forEach((ratio) => {
         const warmupWeight = Math.max(
           0,
-          parseFloat((baseWeight * ratio).toFixed(1))
+          parseFloat((baseWeight * ratio).toFixed(1)),
         );
         this.addSetRow(null, baseReps, warmupWeight, insertBefore);
       });
@@ -2565,7 +2576,7 @@ class WorkoutTracker {
     setNumber = null,
     defaultReps = null,
     defaultWeight = null,
-    insertBefore = null
+    insertBefore = null,
   ) {
     const container = document.getElementById("setsContainer");
     const currentSetCount = container.children.length;
@@ -2590,7 +2601,9 @@ class WorkoutTracker {
 
     if (
       !insertBefore &&
-      (weightValue === null || weightValue === undefined || weightValue === "") &&
+      (weightValue === null ||
+        weightValue === undefined ||
+        weightValue === "") &&
       nearestPreviousRow
     ) {
       const prevSetNum = nearestPreviousRow.getAttribute("data-set-number");
@@ -2745,7 +2758,7 @@ class WorkoutTracker {
         const labelType = btn.dataset.fillType === "weight" ? "weight" : "reps";
         btn.setAttribute(
           "aria-label",
-          `Fill ${labelType} from set ${setNum} down`
+          `Fill ${labelType} from set ${setNum} down`,
         );
       });
     });
@@ -2819,13 +2832,13 @@ class WorkoutTracker {
   calculateVolume(sets) {
     return sets.reduce(
       (sum, set) => sum + (set.reps || 0) * (set.weight_kg || 0),
-      0
+      0,
     );
   }
 
   getPrFlags(exerciseName, newSets) {
     const history = this.sessions.filter(
-      (s) => s.exerciseName === exerciseName
+      (s) => s.exerciseName === exerciseName,
     );
 
     if (history.length === 0) {
@@ -2834,21 +2847,21 @@ class WorkoutTracker {
 
     const newMaxWeight = Math.max(
       0,
-      ...newSets.map((set) => set.weight_kg || 0)
+      ...newSets.map((set) => set.weight_kg || 0),
     );
     const newVolume = this.calculateVolume(newSets);
 
     const previousMaxWeight = history.reduce((max, session) => {
       const sessionMax = Math.max(
         0,
-        ...(session.sets || []).map((set) => set.weight_kg || 0)
+        ...(session.sets || []).map((set) => set.weight_kg || 0),
       );
       return Math.max(max, sessionMax);
     }, 0);
 
     const previousMaxVolume = history.reduce(
       (max, session) => Math.max(max, this.calculateVolume(session.sets || [])),
-      0
+      0,
     );
 
     return {
@@ -2876,7 +2889,7 @@ class WorkoutTracker {
       <div>
         ${prBadges
           .map(
-            (badge) => `<span class="pr-badge" aria-label="PR">${badge}</span>`
+            (badge) => `<span class="pr-badge" aria-label="PR">${badge}</span>`,
           )
           .join(" ")}
       </div>
@@ -2952,7 +2965,7 @@ class WorkoutTracker {
     const todaysSessions = this.sessions.filter(
       (s) =>
         s.workoutId === this.currentWorkout.id &&
-        this.getLocalDateKey(new Date(s.date)) === todayKey
+        this.getLocalDateKey(new Date(s.date)) === todayKey,
     );
 
     const exerciseMap = new Map();
@@ -2968,7 +2981,7 @@ class WorkoutTracker {
 
       const sessionReps = (session.sets || []).reduce(
         (sum, set) => sum + (set.reps || 0),
-        0
+        0,
       );
       const sessionVolume = this.calculateVolume(session.sets || []);
 
@@ -3004,7 +3017,7 @@ class WorkoutTracker {
     const existingIndex = this.workoutHistory.findIndex(
       (entry) =>
         entry.workoutId === summary.workoutId &&
-        this.getLocalDateKey(new Date(entry.date)) === todayKey
+        this.getLocalDateKey(new Date(entry.date)) === todayKey,
     );
 
     if (existingIndex !== -1) {
@@ -3043,7 +3056,7 @@ class WorkoutTracker {
 
   openHistoryForDate(dateKey) {
     const match = this.workoutHistory.find(
-      (entry) => this.getLocalDateKey(new Date(entry.date)) === dateKey
+      (entry) => this.getLocalDateKey(new Date(entry.date)) === dateKey,
     );
 
     if (match) {
@@ -3086,7 +3099,7 @@ class WorkoutTracker {
       item.type = "button";
       item.setAttribute(
         "aria-label",
-        `${entry.workoutName} on ${this.formatDate(new Date(entry.date))}`
+        `${entry.workoutName} on ${this.formatDate(new Date(entry.date))}`,
       );
 
       if (entry.id === targetId) {
@@ -3100,7 +3113,7 @@ class WorkoutTracker {
       const meta = document.createElement("div");
       meta.className = "history-list-meta";
       meta.textContent = `${this.formatDate(
-        new Date(entry.date)
+        new Date(entry.date),
       )} · ${exerciseCount} exercise${exerciseCount === 1 ? "" : "s"}`;
 
       const stats = document.createElement("div");
@@ -3181,19 +3194,19 @@ class WorkoutTracker {
       volumeChart,
       volumeLegend,
       this.getVolumeByMuscle(exercises),
-      "kg-reps"
+      "kg-reps",
     );
     this.renderMuscleChart(
       repsChart,
       repsLegend,
       this.getRepsByMuscle(exercises),
       "reps",
-      "Track reps to see how bodyweight work stacks up."
+      "Track reps to see how bodyweight work stacks up.",
     );
 
     if (milestones) {
       const historyForWorkout = this.workoutHistory.filter(
-        (s) => s.workoutId === entry.workoutId
+        (s) => s.workoutId === entry.workoutId,
       );
       const totalRuns = historyForWorkout.length;
       const previousRun = historyForWorkout
@@ -3272,8 +3285,8 @@ class WorkoutTracker {
               <span class="pill pill-soft">${exercise.muscleGroup || ""}</span>
             </div>
             <p class="history-exercise-meta">${exercise.sets || 0} sets · ${
-            exercise.reps || 0
-          } reps · ${(exercise.volume || 0).toFixed(1)} kg-reps</p>
+              exercise.reps || 0
+            } reps · ${(exercise.volume || 0).toFixed(1)} kg-reps</p>
           `;
 
           exerciseGrid.appendChild(card);
@@ -3334,7 +3347,7 @@ class WorkoutTracker {
       entry.workoutName,
       padding,
       108,
-      width - padding * 2
+      width - padding * 2,
     );
 
     ctx.font = "22px Inter, sans-serif";
@@ -3344,7 +3357,7 @@ class WorkoutTracker {
       entry.headline || this.buildWorkoutHeadline(entry),
       padding,
       146,
-      width - padding * 2
+      width - padding * 2,
     );
 
     // Stats row
@@ -3423,7 +3436,7 @@ class WorkoutTracker {
 
   exportSelectedWorkoutShareCard() {
     const entry = this.workoutHistory.find(
-      (item) => item.id === this.selectedHistoryId
+      (item) => item.id === this.selectedHistoryId,
     );
     if (!entry) return;
 
@@ -3439,7 +3452,7 @@ class WorkoutTracker {
 
   async copySelectedWorkoutShareCard() {
     const entry = this.workoutHistory.find(
-      (item) => item.id === this.selectedHistoryId
+      (item) => item.id === this.selectedHistoryId,
     );
     if (!entry) return;
 
@@ -3542,7 +3555,7 @@ class WorkoutTracker {
         barY + 10,
         Math.max((item.value / maxValue) * width, 6),
         barHeight,
-        10
+        10,
       );
 
       ctx.fillStyle = "#f8fafc";
@@ -3550,7 +3563,7 @@ class WorkoutTracker {
       ctx.fillText(
         `${Math.round((item.value / totalValue) * 100)}%`,
         x + width - 48,
-        barY + 28
+        barY + 28,
       );
     });
     ctx.restore();
@@ -3600,7 +3613,7 @@ class WorkoutTracker {
         exercise.name,
         cardX + 14,
         cardY + 30,
-        colWidth - 28
+        colWidth - 28,
       );
 
       ctx.font = "14px Inter, sans-serif";
@@ -3645,7 +3658,7 @@ class WorkoutTracker {
 
     const trendText = this.describeTrend(
       dailyCounts.slice(-7),
-      dailyCounts.slice(0, dailyCounts.length - 7)
+      dailyCounts.slice(0, dailyCounts.length - 7),
     );
 
     const totalEl = document.getElementById("activityTotal");
@@ -3661,7 +3674,7 @@ class WorkoutTracker {
       dailyCounts.map((day) => ({
         label: day.label,
         value: day.value,
-      }))
+      })),
     );
   }
 
@@ -3713,7 +3726,7 @@ class WorkoutTracker {
     const total = dailyCounts.reduce((sum, day) => sum + day.value, 0);
     const trendText = this.describeTrend(
       dailyCounts.slice(-7),
-      dailyCounts.slice(0, dailyCounts.length - 7)
+      dailyCounts.slice(0, dailyCounts.length - 7),
     );
 
     const frequency = document.getElementById("workoutFrequency");
@@ -3735,7 +3748,7 @@ class WorkoutTracker {
         if (entry.date) {
           this.openHistoryForDate(entry.date);
         }
-      }
+      },
     );
   }
 
@@ -3769,7 +3782,7 @@ class WorkoutTracker {
 
     trendEl.textContent = this.describeTrend(
       dailyCounts.slice(-7),
-      dailyCounts.slice(0, dailyCounts.length - 7)
+      dailyCounts.slice(0, dailyCounts.length - 7),
     );
 
     this.renderMiniBarChart(
@@ -3777,7 +3790,7 @@ class WorkoutTracker {
       dailyCounts.map((day) => ({
         label: day.label,
         value: day.value,
-      }))
+      })),
     );
   }
 
@@ -3806,14 +3819,14 @@ class WorkoutTracker {
     const volumes = history.map((session) =>
       session.sets.reduce(
         (sum, set) => sum + (set.weight_kg || 0) * (set.reps || 0),
-        0
-      )
+        0,
+      ),
     );
 
     const averageVolume =
       volumes.length > 0
         ? Math.round(
-            (volumes.reduce((a, b) => a + b, 0) / volumes.length) * 10
+            (volumes.reduce((a, b) => a + b, 0) / volumes.length) * 10,
           ) / 10
         : 0;
 
@@ -3834,14 +3847,14 @@ class WorkoutTracker {
         label: this.formatShortDate(new Date(session.date)),
         value: session.sets.reduce(
           (sum, set) => sum + (set.weight_kg || 0) * (set.reps || 0),
-          0
+          0,
         ),
-      }))
+      })),
     );
 
     trendEl.textContent = this.describeTrend(
       recentSessions.slice(-5),
-      recentSessions.slice(0, Math.max(0, recentSessions.length - 5))
+      recentSessions.slice(0, Math.max(0, recentSessions.length - 5)),
     );
   }
 
@@ -3996,7 +4009,7 @@ class WorkoutTracker {
     const recentTotal = recentSlice.reduce((sum, day) => sum + day.value, 0);
     const previousTotal = previousSlice.reduce(
       (sum, day) => sum + day.value,
-      0
+      0,
     );
 
     if (recentTotal === 0 && previousTotal === 0) {
@@ -4052,7 +4065,7 @@ class WorkoutTracker {
     legendEl,
     breakdown,
     unitLabel,
-    emptyMessage = "Log sets to see the muscle breakdown."
+    emptyMessage = "Log sets to see the muscle breakdown.",
   ) {
     if (!container) return;
 
@@ -4111,7 +4124,7 @@ class WorkoutTracker {
     const target = new Date(dateString);
     const reference = new Date(referenceDate);
     const diffDays = Math.round(
-      (reference.getTime() - target.getTime()) / (1000 * 60 * 60 * 24)
+      (reference.getTime() - target.getTime()) / (1000 * 60 * 60 * 24),
     );
 
     if (diffDays <= 0) return "Earlier today";
@@ -4215,7 +4228,7 @@ class WorkoutTracker {
     document.querySelectorAll(".onboarding-dot").forEach((dot) => {
       dot.classList.toggle(
         "active",
-        parseInt(dot.dataset.step) === this.onboardingStep
+        parseInt(dot.dataset.step) === this.onboardingStep,
       );
     });
 
@@ -4377,7 +4390,7 @@ class WorkoutTracker {
     // Check if exercise already exists
     if (
       this.exerciseLibrary.find(
-        (e) => e.name.toLowerCase() === name.toLowerCase()
+        (e) => e.name.toLowerCase() === name.toLowerCase(),
       )
     ) {
       alert("An exercise with this name already exists");
@@ -4434,7 +4447,7 @@ class WorkoutTracker {
 
   saveExerciseEdit() {
     const originalName = document.getElementById(
-      "editExerciseOriginalName"
+      "editExerciseOriginalName",
     ).value;
     const newName = document.getElementById("editExerciseName").value.trim();
     const muscleGroup = document.getElementById("editMuscleGroup").value;
@@ -4457,7 +4470,7 @@ class WorkoutTracker {
     const duplicateName = this.exerciseLibrary.some(
       (exercise) =>
         exercise.name.toLowerCase() === newName.toLowerCase() &&
-        exercise.name !== originalName
+        exercise.name !== originalName,
     );
 
     if (duplicateName) {
@@ -4483,7 +4496,7 @@ class WorkoutTracker {
 
     if (wasCurrentExercise) {
       const updated = this.currentWorkout?.exercises.find(
-        (ex) => ex.name === exercise.name
+        (ex) => ex.name === exercise.name,
       );
       this.currentExercise = updated || exercise;
       this.showExerciseDetail(this.currentExercise);
@@ -4540,7 +4553,7 @@ class WorkoutTracker {
   deleteExercise(exerciseName) {
     if (
       !confirm(
-        `Delete "${exerciseName}"? This will remove it from all workouts.`
+        `Delete "${exerciseName}"? This will remove it from all workouts.`,
       )
     ) {
       return;
@@ -4548,14 +4561,14 @@ class WorkoutTracker {
 
     // Remove from library
     this.exerciseLibrary = this.exerciseLibrary.filter(
-      (e) => e.name !== exerciseName
+      (e) => e.name !== exerciseName,
     );
     this.saveExerciseLibrary();
 
     // Remove from all workouts
     this.workouts.forEach((workout) => {
       workout.exercises = workout.exercises.filter(
-        (e) => e.name !== exerciseName
+        (e) => e.name !== exerciseName,
       );
     });
     this.saveWorkouts();
@@ -4581,11 +4594,11 @@ class WorkoutTracker {
 
     // Sort alphabetically
     const sorted = [...this.exerciseLibrary].sort((a, b) =>
-      a.name.localeCompare(b.name)
+      a.name.localeCompare(b.name),
     );
 
     const filtered = sorted.filter((exercise) =>
-      this.matchesExerciseLibraryFilters(exercise)
+      this.matchesExerciseLibraryFilters(exercise),
     );
 
     if (filtered.length === 0) {
@@ -4624,14 +4637,14 @@ class WorkoutTracker {
       editBtn.className = "btn-secondary";
       editBtn.textContent = "Edit";
       editBtn.addEventListener("click", () =>
-        this.openEditExercise(exercise.name)
+        this.openEditExercise(exercise.name),
       );
 
       const deleteBtn = document.createElement("button");
       deleteBtn.className = "btn-delete";
       deleteBtn.textContent = "Delete";
       deleteBtn.addEventListener("click", () =>
-        this.deleteExercise(exercise.name)
+        this.deleteExercise(exercise.name),
       );
 
       actions.appendChild(editBtn);
@@ -4669,7 +4682,7 @@ class WorkoutTracker {
 
     // Sort alphabetically
     const sorted = [...this.exerciseLibrary].sort((a, b) =>
-      a.name.localeCompare(b.name)
+      a.name.localeCompare(b.name),
     );
 
     sorted.forEach((exercise) => {
@@ -4696,7 +4709,7 @@ class WorkoutTracker {
     const name = document.getElementById("workoutName").value.trim();
     const notes = document.getElementById("workoutNotes").value.trim() || null;
     const selectedCheckboxes = document.querySelectorAll(
-      '#exerciseSelector input[type="checkbox"]:checked'
+      '#exerciseSelector input[type="checkbox"]:checked',
     );
 
     if (!name) {
@@ -4736,7 +4749,7 @@ class WorkoutTracker {
     this.renderWorkoutList();
 
     this.showSuccessMessage(
-      `Workout "${name}" created with ${exercises.length} exercises!`
+      `Workout "${name}" created with ${exercises.length} exercises!`,
     );
   }
 
@@ -4798,7 +4811,7 @@ class WorkoutTracker {
 
     // Sort alphabetically
     const sorted = [...this.exerciseLibrary].sort((a, b) =>
-      a.name.localeCompare(b.name)
+      a.name.localeCompare(b.name),
     );
 
     sorted.forEach((exercise) => {
@@ -4833,7 +4846,7 @@ class WorkoutTracker {
   updateEditSelectedExercises() {
     // Get all checked exercises in their current order
     const checkboxes = document.querySelectorAll(
-      '#editExerciseSelector input[type="checkbox"]:checked'
+      '#editExerciseSelector input[type="checkbox"]:checked',
     );
     const selectedNames = Array.from(checkboxes).map((cb) => cb.value);
     const selectedContainer = document.getElementById("editSelectedExercises");
@@ -4841,16 +4854,16 @@ class WorkoutTracker {
     // Preserve the user's existing order and only append new selections
     if (selectedContainer) {
       const currentOrder = Array.from(
-        selectedContainer.querySelectorAll(".selected-exercise-item")
+        selectedContainer.querySelectorAll(".selected-exercise-item"),
       ).map((item) => item.dataset.exerciseName);
 
       const selectedSet = new Set(selectedNames);
       const preservedOrder = currentOrder.filter((name) =>
-        selectedSet.has(name)
+        selectedSet.has(name),
       );
 
       const newSelections = selectedNames.filter(
-        (name) => !currentOrder.includes(name)
+        (name) => !currentOrder.includes(name),
       );
 
       const orderedNames = [...preservedOrder, ...newSelections];
@@ -4924,7 +4937,9 @@ class WorkoutTracker {
 
       removeBtn.addEventListener("click", (event) => {
         event.stopPropagation();
-        const checkbox = document.getElementById(`edit-select-${exercise.name}`);
+        const checkbox = document.getElementById(
+          `edit-select-${exercise.name}`,
+        );
         if (checkbox) {
           checkbox.checked = false;
         }
@@ -4979,10 +4994,10 @@ class WorkoutTracker {
     if (selectedContainer && selectedContainer.style.display !== "none") {
       // Use the reordered list
       const selectedItems = selectedContainer.querySelectorAll(
-        ".selected-exercise-item"
+        ".selected-exercise-item",
       );
       const exerciseNames = Array.from(selectedItems).map(
-        (item) => item.dataset.exerciseName
+        (item) => item.dataset.exerciseName,
       );
       exercises = exerciseNames.map((name) => {
         const exercise = this.exerciseLibrary.find((e) => e.name === name);
@@ -4991,10 +5006,10 @@ class WorkoutTracker {
     } else {
       // Fallback to checkboxes
       const selectedCheckboxes = document.querySelectorAll(
-        '#editExerciseSelector input[type="checkbox"]:checked'
+        '#editExerciseSelector input[type="checkbox"]:checked',
       );
       const exerciseNames = Array.from(selectedCheckboxes).map(
-        (cb) => cb.value
+        (cb) => cb.value,
       );
       exercises = exerciseNames.map((name) => {
         const exercise = this.exerciseLibrary.find((e) => e.name === name);
@@ -5053,7 +5068,7 @@ class WorkoutTracker {
       if (
         this.currentExercise &&
         !updatedWorkout.exercises.some(
-          (exercise) => exercise.name === this.currentExercise.name
+          (exercise) => exercise.name === this.currentExercise.name,
         )
       ) {
         this.currentExercise = null;
@@ -5201,20 +5216,19 @@ class WorkoutTracker {
   }
 
   buildCoachPerformanceSummary() {
-    const athleteName =
-      localStorage.getItem("userName")?.trim() || "Athlete";
+    const athleteName = localStorage.getItem("userName")?.trim() || "Athlete";
     const sessions = [...this.sessions];
     const history = [...this.workoutHistory];
     const totalSets = sessions.reduce(
       (sum, session) => sum + (session.sets?.length || 0),
-      0
+      0,
     );
     const totalVolume = sessions.reduce(
       (sum, session) => sum + this.calculateVolume(session.sets || []),
-      0
+      0,
     );
     const distinctExercises = new Set(
-      sessions.map((session) => session.exerciseName)
+      sessions.map((session) => session.exerciseName),
     ).size;
 
     const recentWindowDays = 30;
@@ -5222,19 +5236,19 @@ class WorkoutTracker {
     recentCutoff.setDate(recentCutoff.getDate() - recentWindowDays);
 
     const recentSessions = sessions.filter(
-      (session) => new Date(session.date) >= recentCutoff
+      (session) => new Date(session.date) >= recentCutoff,
     );
     const recentWorkouts = history.filter(
-      (entry) => new Date(entry.date) >= recentCutoff
+      (entry) => new Date(entry.date) >= recentCutoff,
     );
 
     const recentSets = recentSessions.reduce(
       (sum, session) => sum + (session.sets?.length || 0),
-      0
+      0,
     );
     const recentVolume = recentSessions.reduce(
       (sum, session) => sum + this.calculateVolume(session.sets || []),
-      0
+      0,
     );
 
     const recentWorkoutCount =
@@ -5251,25 +5265,25 @@ class WorkoutTracker {
 
     const firstLog = this.getBoundaryDate(
       [...history.map((h) => h.date), ...sessions.map((s) => s.date)],
-      "min"
+      "min",
     );
     const latestLog = this.getBoundaryDate(
       [...history.map((h) => h.date), ...sessions.map((s) => s.date)],
-      "max"
+      "max",
     );
 
     const muscleFocus = this.describeTopCounts(
-      recentSessions.map((session) => session.muscleGroup)
+      recentSessions.map((session) => session.muscleGroup),
     );
     const exerciseFocus = this.describeTopCounts(
-      recentSessions.map((session) => session.exerciseName)
+      recentSessions.map((session) => session.exerciseName),
     );
     const templateFocus = this.describeTopCounts(
       history.length
         ? history.map((entry) => entry.workoutName)
         : sessions.map((session) => session.workoutName || "Unlabeled workout"),
       3,
-      "Not enough workouts logged yet"
+      "Not enough workouts logged yet",
     );
 
     const averageSetsPerWorkout = this.calculateAverageSetsPerWorkout();
@@ -5283,7 +5297,8 @@ class WorkoutTracker {
     const coreSection = this.buildCoreTrainingSection();
     const recencySection = this.buildRecencyInsightsSection();
 
-    return `# Coach Performance Summary\n\n` +
+    return (
+      `# Coach Performance Summary\n\n` +
       `**Athlete:** ${athleteName}\n` +
       `**Last updated:** ${this.formatDate(new Date())}\n\n` +
       `## Lifetime Snapshot\n` +
@@ -5299,7 +5314,7 @@ class WorkoutTracker {
       `## Recent Focus (last ${recentWindowDays} days)\n` +
       `- Workouts completed: ${recentWorkoutCount} (~${averageWorkoutsPerWeek}/wk)\n` +
       `- Sets logged: ${recentSets} | Volume: ${this.formatNumber(
-        recentVolume
+        recentVolume,
       )} kg-reps\n` +
       `- Most-used muscle groups: ${muscleFocus}\n` +
       `- Frequently trained exercises: ${exerciseFocus}\n` +
@@ -5320,7 +5335,8 @@ class WorkoutTracker {
       `\n## Session Density & Recoverability\n${densitySection}\n` +
       `\n## Progress Quality\n${progressSection}\n` +
       `\n## Core Training Classification\n${coreSection}\n` +
-      `\n## Recency-Weighted Insights\n${recencySection}\n`;
+      `\n## Recency-Weighted Insights\n${recencySection}\n`
+    );
   }
 
   buildTrainingFrequencySection() {
@@ -5328,7 +5344,10 @@ class WorkoutTracker {
     const freq14 = this.getTrainingFrequencyMetrics(14);
     const freq28 = this.getTrainingFrequencyMetrics(28);
 
-    const consistencyBand = this.getConsistencyBand(freq7.sessionsPerWeek, freq28.sessionsPerWeek);
+    const consistencyBand = this.getConsistencyBand(
+      freq7.sessionsPerWeek,
+      freq28.sessionsPerWeek,
+    );
 
     return [
       `- Sessions per week (rolling): ${freq7.sessionsPerWeek} (7d) · ${freq14.sessionsPerWeek} (14d) · ${freq28.sessionsPerWeek} (28d)`,
@@ -5351,7 +5370,7 @@ class WorkoutTracker {
         else acc.mixed += 1;
         return acc;
       },
-      { upper: 0, lower: 0, mixed: 0 }
+      { upper: 0, lower: 0, mixed: 0 },
     );
 
     return {
@@ -5367,7 +5386,8 @@ class WorkoutTracker {
     const currentNum = parseFloat(current);
     const baselineNum = parseFloat(baseline);
     if (currentNum >= baselineNum * 0.9) return "High (tracking to baseline)";
-    if (currentNum >= baselineNum * 0.6) return "Moderate (slightly under baseline)";
+    if (currentNum >= baselineNum * 0.6)
+      return "Moderate (slightly under baseline)";
     return "Low (below typical cadence)";
   }
 
@@ -5381,7 +5401,8 @@ class WorkoutTracker {
     const rows = exposure
       .sort((a, b) => b.sets - a.sets)
       .map((item) => {
-        const pct = totalVolume > 0 ? Math.round((item.volume / totalVolume) * 100) : 0;
+        const pct =
+          totalVolume > 0 ? Math.round((item.volume / totalVolume) * 100) : 0;
         return `- ${item.muscle}: ${item.sets} sets (${pct}% volume) across ${item.sessions} sessions — ${item.status}`;
       });
 
@@ -5417,7 +5438,7 @@ class WorkoutTracker {
       })
       .map(
         ([name, stats]) =>
-          `- ${name}: ${stats.reps} reps | ${this.formatNumber(stats.volume)} kg`
+          `- ${name}: ${stats.reps} reps | ${this.formatNumber(stats.volume)} kg`,
       )
       .join("\n");
   }
@@ -5430,7 +5451,11 @@ class WorkoutTracker {
       const muscle = session.muscleGroup || "Unspecified";
       const sets = session.sets?.length || 0;
       const volume = this.calculateVolume(session.sets || []);
-      const current = exposureMap.get(muscle) || { sets: 0, volume: 0, sessions: 0 };
+      const current = exposureMap.get(muscle) || {
+        sets: 0,
+        volume: 0,
+        sessions: 0,
+      };
       exposureMap.set(muscle, {
         sets: current.sets + sets,
         volume: current.volume + volume,
@@ -5490,7 +5515,9 @@ class WorkoutTracker {
     const reps = allSets.map((set) => set.reps || 0).filter((r) => r > 0);
     const weights = allSets.map((set) => set.weight_kg || 0);
     const volume = workout.volume || 0;
-    const avgLoad = reps.length ? volume / reps.reduce((sum, r) => sum + r, 0) : 0;
+    const avgLoad = reps.length
+      ? volume / reps.reduce((sum, r) => sum + r, 0)
+      : 0;
     const maxReps = reps.length ? Math.max(...reps) : 0;
     const minReps = reps.length ? Math.min(...reps) : 0;
     const repDrop = maxReps - minReps;
@@ -5506,7 +5533,10 @@ class WorkoutTracker {
     const last7 = this.getSessionDensityMetrics(7);
     const prior7 = this.getSessionDensityMetrics(7, 7);
 
-    const trend = this.describeDensityTrend(last7.setsPerHour, prior7.setsPerHour);
+    const trend = this.describeDensityTrend(
+      last7.setsPerHour,
+      prior7.setsPerHour,
+    );
 
     return [
       `- Avg session duration (estimated): ${last7.avgDuration} min`,
@@ -5540,12 +5570,17 @@ class WorkoutTracker {
         acc.volume += workout.volume;
         return acc;
       },
-      { duration: 0, sets: 0, volume: 0 }
+      { duration: 0, sets: 0, volume: 0 },
     );
 
     const avgDuration = Math.round(totals.duration / workouts.length);
-    const setsPerHour = ((totals.sets / Math.max(1, totals.duration)) * 60).toFixed(1);
-    const volumePerMinute = (totals.volume / Math.max(1, totals.duration)).toFixed(1);
+    const setsPerHour = (
+      (totals.sets / Math.max(1, totals.duration)) *
+      60
+    ).toFixed(1);
+    const volumePerMinute = (
+      totals.volume / Math.max(1, totals.duration)
+    ).toFixed(1);
 
     return { avgDuration, setsPerHour, volumePerMinute };
   }
@@ -5563,9 +5598,10 @@ class WorkoutTracker {
     const last7 = this.getTrainingFrequencyMetrics(7);
     const ratio = this.getUpperLowerVolumeRatio(28);
 
-    const warning = parseFloat(last7.lowerPerWeek) <= 1
-      ? "⚠ Legs trained once or less in the last 7 days"
-      : "Lower-body frequency on track";
+    const warning =
+      parseFloat(last7.lowerPerWeek) <= 1
+        ? "⚠ Legs trained once or less in the last 7 days"
+        : "Lower-body frequency on track";
 
     return [
       `- Lower-body frequency flag: ${warning}`,
@@ -5585,9 +5621,10 @@ class WorkoutTracker {
       else if (bucket === "lower") lowerVolume += volume;
     });
 
-    const ratioValue = upperVolume === 0 && lowerVolume === 0
-      ? 1
-      : lowerVolume / Math.max(upperVolume, 1);
+    const ratioValue =
+      upperVolume === 0 && lowerVolume === 0
+        ? 1
+        : lowerVolume / Math.max(upperVolume, 1);
 
     let label = "Balanced";
     if (ratioValue < 0.65) label = "Upper-dominant";
@@ -5598,7 +5635,8 @@ class WorkoutTracker {
 
   buildProgressQualitySection() {
     const insights = this.getProgressQualityInsights(28);
-    if (!insights.length) return "- Not enough repeated sessions to judge progress";
+    if (!insights.length)
+      return "- Not enough repeated sessions to judge progress";
     return insights.map((line) => `- ${line}`).join("\n");
   }
 
@@ -5623,16 +5661,22 @@ class WorkoutTracker {
 
       const latestVolume = this.calculateVolume(latest.sets || []);
       const previousVolume = this.calculateVolume(previous.sets || []);
-      const volumeChange = previousVolume ? (latestVolume - previousVolume) / previousVolume : 0;
+      const volumeChange = previousVolume
+        ? (latestVolume - previousVolume) / previousVolume
+        : 0;
 
       const latestAvgReps = this.getAverageReps(latest.sets || []);
       const previousAvgReps = this.getAverageReps(previous.sets || []);
       const repChange = latestAvgReps - previousAvgReps;
 
       if (Math.abs(volumeChange) < 0.05) {
-        insights.push(`${exercise}: loads stable (repeat performance) over last two sessions`);
+        insights.push(
+          `${exercise}: loads stable (repeat performance) over last two sessions`,
+        );
       } else if (volumeChange > 0.1) {
-        insights.push(`${exercise}: volume trending up ${Math.round(volumeChange * 100)}% over last outing`);
+        insights.push(
+          `${exercise}: volume trending up ${Math.round(volumeChange * 100)}% over last outing`,
+        );
       }
 
       if (repChange > 1) {
@@ -5653,9 +5697,10 @@ class WorkoutTracker {
     const summary7 = this.getCoreExposureSummary(7);
     const summary28 = this.getCoreExposureSummary(28);
 
-    const redundancyFlag = summary7.dominantShare > 0.5
-      ? `⚠ ${summary7.dominantFunction} dominates (~${Math.round(summary7.dominantShare * 100)}%)`
-      : "Balanced mix across functions";
+    const redundancyFlag =
+      summary7.dominantShare > 0.5
+        ? `⚠ ${summary7.dominantFunction} dominates (~${Math.round(summary7.dominantShare * 100)}%)`
+        : "Balanced mix across functions";
 
     const describe = (summary, label) =>
       `${label}: ${summary.lines.length ? summary.lines.join(" · ") : "No core work logged"}`;
@@ -5704,11 +5749,28 @@ class WorkoutTracker {
 
   classifyCoreFunction(exerciseName) {
     const name = exerciseName.toLowerCase();
-    if (name.includes("pallof") || name.includes("anti-rotation")) return "Anti-rotation";
-    if (name.includes("plank") || name.includes("rollout") || name.includes("dead bug")) return "Anti-extension";
-    if (name.includes("carry") || name.includes("farmers")) return "Anti-extension";
-    if (name.includes("side bend") || name.includes("side plank") || name.includes("windmill")) return "Lateral flexion";
-    if (name.includes("crunch") || name.includes("sit-up") || name.includes("leg raise") || name.includes("toes to bar"))
+    if (name.includes("pallof") || name.includes("anti-rotation"))
+      return "Anti-rotation";
+    if (
+      name.includes("plank") ||
+      name.includes("rollout") ||
+      name.includes("dead bug")
+    )
+      return "Anti-extension";
+    if (name.includes("carry") || name.includes("farmers"))
+      return "Anti-extension";
+    if (
+      name.includes("side bend") ||
+      name.includes("side plank") ||
+      name.includes("windmill")
+    )
+      return "Lateral flexion";
+    if (
+      name.includes("crunch") ||
+      name.includes("sit-up") ||
+      name.includes("leg raise") ||
+      name.includes("toes to bar")
+    )
       return "Flexion/hip flexion";
     return "";
   }
@@ -5751,10 +5813,15 @@ class WorkoutTracker {
   getDataCompleteness(windowDays) {
     const sessionsInWindow = this.getSessionsWithinDays(windowDays);
     const workouts = this.groupSessionsByWorkout(sessionsInWindow);
-    const uniqueDays = new Set(workouts.map((workout) => this.getLocalDateKey(workout.date)));
+    const uniqueDays = new Set(
+      workouts.map((workout) => this.getLocalDateKey(workout.date)),
+    );
     const expectedPerWeek = 4;
     const expectedTotal = expectedPerWeek * (windowDays / 7);
-    const score = Math.min(100, Math.round((uniqueDays.size / expectedTotal) * 100));
+    const score = Math.min(
+      100,
+      Math.round((uniqueDays.size / expectedTotal) * 100),
+    );
 
     let confidence = "Low";
     if (score >= 75) confidence = "High";
@@ -5762,9 +5829,11 @@ class WorkoutTracker {
 
     const weekly28 = this.getTrainingFrequencyMetrics(28);
     const weekly7 = this.getTrainingFrequencyMetrics(7);
-    const flag = parseFloat(weekly7.sessionsPerWeek) < parseFloat(weekly28.sessionsPerWeek) * 0.5
-      ? "⚠ Recent logging well below baseline"
-      : "No obvious under-reporting";
+    const flag =
+      parseFloat(weekly7.sessionsPerWeek) <
+      parseFloat(weekly28.sessionsPerWeek) * 0.5
+        ? "⚠ Recent logging well below baseline"
+        : "No obvious under-reporting";
 
     return { score, confidence, flag };
   }
@@ -5788,7 +5857,8 @@ class WorkoutTracker {
       };
 
       const muscleBucket = this.classifyMuscleGroup(session.muscleGroup);
-      entry.focusCounts[muscleBucket] = (entry.focusCounts[muscleBucket] || 0) + 1;
+      entry.focusCounts[muscleBucket] =
+        (entry.focusCounts[muscleBucket] || 0) + 1;
       entry.setCount += session.sets?.length || 0;
       entry.volume += this.calculateVolume(session.sets || []);
       entry.sets.push(...(session.sets || []));
@@ -5931,7 +6001,7 @@ class WorkoutTracker {
     if (counts.size === 0) return fallback;
 
     const sorted = Array.from(counts.entries()).sort(
-      (a, b) => b[1] - a[1] || a[0].localeCompare(b[0])
+      (a, b) => b[1] - a[1] || a[0].localeCompare(b[0]),
     );
 
     return sorted
@@ -5944,11 +6014,12 @@ class WorkoutTracker {
     if (!this.sessions.length) return 0;
 
     const uniqueDays = new Set(
-      this.sessions.map((session) =>
-        `${this.getLocalDateKey(new Date(session.date))}-${
-          session.workoutId || session.workoutName || "workout"
-        }`
-      )
+      this.sessions.map(
+        (session) =>
+          `${this.getLocalDateKey(new Date(session.date))}-${
+            session.workoutId || session.workoutName || "workout"
+          }`,
+      ),
     );
 
     return uniqueDays.size;
@@ -5958,11 +6029,12 @@ class WorkoutTracker {
     if (!sessionList?.length) return 0;
 
     const uniqueDays = new Set(
-      sessionList.map((session) =>
-        `${this.getLocalDateKey(new Date(session.date))}-${
-          session.workoutId || session.workoutName || "workout"
-        }`
-      )
+      sessionList.map(
+        (session) =>
+          `${this.getLocalDateKey(new Date(session.date))}-${
+            session.workoutId || session.workoutName || "workout"
+          }`,
+      ),
     );
 
     return uniqueDays.size;
@@ -5972,11 +6044,11 @@ class WorkoutTracker {
     if (this.workoutHistory.length) {
       const totals = this.workoutHistory.reduce(
         (sum, entry) => sum + (entry.totalSets || 0),
-        0
+        0,
       );
-      return `${(
-        totals / Math.max(1, this.workoutHistory.length)
-      ).toFixed(1)} sets`;
+      return `${(totals / Math.max(1, this.workoutHistory.length)).toFixed(
+        1,
+      )} sets`;
     }
 
     if (!this.sessions.length) return "—";
@@ -6039,7 +6111,7 @@ class WorkoutTracker {
 
       const sessionHeaviest = Math.max(
         0,
-        ...(session.sets || []).map((set) => set.weight_kg || 0)
+        ...(session.sets || []).map((set) => set.weight_kg || 0),
       );
       entry.heaviest = Math.max(entry.heaviest, sessionHeaviest);
 
@@ -6052,27 +6124,29 @@ class WorkoutTracker {
     });
 
     const sorted = Array.from(stats.entries()).sort(
-      (a, b) => b[1].heaviest - a[1].heaviest || b[1].count - a[1].count
+      (a, b) => b[1].heaviest - a[1].heaviest || b[1].count - a[1].count,
     );
 
-    return sorted
-      .slice(0, 5)
-      .map(([name, data]) => {
-        const averageVolume = data.totalVolume / Math.max(1, data.count);
-        return `- ${name}: last on ${
-          data.lastDate ? this.formatDate(data.lastDate) : "—"
-        }, heaviest set ${data.heaviest ? `${data.heaviest} kg` : "—"}, avg volume ${
-          this.formatNumber(averageVolume)
-        } kg-reps/session`;
-      })
-      .join("\n") + "\n";
+    return (
+      sorted
+        .slice(0, 5)
+        .map(([name, data]) => {
+          const averageVolume = data.totalVolume / Math.max(1, data.count);
+          return `- ${name}: last on ${
+            data.lastDate ? this.formatDate(data.lastDate) : "—"
+          }, heaviest set ${data.heaviest ? `${data.heaviest} kg` : "—"}, avg volume ${this.formatNumber(
+            averageVolume,
+          )} kg-reps/session`;
+        })
+        .join("\n") + "\n"
+    );
   }
 
   describeLatestWorkout() {
     if (this.workoutHistory.length > 0) {
       const latest = this.workoutHistory[0];
       return `${latest.workoutName || "Workout"} on ${this.formatDate(
-        new Date(latest.date)
+        new Date(latest.date),
       )}`;
     }
 
@@ -6080,9 +6154,9 @@ class WorkoutTracker {
       const latest = this.sessions
         .slice()
         .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
-      return `${latest.workoutName || latest.exerciseName || "Workout"} on ${
-        this.formatDate(new Date(latest.date))
-      }`;
+      return `${latest.workoutName || latest.exerciseName || "Workout"} on ${this.formatDate(
+        new Date(latest.date),
+      )}`;
     }
 
     return "No workouts logged yet";
@@ -6127,7 +6201,7 @@ class WorkoutTracker {
     const totalItems =
       this.sessions.length + this.workouts.length + this.exerciseLibrary.length;
     this.showSuccessMessage(
-      `Data exported! ${this.sessions.length} sessions, ${this.workouts.length} workouts, ${this.exerciseLibrary.length} exercises`
+      `Data exported! ${this.sessions.length} sessions, ${this.workouts.length} workouts, ${this.exerciseLibrary.length} exercises`,
     );
   }
 
@@ -6139,7 +6213,7 @@ class WorkoutTracker {
 
     const selectedEntry =
       this.workoutHistory.find(
-        (entry) => entry.id === this.selectedHistoryId
+        (entry) => entry.id === this.selectedHistoryId,
       ) || this.workoutHistory[0];
 
     if (!selectedEntry) {
@@ -6151,11 +6225,11 @@ class WorkoutTracker {
     const sessionsForDay = this.sessions.filter(
       (session) =>
         session.workoutId === selectedEntry.workoutId &&
-        this.getLocalDateKey(new Date(session.date)) === sessionDateKey
+        this.getLocalDateKey(new Date(session.date)) === sessionDateKey,
     );
 
     const matchingWorkout = this.workouts.find(
-      (workout) => workout.id === selectedEntry.workoutId
+      (workout) => workout.id === selectedEntry.workoutId,
     );
 
     const exportPayload = {
@@ -6187,7 +6261,7 @@ class WorkoutTracker {
     URL.revokeObjectURL(url);
 
     this.showSuccessMessage(
-      `Session for "${selectedEntry.workoutName}" exported with ${sessionsForDay.length} exercise logs.`
+      `Session for "${selectedEntry.workoutName}" exported with ${sessionsForDay.length} exercise logs.`,
     );
   }
 
@@ -6273,7 +6347,7 @@ class WorkoutTracker {
           }
 
           const exists = this.workouts.some(
-            (w) => w.name.toLowerCase() === workout.name.toLowerCase()
+            (w) => w.name.toLowerCase() === workout.name.toLowerCase(),
           );
           if (!exists) {
             // Generate new ID to avoid conflicts
@@ -6285,7 +6359,7 @@ class WorkoutTracker {
             this.showSuccessMessage(`Workout "${workout.name}" imported!`);
           } else {
             this.showSuccessMessage(
-              `Workout "${workout.name}" already exists (same name). Import skipped.`
+              `Workout "${workout.name}" already exists (same name). Import skipped.`,
             );
           }
 
@@ -6334,7 +6408,7 @@ class WorkoutTracker {
             const workoutName =
               importedData.workout.name || summary.workoutName || "Imported";
             const existingWorkout = this.workouts.find(
-              (w) => w.name.toLowerCase() === workoutName.toLowerCase()
+              (w) => w.name.toLowerCase() === workoutName.toLowerCase(),
             );
 
             if (existingWorkout) {
@@ -6371,7 +6445,7 @@ class WorkoutTracker {
             (entry) =>
               this.getLocalDateKey(new Date(entry.date)) ===
                 this.getLocalDateKey(new Date(summaryToAdd.date)) &&
-              entry.workoutId === summaryToAdd.workoutId
+              entry.workoutId === summaryToAdd.workoutId,
           );
 
           if (hasDuplicateHistory) {
@@ -6386,7 +6460,7 @@ class WorkoutTracker {
 
             this.workoutHistory.unshift(summaryToAdd);
             this.workoutHistory.sort(
-              (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+              (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
             );
             this.selectedHistoryId = summaryToAdd.id;
             results.history.added = 1;
@@ -6468,7 +6542,7 @@ class WorkoutTracker {
         // Import workouts (if present)
         if (importedData.workouts && Array.isArray(importedData.workouts)) {
           const existingWorkoutNames = new Set(
-            this.workouts.map((w) => w.name.toLowerCase())
+            this.workouts.map((w) => w.name.toLowerCase()),
           );
           importedData.workouts.forEach((workout) => {
             if (!existingWorkoutNames.has(workout.name.toLowerCase())) {
@@ -6488,7 +6562,7 @@ class WorkoutTracker {
           Array.isArray(importedData.exerciseLibrary)
         ) {
           const existingExerciseNames = new Set(
-            this.exerciseLibrary.map((e) => e.name.toLowerCase())
+            this.exerciseLibrary.map((e) => e.name.toLowerCase()),
           );
           importedData.exerciseLibrary.forEach((exercise) => {
             if (!existingExerciseNames.has(exercise.name.toLowerCase())) {
@@ -6548,7 +6622,7 @@ class WorkoutTracker {
         alert(
           "Error importing data: " +
             error.message +
-            "\n\nPlease ensure the file is a valid workout tracker backup."
+            "\n\nPlease ensure the file is a valid workout tracker backup.",
         );
         console.error("Import error:", error);
       }
@@ -6608,7 +6682,7 @@ class WorkoutTracker {
     const normalizedTarget = new Date(`${targetKey}T00:00:00`);
     const msPerDay = 24 * 60 * 60 * 1000;
     const diffDays = Math.floor(
-      (normalizedTarget - this.quoteStartDate) / msPerDay
+      (normalizedTarget - this.quoteStartDate) / msPerDay,
     );
 
     return (
