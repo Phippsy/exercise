@@ -429,6 +429,13 @@ class WorkoutTracker {
       });
     }
 
+    const exportSessionMdBtn = document.getElementById("exportSessionMdBtn");
+    if (exportSessionMdBtn) {
+      exportSessionMdBtn.addEventListener("click", () => {
+        this.exportSelectedWorkoutSessionMarkdown();
+      });
+    }
+
     // Management view
     this.bindButtons(["manageBtn", "mobileManageBtn"], () => {
       this.showManagementView();
@@ -6340,6 +6347,100 @@ class WorkoutTracker {
 
     this.showSuccessMessage(
       `Session for "${selectedEntry.workoutName}" exported with ${sessionsForDay.length} exercise logs.`,
+    );
+  }
+
+  exportSelectedWorkoutSessionMarkdown() {
+    if (!this.workoutHistory.length) {
+      alert("No workout sessions to export yet");
+      return;
+    }
+
+    const selectedEntry =
+      this.workoutHistory.find(
+        (entry) => entry.id === this.selectedHistoryId,
+      ) || this.workoutHistory[0];
+
+    if (!selectedEntry) {
+      alert("Select a workout from history to export");
+      return;
+    }
+
+    const sessionDateKey = this.getLocalDateKey(new Date(selectedEntry.date));
+    const sessionsForDay = this.sessions.filter(
+      (session) =>
+        session.workoutId === selectedEntry.workoutId &&
+        this.getLocalDateKey(new Date(session.date)) === sessionDateKey,
+    );
+
+    const dateStr = this.formatDate(new Date(selectedEntry.date));
+    const exercises = selectedEntry.exercises || [];
+
+    let md = `# ${selectedEntry.workoutName}\n`;
+    md += `**Date:** ${dateStr}\n\n`;
+
+    // Summary stats
+    md += `## Summary\n\n`;
+    md += `| Metric | Value |\n`;
+    md += `|--------|-------|\n`;
+    md += `| Exercises | ${exercises.length} |\n`;
+    md += `| Total Sets | ${selectedEntry.totalSets || 0} |\n`;
+    md += `| Total Reps | ${selectedEntry.totalReps || 0} |\n`;
+    md += `| Total Volume | ${(selectedEntry.totalVolume || 0).toFixed(1)} kg-reps |\n`;
+    md += `| Completion | ${selectedEntry.completionPct || 0}% |\n\n`;
+
+    // Per-exercise breakdown
+    md += `## Exercises\n\n`;
+
+    exercises.forEach((exercise) => {
+      md += `### ${exercise.name}\n`;
+      md += `*${exercise.muscleGroup || "—"}*\n\n`;
+      md += `- **Sets:** ${exercise.sets}\n`;
+      md += `- **Reps:** ${exercise.reps}\n`;
+      if (exercise.volume > 0) {
+        md += `- **Volume:** ${exercise.volume.toFixed(1)} kg-reps\n`;
+      }
+      md += `\n`;
+    });
+
+    // Detailed set-by-set log from sessions
+    if (sessionsForDay.length > 0) {
+      md += `## Set-by-Set Log\n\n`;
+
+      sessionsForDay.forEach((session) => {
+        md += `### ${session.exerciseName}\n\n`;
+        md += `| Set | Reps | Weight (kg) | Volume (kg-reps) |\n`;
+        md += `|-----|------|-------------|------------------|\n`;
+
+        (session.sets || []).forEach((set, i) => {
+          const reps = set.reps || 0;
+          const weight = set.weight_kg || 0;
+          const vol = (reps * weight).toFixed(1);
+          md += `| ${i + 1} | ${reps} | ${weight} | ${vol} |\n`;
+        });
+        md += `\n`;
+      });
+    }
+
+    md += `---\n*Exported from Workout Tracker on ${new Date().toLocaleDateString()}*\n`;
+
+    const dataBlob = new Blob([md], { type: "text/markdown" });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement("a");
+    link.href = url;
+
+    const sanitizedName = selectedEntry.workoutName
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-");
+    link.download = `workout-${sanitizedName || "export"}-${sessionDateKey}.md`;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    this.showSuccessMessage(
+      `Session summary for "${selectedEntry.workoutName}" exported as Markdown.`,
     );
   }
 
