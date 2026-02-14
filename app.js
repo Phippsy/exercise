@@ -65,8 +65,19 @@ class WorkoutTracker {
 
       // Load from localStorage if available
       const storedWorkouts = localStorage.getItem("workouts");
+      let newWorkouts = [];
       if (storedWorkouts) {
         this.workouts = JSON.parse(storedWorkouts);
+
+        // Merge any new workouts from exercises.json that don't exist locally
+        const existingIds = new Set(this.workouts.map((w) => w.id));
+        newWorkouts = (data.workouts || []).filter(
+          (w) => !existingIds.has(w.id),
+        );
+        if (newWorkouts.length > 0) {
+          this.workouts.push(...newWorkouts);
+          this.saveWorkouts();
+        }
       } else {
         this.workouts = data.workouts;
         this.saveWorkouts();
@@ -85,6 +96,35 @@ class WorkoutTracker {
         this.exerciseLibrary = JSON.parse(storedLibrary);
       } else {
         this.buildExerciseLibrary();
+      }
+
+      // Merge new exercises from any workouts added above
+      if (newWorkouts.length > 0) {
+        let libraryChanged = false;
+        newWorkouts.forEach((workout) => {
+          (workout.exercises || []).forEach((exercise) => {
+            if (
+              !this.exerciseLibrary.some(
+                (e) => e.name.toLowerCase() === exercise.name.toLowerCase(),
+              )
+            ) {
+              this.exerciseLibrary.push({
+                name: exercise.name,
+                muscle_group: exercise.muscle_group,
+                sets: exercise.sets,
+                reps: exercise.reps,
+                weight_kg: exercise.weight_kg,
+                notes: exercise.notes,
+                form_notes: exercise.form_notes,
+                form_video: exercise.form_video,
+              });
+              libraryChanged = true;
+            }
+          });
+        });
+        if (libraryChanged) {
+          this.saveExerciseLibrary();
+        }
       }
     } catch (error) {
       console.error("Error loading workouts:", error);
