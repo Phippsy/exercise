@@ -1573,10 +1573,11 @@ class WorkoutTracker {
 
   scrollToNextExercise(workout) {
     // Find the first incomplete exercise
+    const exercises = this.getActiveSessionExercises() || workout.exercises;
     let firstIncompleteIndex = -1;
 
-    for (let i = 0; i < workout.exercises.length; i++) {
-      if (!this.isExerciseCompletedToday(workout.exercises[i], workout.id)) {
+    for (let i = 0; i < exercises.length; i++) {
+      if (!this.isExerciseCompletedToday(exercises[i], workout.id)) {
         firstIncompleteIndex = i;
         break;
       }
@@ -1883,7 +1884,7 @@ class WorkoutTracker {
       available = available.filter(
         (exercise) =>
           exercise.name.toLowerCase().includes(searchTerm) ||
-          exercise.muscle_group.toLowerCase().includes(searchTerm),
+          (exercise.muscle_group || "").toLowerCase().includes(searchTerm),
       );
     }
 
@@ -2006,22 +2007,32 @@ class WorkoutTracker {
 
       // Display form notes
       if (exercise.form_notes) {
-        formNotesDisplay.innerHTML = `<p style="margin-bottom: var(--spacing-md); color: var(--dark-text-primary); line-height: 1.6;">${exercise.form_notes}</p>`;
+        const noteP = document.createElement("p");
+        noteP.style.cssText = "margin-bottom: var(--spacing-md); color: var(--dark-text-primary); line-height: 1.6;";
+        noteP.textContent = exercise.form_notes;
+        formNotesDisplay.innerHTML = "";
+        formNotesDisplay.appendChild(noteP);
       } else {
         formNotesDisplay.innerHTML = "";
       }
 
       // Display form video link
-      if (exercise.form_video) {
-        formVideoDisplay.innerHTML = `
-          <a href="${exercise.form_video}" target="_blank" rel="noopener noreferrer" class="btn-secondary" style="display: inline-flex; align-items: center; gap: var(--spacing-xs);">
+      if (exercise.form_video && /^https?:\/\//i.test(exercise.form_video)) {
+        formVideoDisplay.innerHTML = "";
+        const link = document.createElement("a");
+        link.href = exercise.form_video;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.className = "btn-secondary";
+        link.style.cssText = "display: inline-flex; align-items: center; gap: var(--spacing-xs);";
+        link.innerHTML = `
             <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
               <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             Watch Form Video
-          </a>
         `;
+        formVideoDisplay.appendChild(link);
       } else {
         formVideoDisplay.innerHTML = "";
       }
@@ -2793,7 +2804,9 @@ class WorkoutTracker {
       const weightValue = document.getElementById(`weight-${setNum}`).value;
       const weight = weightValue ? parseFloat(weightValue) : 0;
 
-      sets.push({ reps, weight_kg: weight });
+      if (!isNaN(reps)) {
+        sets.push({ reps, weight_kg: weight });
+      }
     });
 
     if (sets.length === 0) {
@@ -3369,8 +3382,8 @@ class WorkoutTracker {
       },
       {
         label: "Exercises",
-        value: `${entry.exercises.length} ${
-          entry.exercises.length === 1 ? "movement" : "movements"
+        value: `${exercises.length} ${
+          exercises.length === 1 ? "movement" : "movements"
         }`,
       },
     ];
@@ -3852,9 +3865,15 @@ class WorkoutTracker {
       })),
     );
 
+    const trendData = recentSessions.map((session) => ({
+      value: session.sets.reduce(
+        (sum, set) => sum + (set.weight_kg || 0) * (set.reps || 0),
+        0,
+      ),
+    }));
     trendEl.textContent = this.describeTrend(
-      recentSessions.slice(-5),
-      recentSessions.slice(0, Math.max(0, recentSessions.length - 5)),
+      trendData.slice(-5),
+      trendData.slice(0, Math.max(0, trendData.length - 5)),
     );
   }
 
@@ -4086,35 +4105,58 @@ class WorkoutTracker {
       const gradient = `linear-gradient(120deg, hsl(${
         200 + index * 18
       }, 82%, 72%), hsl(${280 + index * 16}, 88%, 74%))`;
-      const pct = Math.round((item.value / totalValue) * 100);
+      const pct = totalValue > 0 ? Math.round((item.value / totalValue) * 100) : 0;
 
       const formattedValue =
         unitLabel === "reps" ? Math.round(item.value) : item.value.toFixed(1);
 
-      bar.innerHTML = `
-        <div class="volume-bar-row">
-          <div class="volume-bar-info">
-            <span class="volume-swatch" style="background: ${gradient}"></span>
-            <div>
-              <p class="volume-bar-name">${item.muscle}</p>
-              <p class="volume-bar-sub">${formattedValue} ${unitLabel}</p>
-            </div>
-          </div>
-          <span class="volume-bar-value">${pct}%</span>
-        </div>
-        <div class="volume-bar-track">
-          <div class="volume-bar-fill" style="width: ${
-            (item.value / maxValue) * 100
-          }%; background: ${gradient}"></div>
-        </div>
-      `;
+      const barRow = document.createElement("div");
+      barRow.className = "volume-bar-row";
+
+      const barInfo = document.createElement("div");
+      barInfo.className = "volume-bar-info";
+
+      const swatch = document.createElement("span");
+      swatch.className = "volume-swatch";
+      swatch.style.background = gradient;
+
+      const infoDiv = document.createElement("div");
+      const nameP = document.createElement("p");
+      nameP.className = "volume-bar-name";
+      nameP.textContent = item.muscle;
+      const subP = document.createElement("p");
+      subP.className = "volume-bar-sub";
+      subP.textContent = `${formattedValue} ${unitLabel}`;
+      infoDiv.appendChild(nameP);
+      infoDiv.appendChild(subP);
+
+      barInfo.appendChild(swatch);
+      barInfo.appendChild(infoDiv);
+
+      const valueSpan = document.createElement("span");
+      valueSpan.className = "volume-bar-value";
+      valueSpan.textContent = `${pct}%`;
+
+      barRow.appendChild(barInfo);
+      barRow.appendChild(valueSpan);
+
+      const track = document.createElement("div");
+      track.className = "volume-bar-track";
+      const fill = document.createElement("div");
+      fill.className = "volume-bar-fill";
+      fill.style.width = `${(item.value / maxValue) * 100}%`;
+      fill.style.background = gradient;
+      track.appendChild(fill);
+
+      bar.appendChild(barRow);
+      bar.appendChild(track);
 
       container.appendChild(bar);
     });
 
-    if (legendEl) {
+    if (legendEl && breakdown.length > 0) {
       const top = breakdown[0];
-      const share = Math.round((top.value / totalValue) * 100);
+      const share = totalValue > 0 ? Math.round((top.value / totalValue) * 100) : 0;
       legendEl.textContent = `${top.muscle} carried the day (${share}% of ${unitLabel})`;
     }
   }
@@ -4198,12 +4240,14 @@ class WorkoutTracker {
 
   showOnboarding() {
     const overlay = document.getElementById("onboardingOverlay");
+    if (!overlay) return;
     overlay.classList.remove("hidden");
     this.syncOnboardingContent();
   }
 
   hideOnboarding() {
     const overlay = document.getElementById("onboardingOverlay");
+    if (!overlay) return;
     overlay.classList.add("hidden");
   }
 
@@ -4214,7 +4258,7 @@ class WorkoutTracker {
     const backBtn = document.getElementById("onboardingBack");
     const nextBtn = document.getElementById("onboardingNext");
 
-    if (!step) return;
+    if (!step || !titleEl || !bodyEl || !backBtn || !nextBtn) return;
 
     titleEl.textContent = step.title;
     bodyEl.textContent = step.body;
@@ -4573,10 +4617,22 @@ class WorkoutTracker {
     });
     this.saveWorkouts();
 
+    // Remove orphaned sessions
+    this.sessions = this.sessions.filter(
+      (s) => s.exerciseName !== exerciseName,
+    );
+    this.saveSessions();
+
+    // Clear current exercise if it was deleted
+    if (this.currentExercise?.name === exerciseName) {
+      this.currentExercise = null;
+    }
+
     // Refresh displays
     this.renderExerciseLibrary();
     this.renderWorkoutManager();
     this.renderWorkoutList();
+    this.refreshInsights();
 
     this.showSuccessMessage(`Exercise "${exerciseName}" deleted`);
   }
@@ -4723,10 +4779,10 @@ class WorkoutTracker {
     }
 
     const exerciseNames = Array.from(selectedCheckboxes).map((cb) => cb.value);
-    const exercises = exerciseNames.map((name) => {
-      const exercise = this.exerciseLibrary.find((e) => e.name === name);
-      return { ...exercise };
-    });
+    const exercises = exerciseNames
+      .map((name) => this.exerciseLibrary.find((e) => e.name === name))
+      .filter(Boolean)
+      .map((exercise) => ({ ...exercise }));
 
     const workout = {
       id: Date.now(),
@@ -4766,8 +4822,23 @@ class WorkoutTracker {
 
     this.clearPersistedSession(workoutId);
 
+    // Clean up orphaned sessions and history
+    this.sessions = this.sessions.filter((s) => s.workoutId !== workoutId);
+    this.saveSessions();
+    this.workoutHistory = this.workoutHistory.filter(
+      (h) => h.workoutId !== workoutId,
+    );
+    this.saveWorkoutHistory();
+
+    // Reset current workout if it was deleted
+    if (this.currentWorkout?.id === workoutId) {
+      this.currentWorkout = null;
+      this.currentExercise = null;
+    }
+
     this.renderWorkoutManager();
     this.renderWorkoutList();
+    this.refreshInsights();
 
     this.showSuccessMessage(`Workout "${workout.name}" deleted`);
   }
@@ -4921,9 +4992,15 @@ class WorkoutTracker {
         <svg class="drag-handle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M3 7h18M3 12h18M3 17h18" />
         </svg>
-        <span class="selected-exercise-name">${exercise.name}</span>
-        <span class="selected-exercise-muscle">${exercise.muscle_group}</span>
       `;
+      const nameSpan = document.createElement("span");
+      nameSpan.className = "selected-exercise-name";
+      nameSpan.textContent = exercise.name;
+      const muscleSpan = document.createElement("span");
+      muscleSpan.className = "selected-exercise-muscle";
+      muscleSpan.textContent = exercise.muscle_group || "";
+      item.appendChild(nameSpan);
+      item.appendChild(muscleSpan);
 
       const removeBtn = document.createElement("button");
       removeBtn.type = "button";
@@ -4999,10 +5076,10 @@ class WorkoutTracker {
       const exerciseNames = Array.from(selectedItems).map(
         (item) => item.dataset.exerciseName,
       );
-      exercises = exerciseNames.map((name) => {
-        const exercise = this.exerciseLibrary.find((e) => e.name === name);
-        return { ...exercise };
-      });
+      exercises = exerciseNames
+        .map((name) => this.exerciseLibrary.find((e) => e.name === name))
+        .filter(Boolean)
+        .map((exercise) => ({ ...exercise }));
     } else {
       // Fallback to checkboxes
       const selectedCheckboxes = document.querySelectorAll(
@@ -5011,10 +5088,10 @@ class WorkoutTracker {
       const exerciseNames = Array.from(selectedCheckboxes).map(
         (cb) => cb.value,
       );
-      exercises = exerciseNames.map((name) => {
-        const exercise = this.exerciseLibrary.find((e) => e.name === name);
-        return { ...exercise };
-      });
+      exercises = exerciseNames
+        .map((name) => this.exerciseLibrary.find((e) => e.name === name))
+        .filter(Boolean)
+        .map((exercise) => ({ ...exercise }));
     }
 
     if (!name) {
@@ -6163,6 +6240,7 @@ class WorkoutTracker {
   }
 
   formatNumber(value) {
+    if (typeof value !== "number" || isNaN(value)) return "0.0";
     return value.toLocaleString("en-US", {
       maximumFractionDigits: 1,
       minimumFractionDigits: 1,
