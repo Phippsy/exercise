@@ -1579,6 +1579,107 @@ button {
   resize: vertical;
 }
 
+/* ── Google Sheets Sync Tab ── */
+
+.sync-setup-guide {
+  margin-bottom: var(--spacing-md);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--bg-subtle);
+}
+
+.sync-setup-guide summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.sync-setup-guide summary:hover {
+  color: var(--text-primary);
+}
+
+.sync-steps {
+  margin: var(--spacing-sm) 0 0 var(--spacing-md);
+  padding: 0;
+  font-size: var(--font-size-sm);
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+.sync-steps li {
+  margin-bottom: var(--spacing-xs);
+}
+
+.sync-steps code {
+  background: var(--bg-subtle);
+  padding: 1px 5px;
+  border-radius: var(--radius-xs);
+  font-size: 0.85em;
+}
+
+.sync-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+}
+
+.sync-toggle-row {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.sync-toggle-row .toggle-label {
+  flex: 1;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+}
+
+.sync-toggle-row input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+.sync-status {
+  margin-top: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  color: var(--text-secondary);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+  min-height: 2rem;
+}
+
+.sync-status.syncing {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.sync-status.success {
+  color: var(--color-success);
+  border-color: var(--color-success);
+}
+
+.sync-status.error {
+  color: var(--color-error, #ef4444);
+  border-color: var(--color-error, #ef4444);
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
 .sr-only {
   position: absolute;
   width: 1px;

@@ -49,8 +49,9 @@ Examples:
 
 ### Current Version
 
-**Current Version: 1.6.1** (as of 2025-12-05)
+**Current Version: 1.14.0** (as of 2026-02-25)
 
+- 1.14.0: Added Google Sheets sync — auto-sync on workout finish, bulk export, Sync tab in Manage view
 - 1.6.1: Added bottom bar action buttons (Finish Workout/Save Session) on mobile
 - 1.6.0: Reduced border radiuses, made back buttons purple outlined, improved mobile spacing
 - 1.5.0: Fixed exercises.json data types, git rollback to stable export version

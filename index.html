@@ -13,7 +13,7 @@
     <meta name="theme-color" content="#0a0a0a" />
     <title>Workout Tracker</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-    <link rel="stylesheet" href="styles.css?v=1.11.3" />
+    <link rel="stylesheet" href="styles.css?v=1.12.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -1040,6 +1040,7 @@
             </button>
             <button class="management-tab" data-tab="workouts">Workouts</button>
             <button class="management-tab" data-tab="coach">Coach</button>
+            <button class="management-tab" data-tab="sync">Sync</button>
           </div>
 
           <!-- Exercises Tab -->
@@ -1415,6 +1416,81 @@
               </div>
             </div>
           </div>
+
+          <!-- Sync Tab -->
+          <div id="syncTab" class="management-tab-content">
+            <div class="management-section">
+              <h3 class="management-section-title">
+                Google Sheets Sync
+              </h3>
+              <p class="section-subtext">
+                Connect your workout data to a Google Sheet so every completed
+                workout is automatically backed up. You can also bulk-export
+                your entire history in one go.
+              </p>
+
+              <details class="sync-setup-guide">
+                <summary>Setup instructions</summary>
+                <ol class="sync-steps">
+                  <li>Create a new Google Sheet (or open an existing one)</li>
+                  <li>Go to <strong>Extensions &rarr; Apps Script</strong></li>
+                  <li>
+                    Delete any existing code, then paste the contents of
+                    <code>google-apps-script.js</code> from this project
+                  </li>
+                  <li>
+                    Click <strong>Deploy &rarr; New deployment &rarr; Web app</strong>
+                  </li>
+                  <li>
+                    Set <em>"Execute as"</em> = <strong>Me</strong> and
+                    <em>"Who has access"</em> = <strong>Anyone</strong>
+                  </li>
+                  <li>Copy the Web App URL and paste it below</li>
+                </ol>
+              </details>
+
+              <div class="form-group">
+                <label for="sheetsUrlInput">Apps Script Web App URL</label>
+                <input
+                  type="url"
+                  id="sheetsUrlInput"
+                  placeholder="https://script.google.com/macros/s/…/exec"
+                  autocomplete="off"
+                  spellcheck="false" />
+              </div>
+
+              <div class="sync-actions">
+                <button id="sheetsTestBtn" class="btn-secondary">
+                  Test connection
+                </button>
+              </div>
+
+              <div class="form-group sync-toggle-row">
+                <label for="sheetsAutoSync" class="toggle-label">
+                  Auto-sync when a workout is finished
+                </label>
+                <input type="checkbox" id="sheetsAutoSync" />
+              </div>
+            </div>
+
+            <div class="management-section">
+              <h3 class="management-section-title">
+                Bulk Export to Sheet
+              </h3>
+              <p class="section-subtext">
+                Push all your existing workout history and exercise sessions to
+                Google Sheets in one go. Existing rows are updated (not
+                duplicated) so it's safe to run multiple times.
+              </p>
+              <div class="sync-actions">
+                <button id="sheetsBulkSyncBtn" class="btn-primary">
+                  Sync all history to Google Sheets
+                </button>
+              </div>
+              <div id="syncStatus" class="sync-status"></div>
+            </div>
+          </div>
+
         </div>
       </aside>
 
@@ -1743,6 +1819,6 @@
       </div>
     </div>
 
-    <script src="app.js?v=1.13.1"></script>
+    <script src="app.js?v=1.14.0"></script>
   </body>
 </html>

@@ -30,6 +30,11 @@ class WorkoutTracker {
     this.quoteStartDate = new Date("2024-01-01T00:00:00");
     this.warmupAdded = false;
 
+    // Google Sheets sync
+    this.googleSheetsUrl = localStorage.getItem("googleSheetsUrl") || "";
+    this.googleSheetsAutoSync = JSON.parse(localStorage.getItem("googleSheetsAutoSync")) || false;
+    this.sheetsIsSyncing = false;
+
     this.init();
   }
 
@@ -499,6 +504,9 @@ class WorkoutTracker {
         this.switchManagementTab(e.target.dataset.tab);
       });
     });
+
+    // Google Sheets sync tab
+    this.setupSyncTabListeners();
 
     const generateCoachSummaryBtn = document.getElementById(
       "generateCoachSummaryBtn",
@@ -3091,6 +3099,12 @@ class WorkoutTracker {
     this.refreshInsights();
 
     this.showSuccessMessage("Workout saved to history");
+
+    // Auto-sync to Google Sheets if enabled
+    if (this.googleSheetsAutoSync && this.googleSheetsUrl) {
+      this.syncWorkoutToSheets(summary, todaysSessions);
+    }
+
     this.clearPersistedSession(this.currentWorkout.id);
     this.openHistoryView(summary.id);
   }
@@ -4458,6 +4472,9 @@ class WorkoutTracker {
     } else if (tabName === "coach") {
       document.getElementById("coachTab").classList.add("active");
       this.updateCoachSummaryOutput();
+    } else if (tabName === "sync") {
+      document.getElementById("syncTab").classList.add("active");
+      this.renderSyncTabStatus();
     }
   }
 
@@ -6961,6 +6978,220 @@ class WorkoutTracker {
 
   scrollToTop() {
     window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // ============================================
+  // Google Sheets Sync
+  // ============================================
+
+  saveGoogleSheetsUrl(url) {
+    this.googleSheetsUrl = (url || "").trim();
+    localStorage.setItem("googleSheetsUrl", this.googleSheetsUrl);
+  }
+
+  saveGoogleSheetsAutoSync(enabled) {
+    this.googleSheetsAutoSync = !!enabled;
+    localStorage.setItem(
+      "googleSheetsAutoSync",
+      JSON.stringify(this.googleSheetsAutoSync),
+    );
+  }
+
+  /** Test the connection to the deployed Apps Script web app */
+  async testSheetsConnection() {
+    if (!this.googleSheetsUrl) {
+      this.showSuccessMessage("Please enter your Apps Script URL first");
+      return false;
+    }
+
+    try {
+      const url = `${this.googleSheetsUrl}?action=ping`;
+      const resp = await fetch(url);
+      const data = await resp.json();
+      if (data.ok) {
+        this.showSuccessMessage("Connected to Google Sheets!");
+        return true;
+      } else {
+        this.showSuccessMessage("Connection failed: " + (data.error || "Unknown"));
+        return false;
+      }
+    } catch (err) {
+      this.showSuccessMessage("Connection error: " + err.message);
+      return false;
+    }
+  }
+
+  /**
+   * Sync a single completed workout (summary + its sessions) to Google Sheets.
+   * Called automatically after finishing a workout when auto-sync is on.
+   */
+  async syncWorkoutToSheets(summary, sessions) {
+    if (!this.googleSheetsUrl || this.sheetsIsSyncing) return;
+    this.sheetsIsSyncing = true;
+
+    try {
+      const payload = JSON.stringify({
+        action: "sync_workout",
+        summary: summary,
+        sessions: sessions,
+      });
+
+      const url = `${this.googleSheetsUrl}?action=sync_workout&payload=${encodeURIComponent(payload)}`;
+      const resp = await fetch(url);
+      const data = await resp.json();
+
+      if (data.ok) {
+        this.showSuccessMessage(
+          `Synced to Google Sheets (${data.sessions_written} exercises)`,
+        );
+      } else {
+        console.error("Sheets sync error:", data.error);
+        this.showSuccessMessage("Sheets sync failed — check console");
+      }
+    } catch (err) {
+      console.error("Sheets sync error:", err);
+      this.showSuccessMessage("Sheets sync error — check console");
+    } finally {
+      this.sheetsIsSyncing = false;
+    }
+  }
+
+  /**
+   * Bulk-sync ALL workout history and sessions to Google Sheets.
+   * This is the "mass export" for populating the sheet with existing data.
+   */
+  async bulkSyncToSheets() {
+    if (!this.googleSheetsUrl) {
+      this.showSuccessMessage("Set your Apps Script URL first");
+      return;
+    }
+
+    if (this.sheetsIsSyncing) {
+      this.showSuccessMessage("Sync already in progress…");
+      return;
+    }
+
+    this.sheetsIsSyncing = true;
+    const statusEl = document.getElementById("syncStatus");
+    if (statusEl) {
+      statusEl.textContent = "Syncing all data…";
+      statusEl.className = "sync-status syncing";
+    }
+
+    try {
+      // Split into chunks to avoid Apps Script URL length / execution limits
+      const CHUNK = 20;
+      const totalHistory = this.workoutHistory.length;
+      const totalSessions = this.sessions.length;
+      let historyWritten = 0;
+      let sessionsWritten = 0;
+      let exercisesWritten = 0;
+
+      // First chunk includes exercise library
+      for (let i = 0; i < Math.max(totalHistory, totalSessions); i += CHUNK) {
+        const historyChunk = this.workoutHistory.slice(i, i + CHUNK);
+        const sessionChunk = this.sessions.slice(i, i + CHUNK);
+        const exerciseChunk = i === 0 ? this.exerciseLibrary : [];
+
+        const payload = JSON.stringify({
+          action: "bulk_sync",
+          history: historyChunk,
+          sessions: sessionChunk,
+          exercises: exerciseChunk,
+        });
+
+        const url = `${this.googleSheetsUrl}?action=bulk_sync&payload=${encodeURIComponent(payload)}`;
+        const resp = await fetch(url);
+        const data = await resp.json();
+
+        if (!data.ok) {
+          throw new Error(data.error || "Sync chunk failed");
+        }
+
+        historyWritten += data.history_written || 0;
+        sessionsWritten += data.sessions_written || 0;
+        exercisesWritten += data.exercises_written || 0;
+
+        if (statusEl) {
+          statusEl.textContent = `Synced ${historyWritten}/${totalHistory} workouts, ${sessionsWritten}/${totalSessions} sessions…`;
+        }
+      }
+
+      if (statusEl) {
+        statusEl.textContent = `Done! ${historyWritten} workouts, ${sessionsWritten} sessions, ${exercisesWritten} exercises synced.`;
+        statusEl.className = "sync-status success";
+      }
+
+      this.showSuccessMessage(
+        `Bulk sync complete — ${historyWritten} workouts synced`,
+      );
+    } catch (err) {
+      console.error("Bulk sync error:", err);
+      if (statusEl) {
+        statusEl.textContent = "Sync failed: " + err.message;
+        statusEl.className = "sync-status error";
+      }
+      this.showSuccessMessage("Bulk sync failed — " + err.message);
+    } finally {
+      this.sheetsIsSyncing = false;
+    }
+  }
+
+  /** Render live status info inside the Sync tab */
+  renderSyncTabStatus() {
+    const urlInput = document.getElementById("sheetsUrlInput");
+    const autoSyncToggle = document.getElementById("sheetsAutoSync");
+    const statusEl = document.getElementById("syncStatus");
+
+    if (urlInput) urlInput.value = this.googleSheetsUrl;
+    if (autoSyncToggle) autoSyncToggle.checked = this.googleSheetsAutoSync;
+
+    if (statusEl && !this.sheetsIsSyncing) {
+      const historyCount = this.workoutHistory.length;
+      const sessionCount = this.sessions.length;
+      statusEl.textContent = this.googleSheetsUrl
+        ? `Ready · ${historyCount} workouts, ${sessionCount} exercise sessions available to sync`
+        : "Enter your Apps Script URL above to get started";
+      statusEl.className = "sync-status";
+    }
+  }
+
+  /** Wire up event listeners for the Sync tab elements */
+  setupSyncTabListeners() {
+    const urlInput = document.getElementById("sheetsUrlInput");
+    if (urlInput) {
+      urlInput.addEventListener("change", () => {
+        this.saveGoogleSheetsUrl(urlInput.value);
+        this.renderSyncTabStatus();
+      });
+    }
+
+    const autoSyncToggle = document.getElementById("sheetsAutoSync");
+    if (autoSyncToggle) {
+      autoSyncToggle.addEventListener("change", () => {
+        this.saveGoogleSheetsAutoSync(autoSyncToggle.checked);
+      });
+    }
+
+    const testBtn = document.getElementById("sheetsTestBtn");
+    if (testBtn) {
+      testBtn.addEventListener("click", () => {
+        this.testSheetsConnection();
+      });
+    }
+
+    const bulkSyncBtn = document.getElementById("sheetsBulkSyncBtn");
+    if (bulkSyncBtn) {
+      bulkSyncBtn.addEventListener("click", () => {
+        if (
+          confirm(
+            `This will sync all ${this.workoutHistory.length} workouts and ${this.sessions.length} exercise sessions to your Google Sheet. Continue?`,
+          )
+        ) {
+          this.bulkSyncToSheets();
+        }
+      });
+    }
   }
 
   showSuccessMessage(message) {
