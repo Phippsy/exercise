@@ -142,177 +142,182 @@ function doPost(e) {
 // ─── Sync a single completed workout ────────────────────────────────────────
 
 function syncWorkout(data) {
-  const summary = data.summary;
-  const sessions = data.sessions || [];
+  var summary = data.summary;
+  var sessions = data.sessions || [];
 
   if (!summary || !summary.id) {
     return jsonResponse({ error: "summary with id required" });
   }
 
-  const timestamp = new Date().toISOString();
+  var timestamp = new Date().toISOString();
 
-  // ── Write / update History row ──
-  const historySheet = getSheet("History");
-  const historyId = String(summary.id);
-
-  // Check if this history entry already exists (upsert)
-  const existingHistoryRow = findRowByColumn(historySheet, 2, historyId);
-  const historyRow = [
-    timestamp,
-    historyId,
-    summary.workoutId || "",
-    summary.workoutName || "",
-    summary.date || "",
-    JSON.stringify(summary.exercises || []),
-    summary.totalSets || 0,
-    summary.totalVolume || 0,
-    summary.totalReps || 0,
-    summary.completionPct || 0,
-    summary.headline || "",
+  // ── History ──
+  var historySheet = getSheet("History");
+  var historyId = String(summary.id);
+  var existingHistoryRow = findRowByColumn(historySheet, 2, historyId);
+  var historyRow = [
+    timestamp, historyId, summary.workoutId || "", summary.workoutName || "",
+    summary.date || "", JSON.stringify(summary.exercises || []),
+    summary.totalSets || 0, summary.totalVolume || 0, summary.totalReps || 0,
+    summary.completionPct || 0, summary.headline || "",
   ];
 
   if (existingHistoryRow > 0) {
-    historySheet
-      .getRange(existingHistoryRow, 1, 1, historyRow.length)
-      .setValues([historyRow]);
+    historySheet.getRange(existingHistoryRow, 1, 1, historyRow.length).setValues([historyRow]);
   } else {
     historySheet.appendRow(historyRow);
   }
 
-  // ── Write / update Session rows ──
-  const sessionSheet = getSheet("Sessions");
-  let sessionsWritten = 0;
+  // ── Sessions (batch) ──
+  var sessionSheet = getSheet("Sessions");
+  var existingSessionData = sessionSheet.getDataRange().getValues();
+  var sessionIdMap = {};
+  for (var i = 1; i < existingSessionData.length; i++) {
+    sessionIdMap[String(existingSessionData[i][1])] = i + 1;
+  }
 
+  var newSessionRows = [];
   sessions.forEach(function (session) {
-    const sessionId = String(session.id);
-    const existingRow = findRowByColumn(sessionSheet, 2, sessionId);
-    const row = [
-      timestamp,
-      sessionId,
-      session.workoutId || "",
-      session.workoutName || "",
-      session.exerciseName || "",
-      session.muscleGroup || "",
-      session.date || "",
-      JSON.stringify(session.sets || []),
-      session.totalVolume || 0,
+    var sessionId = String(session.id);
+    var row = [
+      timestamp, sessionId, session.workoutId || "", session.workoutName || "",
+      session.exerciseName || "", session.muscleGroup || "", session.date || "",
+      JSON.stringify(session.sets || []), session.totalVolume || 0,
       session.pr ? !!session.pr.weight : false,
       session.pr ? !!session.pr.volume : false,
     ];
 
-    if (existingRow > 0) {
-      sessionSheet
-        .getRange(existingRow, 1, 1, row.length)
-        .setValues([row]);
+    if (sessionIdMap[sessionId]) {
+      sessionSheet.getRange(sessionIdMap[sessionId], 1, 1, row.length).setValues([row]);
     } else {
-      sessionSheet.appendRow(row);
+      newSessionRows.push(row);
     }
-    sessionsWritten++;
   });
+
+  if (newSessionRows.length > 0) {
+    sessionSheet
+      .getRange(existingSessionData.length + 1, 1, newSessionRows.length, newSessionRows[0].length)
+      .setValues(newSessionRows);
+  }
 
   return jsonResponse({
     ok: true,
     history_id: historyId,
-    sessions_written: sessionsWritten,
+    sessions_written: sessions.length,
   });
 }
 
 // ─── Bulk sync — mass export all history + sessions at once ─────────────────
 
 function bulkSync(data) {
-  const historyEntries = data.history || [];
-  const allSessions = data.sessions || [];
-  const exercises = data.exercises || [];
+  var historyEntries = data.history || [];
+  var allSessions = data.sessions || [];
+  var exercises = data.exercises || [];
 
-  const timestamp = new Date().toISOString();
-  let historyWritten = 0;
-  let sessionsWritten = 0;
-  let exercisesWritten = 0;
+  var timestamp = new Date().toISOString();
+  var historyWritten = 0;
+  var sessionsWritten = 0;
+  var exercisesWritten = 0;
 
-  // ── History ──
-  const historySheet = getSheet("History");
-  historyEntries.forEach(function (summary) {
-    const historyId = String(summary.id);
-    const existingRow = findRowByColumn(historySheet, 2, historyId);
-    const row = [
-      timestamp,
-      historyId,
-      summary.workoutId || "",
-      summary.workoutName || "",
-      summary.date || "",
-      JSON.stringify(summary.exercises || []),
-      summary.totalSets || 0,
-      summary.totalVolume || 0,
-      summary.totalReps || 0,
-      summary.completionPct || 0,
-      summary.headline || "",
-    ];
-
-    if (existingRow > 0) {
-      historySheet
-        .getRange(existingRow, 1, 1, row.length)
-        .setValues([row]);
-    } else {
-      historySheet.appendRow(row);
+  // ── History (batch read + batch write) ──
+  if (historyEntries.length > 0) {
+    var historySheet = getSheet("History");
+    var hData = historySheet.getDataRange().getValues();
+    var hIdMap = {};
+    for (var hi = 1; hi < hData.length; hi++) {
+      hIdMap[String(hData[hi][1])] = hi + 1;
     }
-    historyWritten++;
-  });
 
-  // ── Sessions ──
-  const sessionSheet = getSheet("Sessions");
-  allSessions.forEach(function (session) {
-    const sessionId = String(session.id);
-    const existingRow = findRowByColumn(sessionSheet, 2, sessionId);
-    const row = [
-      timestamp,
-      sessionId,
-      session.workoutId || "",
-      session.workoutName || "",
-      session.exerciseName || "",
-      session.muscleGroup || "",
-      session.date || "",
-      JSON.stringify(session.sets || []),
-      session.totalVolume || 0,
-      session.pr ? !!session.pr.weight : false,
-      session.pr ? !!session.pr.volume : false,
-    ];
-
-    if (existingRow > 0) {
-      sessionSheet
-        .getRange(existingRow, 1, 1, row.length)
-        .setValues([row]);
-    } else {
-      sessionSheet.appendRow(row);
-    }
-    sessionsWritten++;
-  });
-
-  // ── Exercise Library ──
-  if (exercises.length > 0) {
-    const exerciseSheet = getSheet("Exercises");
-    exercises.forEach(function (ex) {
-      const existingRow = findRowByColumn(exerciseSheet, 2, ex.name);
-      const row = [
-        timestamp,
-        ex.name || "",
-        ex.muscle_group || "",
-        ex.sets || "",
-        ex.reps || "",
-        ex.weight_kg || "",
-        ex.notes || "",
-        ex.form_notes || "",
-        ex.form_video || "",
+    var newHistoryRows = [];
+    historyEntries.forEach(function (summary) {
+      var historyId = String(summary.id);
+      var row = [
+        timestamp, historyId, summary.workoutId || "", summary.workoutName || "",
+        summary.date || "", JSON.stringify(summary.exercises || []),
+        summary.totalSets || 0, summary.totalVolume || 0, summary.totalReps || 0,
+        summary.completionPct || 0, summary.headline || "",
       ];
 
-      if (existingRow > 0) {
-        exerciseSheet
-          .getRange(existingRow, 1, 1, row.length)
-          .setValues([row]);
+      if (hIdMap[historyId]) {
+        historySheet.getRange(hIdMap[historyId], 1, 1, row.length).setValues([row]);
       } else {
-        exerciseSheet.appendRow(row);
+        newHistoryRows.push(row);
+      }
+      historyWritten++;
+    });
+
+    if (newHistoryRows.length > 0) {
+      historySheet
+        .getRange(hData.length + 1, 1, newHistoryRows.length, newHistoryRows[0].length)
+        .setValues(newHistoryRows);
+    }
+  }
+
+  // ── Sessions (batch read + batch write) ──
+  if (allSessions.length > 0) {
+    var sessionSheet = getSheet("Sessions");
+    var sData = sessionSheet.getDataRange().getValues();
+    var sIdMap = {};
+    for (var si = 1; si < sData.length; si++) {
+      sIdMap[String(sData[si][1])] = si + 1;
+    }
+
+    var newSessionRows = [];
+    allSessions.forEach(function (session) {
+      var sessionId = String(session.id);
+      var row = [
+        timestamp, sessionId, session.workoutId || "", session.workoutName || "",
+        session.exerciseName || "", session.muscleGroup || "", session.date || "",
+        JSON.stringify(session.sets || []), session.totalVolume || 0,
+        session.pr ? !!session.pr.weight : false,
+        session.pr ? !!session.pr.volume : false,
+      ];
+
+      if (sIdMap[sessionId]) {
+        sessionSheet.getRange(sIdMap[sessionId], 1, 1, row.length).setValues([row]);
+      } else {
+        newSessionRows.push(row);
+      }
+      sessionsWritten++;
+    });
+
+    if (newSessionRows.length > 0) {
+      sessionSheet
+        .getRange(sData.length + 1, 1, newSessionRows.length, newSessionRows[0].length)
+        .setValues(newSessionRows);
+    }
+  }
+
+  // ── Exercise Library (batch read + batch write) ──
+  if (exercises.length > 0) {
+    var exerciseSheet = getSheet("Exercises");
+    var eData = exerciseSheet.getDataRange().getValues();
+    var eNameMap = {};
+    for (var ei = 1; ei < eData.length; ei++) {
+      eNameMap[String(eData[ei][1])] = ei + 1;
+    }
+
+    var newExerciseRows = [];
+    exercises.forEach(function (ex) {
+      var row = [
+        timestamp, ex.name || "", ex.muscle_group || "",
+        ex.sets || "", ex.reps || "", ex.weight_kg || "",
+        ex.notes || "", ex.form_notes || "", ex.form_video || "",
+      ];
+
+      if (eNameMap[ex.name]) {
+        exerciseSheet.getRange(eNameMap[ex.name], 1, 1, row.length).setValues([row]);
+      } else {
+        newExerciseRows.push(row);
       }
       exercisesWritten++;
     });
+
+    if (newExerciseRows.length > 0) {
+      exerciseSheet
+        .getRange(eData.length + 1, 1, newExerciseRows.length, newExerciseRows[0].length)
+        .setValues(newExerciseRows);
+    }
   }
 
   return jsonResponse({
