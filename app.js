@@ -4435,6 +4435,7 @@ class WorkoutTracker {
 
   showManagementView() {
     document.getElementById("managementView").classList.remove("hidden");
+    document.body.style.overflow = "hidden"; // prevent background scrolling
     this.renderExerciseLibrary();
     this.renderWorkoutManager();
     this.renderExerciseSelector();
@@ -4443,6 +4444,7 @@ class WorkoutTracker {
 
   hideManagementView() {
     document.getElementById("managementView").classList.add("hidden");
+    document.body.style.overflow = ""; // restore scrolling
   }
 
   switchManagementTab(tabName) {
@@ -4546,10 +4548,12 @@ class WorkoutTracker {
       exercise.form_video || "";
 
     document.getElementById("editExerciseModal").classList.remove("hidden");
+    document.body.style.overflow = "hidden";
   }
 
   hideEditExerciseModal() {
     document.getElementById("editExerciseModal").classList.add("hidden");
+    document.body.style.overflow = "";
     document.getElementById("editExerciseForm").reset();
   }
 
@@ -4923,10 +4927,12 @@ class WorkoutTracker {
 
     // Show the edit modal
     document.getElementById("editWorkoutModal").classList.remove("hidden");
+    document.body.style.overflow = "hidden";
   }
 
   hideEditWorkoutModal() {
     document.getElementById("editWorkoutModal").classList.add("hidden");
+    document.body.style.overflow = "";
     document.getElementById("editWorkoutForm").reset();
   }
 

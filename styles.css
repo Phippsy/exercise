@@ -1441,14 +1441,23 @@ button {
   position: relative;
   width: 100%;
   max-width: 600px;
-  height: 100vh;
+  height: 100dvh; /* dvh respects iOS dynamic viewport */
+  height: 100vh; /* fallback for older browsers */
   background-color: var(--bg-surface);
   border-left: 1px solid var(--border-subtle);
   display: flex;
   flex-direction: column;
   animation: slideInRight 0.3s ease;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
   z-index: 2;
+}
+
+@supports (height: 100dvh) {
+  .management-panel {
+    height: 100dvh;
+  }
 }
 
 @keyframes slideInRight {
@@ -1466,8 +1475,7 @@ button {
   align-items: center;
   padding: var(--spacing-lg);
   border-bottom: 1px solid var(--border-subtle);
-  position: sticky;
-  top: 0;
+  flex-shrink: 0; /* never collapse */
   background-color: var(--bg-surface);
   z-index: 10;
 }
@@ -1481,12 +1489,14 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px; /* iOS minimum touch target */
+  min-height: 44px;
   padding: 0;
-  background-color: transparent;
-  color: var(--text-muted);
-  border: none;
+  background-color: var(--bg-subtle);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all 0.15s ease;
@@ -1501,8 +1511,7 @@ button {
   display: flex;
   border-bottom: 1px solid var(--border-subtle);
   background-color: var(--bg-surface);
-  position: sticky;
-  top: 73px;
+  flex-shrink: 0; /* never collapse */
   z-index: 9;
 }
 
@@ -1532,10 +1541,15 @@ button {
 .management-tab-content {
   padding: var(--spacing-lg);
   display: none;
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 .management-tab-content.active {
-  display: block;
+  display: flex;
+  flex-direction: column;
 }
 
 .management-section {
@@ -2924,10 +2938,6 @@ input[type="number"]::-webkit-outer-spin-button {
     font-size: 20px;
   }
 
-  .management-tabs {
-    top: 57px; /* Adjusted for smaller header */
-  }
-
   .management-tab {
     padding: var(--spacing-sm) var(--spacing-md);
     font-size: 13px;
@@ -3141,6 +3151,7 @@ input[type="number"]::-webkit-outer-spin-button {
 
   .management-panel {
     padding-bottom: env(safe-area-inset-bottom);
+    height: -webkit-fill-available; /* iOS-accurate viewport height */
   }
 
   /* Prevent iOS text size adjustment */
