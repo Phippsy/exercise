@@ -49,8 +49,9 @@ Examples:
 
 ### Current Version
 
-**Current Version: 1.14.1** (as of 2026-02-25)
+**Current Version: 1.14.2** (as of 2026-02-25)
 
+- 1.14.2: Fixed sync to use POST (avoids URL length limits), improved CORS error messages, clearer setup instructions
 - 1.14.1: Fixed iOS PWA scroll lock in Manage/Edit modals, improved close button visibility
 - 1.14.0: Added Google Sheets sync — auto-sync on workout finish, bulk export, Sync tab in Manage view
 - 1.6.1: Added bottom bar action buttons (Finish Workout/Save Session) on mobile

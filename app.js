@@ -7012,7 +7012,7 @@ class WorkoutTracker {
 
     try {
       const url = `${this.googleSheetsUrl}?action=ping`;
-      const resp = await fetch(url);
+      const resp = await fetch(url, { redirect: "follow" });
       const data = await resp.json();
       if (data.ok) {
         this.showSuccessMessage("Connected to Google Sheets!");
@@ -7022,7 +7022,15 @@ class WorkoutTracker {
         return false;
       }
     } catch (err) {
-      this.showSuccessMessage("Connection error: " + err.message);
+      // CORS / network errors typically mean the Apps Script deployment
+      // isn't set to "Anyone" (anonymous) access, or hasn't been authorized.
+      if (err.message === "Failed to fetch" || err.message === "Load failed") {
+        this.showSuccessMessage(
+          'Connection blocked — check Apps Script is deployed with access set to "Anyone"',
+        );
+      } else {
+        this.showSuccessMessage("Connection error: " + err.message);
+      }
       return false;
     }
   }
@@ -7042,8 +7050,12 @@ class WorkoutTracker {
         sessions: sessions,
       });
 
-      const url = `${this.googleSheetsUrl}?action=sync_workout&payload=${encodeURIComponent(payload)}`;
-      const resp = await fetch(url);
+      const resp = await fetch(this.googleSheetsUrl, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain" },
+        body: payload,
+        redirect: "follow",
+      });
       const data = await resp.json();
 
       if (data.ok) {
@@ -7106,8 +7118,12 @@ class WorkoutTracker {
           exercises: exerciseChunk,
         });
 
-        const url = `${this.googleSheetsUrl}?action=bulk_sync&payload=${encodeURIComponent(payload)}`;
-        const resp = await fetch(url);
+        const resp = await fetch(this.googleSheetsUrl, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain" },
+          body: payload,
+          redirect: "follow",
+        });
         const data = await resp.json();
 
         if (!data.ok) {

@@ -1,0 +1,385 @@
+{
+  "version": "2.1",
+  "exportType": "workout-session",
+  "exportDate": "2026-02-05T08:24:15.925Z",
+  "workoutSummary": {
+    "id": 1769762944145,
+    "workoutId": 1765019399765,
+    "workoutName": "3 – Upper B (Vertical Push / Horizontal Pull)",
+    "date": "2026-01-30T08:49:04.145Z",
+    "exercises": [
+      {
+        "name": "Close-Grip Cable Row",
+        "muscleGroup": "Back",
+        "sets": 3,
+        "reps": 45,
+        "volume": 3600
+      },
+      {
+        "name": "Straight Arm Lat Pulldown",
+        "muscleGroup": "Back",
+        "sets": 3,
+        "reps": 36,
+        "volume": 1350
+      },
+      {
+        "name": "EZ-Bar Curl",
+        "muscleGroup": "Biceps",
+        "sets": 3,
+        "reps": 36,
+        "volume": 900
+      },
+      {
+        "name": "Push Ups",
+        "muscleGroup": "Chest",
+        "sets": 3,
+        "reps": 45,
+        "volume": 0
+      },
+      {
+        "name": "Rope Tricep Pushdown",
+        "muscleGroup": "Triceps",
+        "sets": 3,
+        "reps": 36,
+        "volume": 1620
+      },
+      {
+        "name": "Jack Knife",
+        "muscleGroup": "Core",
+        "sets": 3,
+        "reps": 36,
+        "volume": 0
+      },
+      {
+        "name": "Reverse Alternating Lunge (Kettlebell)",
+        "muscleGroup": "Legs",
+        "sets": 3,
+        "reps": 30,
+        "volume": 360
+      },
+      {
+        "name": "Cable Pallof Press",
+        "muscleGroup": "Core",
+        "sets": 3,
+        "reps": 36,
+        "volume": 270
+      },
+      {
+        "name": "Landmine Lateral-Raise→Press",
+        "muscleGroup": "Shoulders",
+        "sets": 3,
+        "reps": 24,
+        "volume": 480
+      }
+    ],
+    "totalSets": 27,
+    "totalVolume": 8580,
+    "totalReps": 324,
+    "completionPct": 100,
+    "headline": "Moved 8580.0 kg-reps across 27 sets"
+  },
+  "sessions": [
+    {
+      "id": 1769761245691,
+      "workoutId": 1765019399765,
+      "workoutName": "3 – Upper B (Vertical Push / Horizontal Pull)",
+      "exerciseName": "Close-Grip Cable Row",
+      "muscleGroup": "Back",
+      "date": "2026-01-30T08:20:45.691Z",
+      "sets": [
+        {
+          "reps": 15,
+          "weight_kg": 80
+        },
+        {
+          "reps": 15,
+          "weight_kg": 80
+        },
+        {
+          "reps": 15,
+          "weight_kg": 80
+        }
+      ]
+    },
+    {
+      "id": 1769761245692,
+      "workoutId": 1765019399765,
+      "workoutName": "3 – Upper B (Vertical Push / Horizontal Pull)",
+      "exerciseName": "Straight Arm Lat Pulldown",
+      "muscleGroup": "Back",
+      "date": "2026-01-30T08:20:45.691Z",
+      "sets": [
+        {
+          "reps": 12,
+          "weight_kg": 37.5
+        },
+        {
+          "reps": 12,
+          "weight_kg": 37.5
+        },
+        {
+          "reps": 12,
+          "weight_kg": 37.5
+        }
+      ]
+    },
+    {
+      "id": 1769761254000,
+      "workoutId": 1765019399765,
+      "workoutName": "3 – Upper B (Vertical Push / Horizontal Pull)",
+      "exerciseName": "EZ-Bar Curl",
+      "muscleGroup": "Biceps",
+      "date": "2026-01-30T08:20:54.000Z",
+      "sets": [
+        {
+          "reps": 12,
+          "weight_kg": 25
+        },
+        {
+          "reps": 12,
+          "weight_kg": 25
+        },
+        {
+          "reps": 12,
+          "weight_kg": 25
+        }
+      ],
+      "totalVolume": 900,
+      "pr": {
+        "weight": false,
+        "volume": false
+      }
+    },
+    {
+      "id": 1769761729589,
+      "workoutId": 1765019399765,
+      "workoutName": "3 – Upper B (Vertical Push / Horizontal Pull)",
+      "exerciseName": "Push Ups",
+      "muscleGroup": "Chest",
+      "date": "2026-01-30T08:28:49.589Z",
+      "sets": [
+        {
+          "reps": 15,
+          "weight_kg": 0
+        },
+        {
+          "reps": 15,
+          "weight_kg": 0
+        },
+        {
+          "reps": 15,
+          "weight_kg": 0
+        }
+      ]
+    },
+    {
+      "id": 1769761729590,
+      "workoutId": 1765019399765,
+      "workoutName": "3 – Upper B (Vertical Push / Horizontal Pull)",
+      "exerciseName": "Rope Tricep Pushdown",
+      "muscleGroup": "Triceps",
+      "date": "2026-01-30T08:28:49.589Z",
+      "sets": [
+        {
+          "reps": 12,
+          "weight_kg": 45
+        },
+        {
+          "reps": 12,
+          "weight_kg": 45
+        },
+        {
+          "reps": 12,
+          "weight_kg": 45
+        }
+      ]
+    },
+    {
+      "id": 1769762382038,
+      "workoutId": 1765019399765,
+      "workoutName": "3 – Upper B (Vertical Push / Horizontal Pull)",
+      "exerciseName": "Jack Knife",
+      "muscleGroup": "Core",
+      "date": "2026-01-30T08:39:42.038Z",
+      "sets": [
+        {
+          "reps": 12,
+          "weight_kg": 0
+        },
+        {
+          "reps": 12,
+          "weight_kg": 0
+        },
+        {
+          "reps": 12,
+          "weight_kg": 0
+        }
+      ]
+    },
+    {
+      "id": 1769762382040,
+      "workoutId": 1765019399765,
+      "workoutName": "3 – Upper B (Vertical Push / Horizontal Pull)",
+      "exerciseName": "Reverse Alternating Lunge (Kettlebell)",
+      "muscleGroup": "Legs",
+      "date": "2026-01-30T08:39:42.039Z",
+      "sets": [
+        {
+          "reps": 10,
+          "weight_kg": 12
+        },
+        {
+          "reps": 10,
+          "weight_kg": 12
+        },
+        {
+          "reps": 10,
+          "weight_kg": 12
+        }
+      ]
+    },
+    {
+      "id": 1769762407522,
+      "workoutId": 1765019399765,
+      "workoutName": "3 – Upper B (Vertical Push / Horizontal Pull)",
+      "exerciseName": "Cable Pallof Press",
+      "muscleGroup": "Core",
+      "date": "2026-01-30T08:40:07.522Z",
+      "sets": [
+        {
+          "reps": 12,
+          "weight_kg": 7.5
+        },
+        {
+          "reps": 12,
+          "weight_kg": 7.5
+        },
+        {
+          "reps": 12,
+          "weight_kg": 7.5
+        }
+      ],
+      "totalVolume": 270,
+      "pr": {
+        "weight": false,
+        "volume": false
+      }
+    },
+    {
+      "id": 1769762798791,
+      "workoutId": 1765019399765,
+      "workoutName": "3 – Upper B (Vertical Push / Horizontal Pull)",
+      "exerciseName": "Landmine Lateral-Raise→Press",
+      "muscleGroup": "Shoulders",
+      "date": "2026-01-30T08:46:38.791Z",
+      "sets": [
+        {
+          "reps": 8,
+          "weight_kg": 20
+        },
+        {
+          "reps": 8,
+          "weight_kg": 20
+        },
+        {
+          "reps": 8,
+          "weight_kg": 20
+        }
+      ],
+      "totalVolume": 480,
+      "pr": {
+        "weight": false,
+        "volume": false
+      }
+    }
+  ],
+  "workout": {
+    "favorite": true,
+    "id": 1765019399765,
+    "name": "3 – Upper B (Vertical Push / Horizontal Pull)",
+    "exercises": [
+      {
+        "name": "Close-Grip Cable Row",
+        "muscle_group": "Back",
+        "sets": 4,
+        "reps": null,
+        "weight_kg": null,
+        "notes": null,
+        "form_video": "https://www.youtube.com/watch?v=TLRdVjMPfG0"
+      },
+      {
+        "name": "Straight Arm Lat Pulldown",
+        "muscle_group": "Back",
+        "sets": 3,
+        "reps": 12,
+        "weight_kg": null,
+        "notes": "Cable or Band.",
+        "form_video": "https://www.youtube.com/watch?v=G6NdR5nO1Go"
+      },
+      {
+        "name": "Landmine Lateral-Raise→Press",
+        "muscle_group": "Shoulders",
+        "sets": 3,
+        "reps": null,
+        "weight_kg": null,
+        "notes": null,
+        "form_video": "https://www.youtube.com/watch?v=PjB_H_r9h1A"
+      },
+      {
+        "name": "Push Ups",
+        "muscle_group": "Chest",
+        "sets": 3,
+        "reps": 15,
+        "weight_kg": null,
+        "notes": null,
+        "form_video": "https://www.youtube.com/watch?v=i9sTjhN4Z3M"
+      },
+      {
+        "name": "Reverse Pec Deck / Rear Delt Flys",
+        "muscle_group": "Shoulders (Rear Delt)",
+        "sets": 3,
+        "reps": "12–15",
+        "weight_kg": null,
+        "notes": null,
+        "form_video": "https://www.youtube.com/watch?v=H530fW3y9bk"
+      },
+      {
+        "name": "EZ-Bar Curl",
+        "muscle_group": "Biceps",
+        "sets": 3,
+        "reps": null,
+        "weight_kg": null,
+        "notes": null,
+        "form_video": "https://www.youtube.com/watch?v=2_an9taJ9UY"
+      },
+      {
+        "name": "Rope Tricep Pushdown",
+        "muscle_group": "Triceps",
+        "sets": 3,
+        "reps": 15,
+        "weight_kg": null,
+        "notes": "Finisher Circuit - Round 2/3",
+        "form_video": "https://www.youtube.com/watch?v=vB5OHsJ3EME"
+      },
+      {
+        "name": "Cable Pallof Press",
+        "muscle_group": "Core",
+        "sets": 3,
+        "reps": "12–15/side",
+        "weight_kg": 7.5,
+        "notes": null,
+        "form_video": "https://www.youtube.com/watch?v=xeFp4MXad98"
+      },
+      {
+        "name": "Reverse Alternating Lunge (Kettlebell)",
+        "muscle_group": "Legs",
+        "sets": null,
+        "reps": 12,
+        "weight_kg": 4,
+        "notes": null,
+        "form_video": "https://www.youtube.com/watch?v=iwRSeGbZ1uw"
+      }
+    ],
+    "notes": null
+  }
+}

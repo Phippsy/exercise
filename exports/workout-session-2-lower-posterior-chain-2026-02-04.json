@@ -1,0 +1,429 @@
+{
+  "version": "2.1",
+  "exportType": "workout-session",
+  "exportDate": "2026-02-05T08:23:44.026Z",
+  "workoutSummary": {
+    "id": 1770192777439,
+    "workoutId": 1765019399764,
+    "workoutName": "2 – Lower & Posterior Chain",
+    "date": "2026-02-04T08:12:57.439Z",
+    "exercises": [
+      {
+        "name": "Landmine Shoulder Press",
+        "muscleGroup": "Shoulders",
+        "sets": 4,
+        "reps": 32,
+        "volume": 1120
+      },
+      {
+        "name": "Stiff-Leg Deadlift",
+        "muscleGroup": "Legs",
+        "sets": 3,
+        "reps": 30,
+        "volume": 2100
+      },
+      {
+        "name": "Push-up Drop Set (feet-elevated → floor)",
+        "muscleGroup": "Chest",
+        "sets": 3,
+        "reps": 60,
+        "volume": 0
+      },
+      {
+        "name": "Arm Curl (Barbell)",
+        "muscleGroup": "Biceps",
+        "sets": 3,
+        "reps": 34,
+        "volume": 935
+      },
+      {
+        "name": "Front-Facing Lat Pulldown",
+        "muscleGroup": "Back",
+        "sets": 3,
+        "reps": 30,
+        "volume": 2100
+      },
+      {
+        "name": "Overhead Cable Triceps Extension (Rope)",
+        "muscleGroup": "Triceps",
+        "sets": 3,
+        "reps": 36,
+        "volume": 1440
+      },
+      {
+        "name": "Leg Press",
+        "muscleGroup": "Legs",
+        "sets": 3,
+        "reps": 60,
+        "volume": 6000
+      },
+      {
+        "name": "Roman Chair Side Bend",
+        "muscleGroup": "Core",
+        "sets": 2,
+        "reps": 60,
+        "volume": 0
+      },
+      {
+        "name": "Reverse Alternating Lunge (Kettlebell)",
+        "muscleGroup": "Legs",
+        "sets": 3,
+        "reps": 30,
+        "volume": 360
+      },
+      {
+        "name": "Farmers Carry (Kettlebell)",
+        "muscleGroup": "Full Body",
+        "sets": 3,
+        "reps": 60,
+        "volume": 1680
+      }
+    ],
+    "totalSets": 30,
+    "totalVolume": 15735,
+    "totalReps": 432,
+    "completionPct": 100,
+    "headline": "Moved 15735.0 kg-reps across 30 sets"
+  },
+  "sessions": [
+    {
+      "id": 1770188780840,
+      "workoutId": 1765019399764,
+      "workoutName": "2 – Lower & Posterior Chain",
+      "exerciseName": "Landmine Shoulder Press",
+      "muscleGroup": "Shoulders",
+      "date": "2026-02-04T07:06:20.840Z",
+      "sets": [
+        {
+          "reps": 8,
+          "weight_kg": 35
+        },
+        {
+          "reps": 8,
+          "weight_kg": 35
+        },
+        {
+          "reps": 8,
+          "weight_kg": 35
+        },
+        {
+          "reps": 8,
+          "weight_kg": 35
+        }
+      ],
+      "totalVolume": 1120,
+      "pr": {
+        "weight": true,
+        "volume": false
+      }
+    },
+    {
+      "id": 1770189060670,
+      "workoutId": 1765019399764,
+      "workoutName": "2 – Lower & Posterior Chain",
+      "exerciseName": "Stiff-Leg Deadlift",
+      "muscleGroup": "Legs",
+      "date": "2026-02-04T07:11:00.670Z",
+      "sets": [
+        {
+          "reps": 10,
+          "weight_kg": 70
+        },
+        {
+          "reps": 10,
+          "weight_kg": 70
+        },
+        {
+          "reps": 10,
+          "weight_kg": 70
+        }
+      ]
+    },
+    {
+      "id": 1770189060671,
+      "workoutId": 1765019399764,
+      "workoutName": "2 – Lower & Posterior Chain",
+      "exerciseName": "Push-up Drop Set (feet-elevated → floor)",
+      "muscleGroup": "Chest",
+      "date": "2026-02-04T07:11:00.670Z",
+      "sets": [
+        {
+          "reps": 20,
+          "weight_kg": 0
+        },
+        {
+          "reps": 20,
+          "weight_kg": 0
+        },
+        {
+          "reps": 20,
+          "weight_kg": 0
+        }
+      ]
+    },
+    {
+      "id": 1770189795381,
+      "workoutId": 1765019399764,
+      "workoutName": "2 – Lower & Posterior Chain",
+      "exerciseName": "Arm Curl (Barbell)",
+      "muscleGroup": "Biceps",
+      "date": "2026-02-04T07:23:15.381Z",
+      "sets": [
+        {
+          "reps": 12,
+          "weight_kg": 27.5
+        },
+        {
+          "reps": 12,
+          "weight_kg": 27.5
+        },
+        {
+          "reps": 10,
+          "weight_kg": 27.5
+        }
+      ],
+      "totalVolume": 935,
+      "pr": {
+        "weight": false,
+        "volume": false
+      }
+    },
+    {
+      "id": 1770190224908,
+      "workoutId": 1765019399764,
+      "workoutName": "2 – Lower & Posterior Chain",
+      "exerciseName": "Front-Facing Lat Pulldown",
+      "muscleGroup": "Back",
+      "date": "2026-02-04T07:30:24.908Z",
+      "sets": [
+        {
+          "reps": 10,
+          "weight_kg": 70
+        },
+        {
+          "reps": 10,
+          "weight_kg": 70
+        },
+        {
+          "reps": 10,
+          "weight_kg": 70
+        }
+      ],
+      "totalVolume": 2100,
+      "pr": {
+        "weight": false,
+        "volume": false
+      }
+    },
+    {
+      "id": 1770190555406,
+      "workoutId": 1765019399764,
+      "workoutName": "2 – Lower & Posterior Chain",
+      "exerciseName": "Overhead Cable Triceps Extension (Rope)",
+      "muscleGroup": "Triceps",
+      "date": "2026-02-04T07:35:55.406Z",
+      "sets": [
+        {
+          "reps": 12,
+          "weight_kg": 40
+        },
+        {
+          "reps": 12,
+          "weight_kg": 40
+        },
+        {
+          "reps": 12,
+          "weight_kg": 40
+        }
+      ],
+      "totalVolume": 1440,
+      "pr": {
+        "weight": false,
+        "volume": false
+      }
+    },
+    {
+      "id": 1770190775607,
+      "workoutId": 1765019399764,
+      "workoutName": "2 – Lower & Posterior Chain",
+      "exerciseName": "Leg Press",
+      "muscleGroup": "Legs",
+      "date": "2026-02-04T07:39:35.607Z",
+      "sets": [
+        {
+          "reps": 20,
+          "weight_kg": 100
+        },
+        {
+          "reps": 20,
+          "weight_kg": 100
+        },
+        {
+          "reps": 20,
+          "weight_kg": 100
+        }
+      ],
+      "totalVolume": 6000,
+      "pr": {
+        "weight": false,
+        "volume": false
+      }
+    },
+    {
+      "id": 1770191070893,
+      "workoutId": 1765019399764,
+      "workoutName": "2 – Lower & Posterior Chain",
+      "exerciseName": "Roman Chair Side Bend",
+      "muscleGroup": "Core",
+      "date": "2026-02-04T07:44:30.893Z",
+      "sets": [
+        {
+          "reps": 30,
+          "weight_kg": 0
+        },
+        {
+          "reps": 30,
+          "weight_kg": 0
+        }
+      ],
+      "totalVolume": 0,
+      "pr": {
+        "weight": false,
+        "volume": false
+      }
+    },
+    {
+      "id": 1770191431465,
+      "workoutId": 1765019399764,
+      "workoutName": "2 – Lower & Posterior Chain",
+      "exerciseName": "Reverse Alternating Lunge (Kettlebell)",
+      "muscleGroup": "Legs",
+      "date": "2026-02-04T07:50:31.465Z",
+      "sets": [
+        {
+          "reps": 10,
+          "weight_kg": 12
+        },
+        {
+          "reps": 10,
+          "weight_kg": 12
+        },
+        {
+          "reps": 10,
+          "weight_kg": 12
+        }
+      ]
+    },
+    {
+      "id": 1770191431467,
+      "workoutId": 1765019399764,
+      "workoutName": "2 – Lower & Posterior Chain",
+      "exerciseName": "Farmers Carry (Kettlebell)",
+      "muscleGroup": "Full Body",
+      "date": "2026-02-04T07:50:31.466Z",
+      "sets": [
+        {
+          "reps": 20,
+          "weight_kg": 28
+        },
+        {
+          "reps": 20,
+          "weight_kg": 28
+        },
+        {
+          "reps": 20,
+          "weight_kg": 28
+        }
+      ]
+    }
+  ],
+  "workout": {
+    "favorite": true,
+    "id": 1765019399764,
+    "name": "2 – Lower & Posterior Chain",
+    "exercises": [
+      {
+        "name": "Landmine Shoulder Press",
+        "muscle_group": "Shoulders",
+        "sets": "3 + 2 back-off",
+        "reps": null,
+        "weight_kg": null,
+        "notes": null,
+        "form_video": "https://www.youtube.com/watch?v=M1k-y3X-xkc"
+      },
+      {
+        "name": "Stiff-Leg Deadlift",
+        "muscle_group": "Legs",
+        "sets": 3,
+        "reps": null,
+        "weight_kg": null,
+        "notes": null,
+        "form_video": "https://www.youtube.com/watch?v=CN_7cz3P-1U"
+      },
+      {
+        "name": "Overhead Cable Triceps Extension (Rope)",
+        "muscle_group": "Triceps",
+        "sets": 3,
+        "reps": "12–15",
+        "weight_kg": "15–20",
+        "notes": "Ercolina machine.",
+        "form_video": "https://www.youtube.com/watch?v=KjQ_54-hCq4"
+      },
+      {
+        "name": "Arm Curl (Barbell)",
+        "muscle_group": "Biceps",
+        "sets": null,
+        "reps": 10,
+        "weight_kg": 22.5,
+        "notes": null,
+        "form_video": "https://www.youtube.com/watch?v=kwG2ipFRgfo"
+      },
+      {
+        "name": "Front-Facing Lat Pulldown",
+        "muscle_group": "Back",
+        "sets": 3,
+        "reps": null,
+        "weight_kg": null,
+        "notes": null,
+        "form_video": "https://www.youtube.com/watch?v=CAwf7n6Luuc"
+      },
+      {
+        "name": "Leg Press",
+        "muscle_group": "Legs",
+        "sets": null,
+        "reps": 12,
+        "weight_kg": 80,
+        "notes": null,
+        "form_video": "https://www.youtube.com/watch?v=SWd6n6T9Fcw"
+      },
+      {
+        "name": "Roman Chair Side Bend",
+        "muscle_group": "Core",
+        "sets": 2,
+        "reps": "10/side",
+        "weight_kg": null,
+        "notes": null,
+        "form_video": "https://www.youtube.com/watch?v=SkWTRlKzs6A"
+      },
+      {
+        "name": "Reverse Alternating Lunge (Kettlebell)",
+        "muscle_group": "Legs",
+        "sets": null,
+        "reps": 12,
+        "weight_kg": 4,
+        "notes": null,
+        "form_video": "https://www.youtube.com/watch?v=iwRSeGbZ1uw"
+      },
+      {
+        "name": "Farmers Carry (Kettlebell)",
+        "muscle_group": "Full Body",
+        "sets": 4,
+        "reps": 20,
+        "weight_kg": 16,
+        "notes": null,
+        "form_video": "https://www.youtube.com/watch?v=fxwrTkKUkTo"
+      }
+    ],
+    "notes": null
+  }
+}

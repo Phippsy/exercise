@@ -1,0 +1,355 @@
+{
+  "version": "2.1",
+  "exportType": "workout-session",
+  "exportDate": "2026-02-05T08:24:31.188Z",
+  "workoutSummary": {
+    "id": 1769416637158,
+    "workoutId": 1,
+    "workoutName": "1- Push/Arms/Back",
+    "date": "2026-01-26T08:37:17.158Z",
+    "exercises": [
+      {
+        "name": "Single Arm Pulldown - Kneeling",
+        "muscleGroup": "Back",
+        "sets": 4,
+        "reps": 46,
+        "volume": 2300
+      },
+      {
+        "name": "Seated Cable Row",
+        "muscleGroup": "Back",
+        "sets": 4,
+        "reps": 60,
+        "volume": 4800
+      },
+      {
+        "name": "Arm Curl (Barbell)",
+        "muscleGroup": "Biceps",
+        "sets": 4,
+        "reps": 38,
+        "volume": 1045
+      },
+      {
+        "name": "Rope Tricep Extension",
+        "muscleGroup": "Triceps",
+        "sets": 4,
+        "reps": 48,
+        "volume": 2280
+      },
+      {
+        "name": "Chest Press - Flat Bench (Dumbbells)",
+        "muscleGroup": "Chest",
+        "sets": 4,
+        "reps": 33,
+        "volume": 825
+      },
+      {
+        "name": "Dead Bug with Kettlebell",
+        "muscleGroup": "Core",
+        "sets": 4,
+        "reps": 96,
+        "volume": 0
+      },
+      {
+        "name": "Jack Knife",
+        "muscleGroup": "Core",
+        "sets": 4,
+        "reps": 40,
+        "volume": 0
+      }
+    ],
+    "totalSets": 28,
+    "totalVolume": 11250,
+    "totalReps": 361,
+    "completionPct": 100,
+    "headline": "Moved 11250.0 kg-reps across 28 sets"
+  },
+  "sessions": [
+    {
+      "id": 1769414858611,
+      "workoutId": 1,
+      "workoutName": "1- Push/Arms/Back",
+      "exerciseName": "Single Arm Pulldown - Kneeling",
+      "muscleGroup": "Back",
+      "date": "2026-01-26T08:07:38.611Z",
+      "sets": [
+        {
+          "reps": 12,
+          "weight_kg": 50
+        },
+        {
+          "reps": 12,
+          "weight_kg": 50
+        },
+        {
+          "reps": 12,
+          "weight_kg": 50
+        },
+        {
+          "reps": 10,
+          "weight_kg": 50
+        }
+      ]
+    },
+    {
+      "id": 1769414858612,
+      "workoutId": 1,
+      "workoutName": "1- Push/Arms/Back",
+      "exerciseName": "Seated Cable Row",
+      "muscleGroup": "Back",
+      "date": "2026-01-26T08:07:38.611Z",
+      "sets": [
+        {
+          "reps": 15,
+          "weight_kg": 80
+        },
+        {
+          "reps": 15,
+          "weight_kg": 80
+        },
+        {
+          "reps": 15,
+          "weight_kg": 80
+        },
+        {
+          "reps": 15,
+          "weight_kg": 80
+        }
+      ]
+    },
+    {
+      "id": 1769415612609,
+      "workoutId": 1,
+      "workoutName": "1- Push/Arms/Back",
+      "exerciseName": "Arm Curl (Barbell)",
+      "muscleGroup": "Biceps",
+      "date": "2026-01-26T08:20:12.609Z",
+      "sets": [
+        {
+          "reps": 12,
+          "weight_kg": 27.5
+        },
+        {
+          "reps": 10,
+          "weight_kg": 27.5
+        },
+        {
+          "reps": 8,
+          "weight_kg": 27.5
+        },
+        {
+          "reps": 8,
+          "weight_kg": 27.5
+        }
+      ]
+    },
+    {
+      "id": 1769415612610,
+      "workoutId": 1,
+      "workoutName": "1- Push/Arms/Back",
+      "exerciseName": "Rope Tricep Extension",
+      "muscleGroup": "Triceps",
+      "date": "2026-01-26T08:20:12.609Z",
+      "sets": [
+        {
+          "reps": 12,
+          "weight_kg": 47.5
+        },
+        {
+          "reps": 12,
+          "weight_kg": 47.5
+        },
+        {
+          "reps": 12,
+          "weight_kg": 47.5
+        },
+        {
+          "reps": 12,
+          "weight_kg": 47.5
+        }
+      ]
+    },
+    {
+      "id": 1769416407494,
+      "workoutId": 1,
+      "workoutName": "1- Push/Arms/Back",
+      "exerciseName": "Chest Press - Flat Bench (Dumbbells)",
+      "muscleGroup": "Chest",
+      "date": "2026-01-26T08:33:27.494Z",
+      "sets": [
+        {
+          "reps": 10,
+          "weight_kg": 25
+        },
+        {
+          "reps": 8,
+          "weight_kg": 25
+        },
+        {
+          "reps": 8,
+          "weight_kg": 25
+        },
+        {
+          "reps": 7,
+          "weight_kg": 25
+        }
+      ],
+      "totalVolume": 825,
+      "pr": {
+        "weight": false,
+        "volume": false
+      }
+    },
+    {
+      "id": 1769416630324,
+      "workoutId": 1,
+      "workoutName": "1- Push/Arms/Back",
+      "exerciseName": "Dead Bug with Kettlebell",
+      "muscleGroup": "Core",
+      "date": "2026-01-26T08:37:10.324Z",
+      "sets": [
+        {
+          "reps": 24,
+          "weight_kg": 0
+        },
+        {
+          "reps": 24,
+          "weight_kg": 0
+        },
+        {
+          "reps": 24,
+          "weight_kg": 0
+        },
+        {
+          "reps": 24,
+          "weight_kg": 0
+        }
+      ]
+    },
+    {
+      "id": 1769416630325,
+      "workoutId": 1,
+      "workoutName": "1- Push/Arms/Back",
+      "exerciseName": "Jack Knife",
+      "muscleGroup": "Core",
+      "date": "2026-01-26T08:37:10.324Z",
+      "sets": [
+        {
+          "reps": 10,
+          "weight_kg": 0
+        },
+        {
+          "reps": 10,
+          "weight_kg": 0
+        },
+        {
+          "reps": 10,
+          "weight_kg": 0
+        },
+        {
+          "reps": 10,
+          "weight_kg": 0
+        }
+      ]
+    }
+  ],
+  "workout": {
+    "favorite": true,
+    "id": 1,
+    "name": "1- Push/Arms/Back",
+    "date": null,
+    "exercises": [
+      {
+        "name": "Single Arm Pulldown - Kneeling",
+        "muscle_group": "Back",
+        "sets": 3,
+        "reps": 8,
+        "weight_kg": 22.5,
+        "notes": null,
+        "form_video": "https://www.youtube.com/watch?v=Vu3OrBHrMNk"
+      },
+      {
+        "name": "Seated Cable Row",
+        "muscle_group": "Back",
+        "sets": 4,
+        "reps": 10,
+        "weight_kg": 35,
+        "notes": null,
+        "form_video": "https://www.youtube.com/watch?v=A77hAjcpN1s"
+      },
+      {
+        "name": "Arm Curl (Barbell)",
+        "muscle_group": "Biceps",
+        "sets": null,
+        "reps": 10,
+        "weight_kg": 22.5,
+        "notes": null,
+        "form_video": "https://www.youtube.com/watch?v=kwG2ipFRgfo"
+      },
+      {
+        "name": "Rope Tricep Extension",
+        "muscle_group": "Triceps",
+        "sets": null,
+        "reps": 12,
+        "weight_kg": 45,
+        "notes": null,
+        "form_video": "https://www.youtube.com/watch?v=vB5OHsJ3EME"
+      },
+      {
+        "name": "Chest Press - Flat Bench (Dumbbells)",
+        "muscle_group": "Chest",
+        "sets": 3,
+        "reps": 15,
+        "weight_kg": 20,
+        "notes": null,
+        "form_video": "https://www.youtube.com/watch?v=pKZMNVbfUzQ"
+      },
+      {
+        "name": "Dead Bug with Kettlebell",
+        "muscle_group": "Core",
+        "sets": 3,
+        "reps": "10/side",
+        "weight_kg": "4–8",
+        "notes": null,
+        "form_video": "https://www.youtube.com/watch?v=Sa7msHujL3M"
+      },
+      {
+        "name": "Jack Knife",
+        "muscle_group": "Core",
+        "sets": 4,
+        "reps": 10,
+        "weight_kg": null,
+        "notes": null,
+        "form_video": "https://www.youtube.com/shorts/qKkGRZFVX8U"
+      },
+      {
+        "name": "Leg Press",
+        "muscle_group": "Legs",
+        "sets": null,
+        "reps": 12,
+        "weight_kg": 80,
+        "notes": null,
+        "form_video": "https://www.youtube.com/watch?v=SWd6n6T9Fcw"
+      },
+      {
+        "name": "Reverse Alternating Lunge (Kettlebell)",
+        "muscle_group": "Legs",
+        "sets": null,
+        "reps": 12,
+        "weight_kg": 4,
+        "notes": null,
+        "form_video": "https://www.youtube.com/watch?v=iwRSeGbZ1uw"
+      },
+      {
+        "name": "Roman Chair Side Bend",
+        "muscle_group": "Core",
+        "sets": 2,
+        "reps": "10/side",
+        "weight_kg": null,
+        "notes": null,
+        "form_video": "https://www.youtube.com/watch?v=SkWTRlKzs6A"
+      }
+    ],
+    "notes": null
+  }
+}
