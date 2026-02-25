@@ -32,7 +32,8 @@ class WorkoutTracker {
 
     // Google Sheets sync
     this.googleSheetsUrl = localStorage.getItem("googleSheetsUrl") || "";
-    this.googleSheetsAutoSync = JSON.parse(localStorage.getItem("googleSheetsAutoSync")) || false;
+    this.googleSheetsAutoSync =
+      JSON.parse(localStorage.getItem("googleSheetsAutoSync")) || false;
     this.sheetsIsSyncing = false;
 
     this.init();
@@ -2063,7 +2064,8 @@ class WorkoutTracker {
       // Display form notes
       if (exercise.form_notes) {
         const noteP = document.createElement("p");
-        noteP.style.cssText = "margin-bottom: var(--spacing-md); color: var(--dark-text-primary); line-height: 1.6;";
+        noteP.style.cssText =
+          "margin-bottom: var(--spacing-md); color: var(--dark-text-primary); line-height: 1.6;";
         noteP.textContent = exercise.form_notes;
         formNotesDisplay.innerHTML = "";
         formNotesDisplay.appendChild(noteP);
@@ -2079,7 +2081,8 @@ class WorkoutTracker {
         link.target = "_blank";
         link.rel = "noopener noreferrer";
         link.className = "btn-secondary";
-        link.style.cssText = "display: inline-flex; align-items: center; gap: var(--spacing-xs);";
+        link.style.cssText =
+          "display: inline-flex; align-items: center; gap: var(--spacing-xs);";
         link.innerHTML = `
             <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
@@ -4166,7 +4169,8 @@ class WorkoutTracker {
       const gradient = `linear-gradient(120deg, hsl(${
         200 + index * 18
       }, 82%, 72%), hsl(${280 + index * 16}, 88%, 74%))`;
-      const pct = totalValue > 0 ? Math.round((item.value / totalValue) * 100) : 0;
+      const pct =
+        totalValue > 0 ? Math.round((item.value / totalValue) * 100) : 0;
 
       const formattedValue =
         unitLabel === "reps" ? Math.round(item.value) : item.value.toFixed(1);
@@ -4217,7 +4221,8 @@ class WorkoutTracker {
 
     if (legendEl && breakdown.length > 0) {
       const top = breakdown[0];
-      const share = totalValue > 0 ? Math.round((top.value / totalValue) * 100) : 0;
+      const share =
+        totalValue > 0 ? Math.round((top.value / totalValue) * 100) : 0;
       legendEl.textContent = `${top.muscle} carried the day (${share}% of ${unitLabel})`;
     }
   }
@@ -7004,34 +7009,50 @@ class WorkoutTracker {
   }
 
   /**
-   * Internal helper: POST JSON to the Apps Script URL.
-   * Uses text/plain Content-Type to avoid CORS preflight.
-   * Includes AbortController timeout and response debugging.
+   * Flatten sessions into individual set rows for the spreadsheet.
+   * Each row: [date, workout, exercise, muscle_group, setNum, reps, kg]
    */
-  async _postToSheets(payload, timeoutMs = 90000) {
+  _sessionsToSetRows(sessions) {
+    const rows = [];
+    sessions.forEach((s) => {
+      const sets = s.sets || [];
+      sets.forEach((set, i) => {
+        rows.push([
+          s.date || "",
+          s.workoutName || "",
+          s.exerciseName || "",
+          s.muscleGroup || "",
+          i + 1,
+          set.reps || 0,
+          set.weight_kg || 0,
+        ]);
+      });
+    });
+    return rows;
+  }
+
+  /**
+   * GET helper with timeout. Sends rows as a JSON query param.
+   * Google Apps Script redirects POST→GET (dropping the body),
+   * so we must use GET with query params.
+   */
+  async _getFromSheets(action, rows, timeoutMs = 90000) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeoutMs);
 
-    try {
-      const resp = await fetch(this.googleSheetsUrl, {
-        method: "POST",
-        body: payload,
-        signal: controller.signal,
-      });
-      clearTimeout(timer);
+    const encoded = encodeURIComponent(JSON.stringify(rows));
+    const url = `${this.googleSheetsUrl}?action=${action}&rows=${encoded}`;
 
-      // Read as text first so we can debug non-JSON responses
+    try {
+      const resp = await fetch(url, { signal: controller.signal });
+      clearTimeout(timer);
       const text = await resp.text();
-      let data;
       try {
-        data = JSON.parse(text);
+        return JSON.parse(text);
       } catch (_) {
-        console.error("Sheets non-JSON response:", text.substring(0, 500));
-        throw new Error(
-          "Server returned non-JSON response (status " + resp.status + ")",
-        );
+        console.error("Sheets non-JSON response:", text.substring(0, 300));
+        throw new Error("Non-JSON response (status " + resp.status + ")");
       }
-      return data;
     } catch (err) {
       clearTimeout(timer);
       if (err.name === "AbortError") {
@@ -7074,7 +7095,7 @@ class WorkoutTracker {
   }
 
   /**
-   * Sync a single completed workout (summary + its sessions) to Google Sheets.
+   * Sync a single completed workout's sets to Google Sheets.
    * Called automatically after finishing a workout when auto-sync is on.
    */
   async syncWorkoutToSheets(summary, sessions) {
@@ -7082,17 +7103,14 @@ class WorkoutTracker {
     this.sheetsIsSyncing = true;
 
     try {
-      const payload = JSON.stringify({
-        action: "sync_workout",
-        summary: summary,
-        sessions: sessions,
-      });
+      const rows = this._sessionsToSetRows(sessions);
+      if (rows.length === 0) return;
 
-      const data = await this._postToSheets(payload);
+      const data = await this._getFromSheets("log", rows);
 
       if (data.ok) {
         this.showSuccessMessage(
-          `Synced to Google Sheets (${data.sessions_written} exercises)`,
+          `Synced ${data.rows_written} sets to Google Sheets`,
         );
       } else {
         console.error("Sheets sync error:", data.error);
@@ -7107,11 +7125,9 @@ class WorkoutTracker {
   }
 
   /**
-   * Bulk-sync ALL workout history and sessions to Google Sheets.
-   * This is the "mass export" for populating the sheet with existing data.
-   *
-   * Sends data in small chunks (5 items each) via POST. Each chunk is given
-   * a 90-second timeout. Uses batch operations on the Apps Script side.
+   * Bulk-sync ALL sessions to Google Sheets.
+   * Clears the sheet first, then writes everything in chunks via GET.
+   * Each chunk sends ~15 set-rows to stay within URL length limits.
    */
   async bulkSyncToSheets() {
     if (!this.googleSheetsUrl) {
@@ -7136,64 +7152,41 @@ class WorkoutTracker {
     updateStatus("Preparing sync…", "syncing");
 
     try {
-      const CHUNK = 5;
-      const totalHistory = this.workoutHistory.length;
-      const totalSessions = this.sessions.length;
-      let historyWritten = 0;
-      let sessionsWritten = 0;
-      let exercisesWritten = 0;
+      // Flatten all sessions into individual set rows
+      const allRows = this._sessionsToSetRows(this.sessions);
+      const totalRows = allRows.length;
 
-      // ── Step 1: Exercise library (one request) ──
-      if (this.exerciseLibrary && this.exerciseLibrary.length > 0) {
-        updateStatus("Syncing exercise library…", "syncing");
-        const exPayload = JSON.stringify({
-          action: "bulk_sync",
-          history: [],
-          sessions: [],
-          exercises: this.exerciseLibrary,
-        });
-        const exData = await this._postToSheets(exPayload);
-        if (!exData.ok) throw new Error(exData.error || "Exercise sync failed");
-        exercisesWritten = exData.exercises_written || 0;
+      if (totalRows === 0) {
+        updateStatus("No session data to sync.", "");
+        this.showSuccessMessage("Nothing to sync — no sessions found");
+        return;
       }
 
-      // ── Step 2: History + sessions in small chunks ──
-      const maxLen = Math.max(totalHistory, totalSessions);
-      for (let i = 0; i < maxLen; i += CHUNK) {
-        const historyChunk = this.workoutHistory.slice(i, i + CHUNK);
-        const sessionChunk = this.sessions.slice(i, i + CHUNK);
+      const CHUNK = 15;
+      const totalChunks = Math.ceil(totalRows / CHUNK);
+      let written = 0;
 
+      for (let i = 0; i < totalRows; i += CHUNK) {
+        const chunk = allRows.slice(i, i + CHUNK);
         const chunkNum = Math.floor(i / CHUNK) + 1;
-        const totalChunks = Math.ceil(maxLen / CHUNK);
+        const action = i === 0 ? "clear_log" : "log";
+
         updateStatus(
-          `Syncing chunk ${chunkNum}/${totalChunks}… (${historyWritten}/${totalHistory} workouts, ${sessionsWritten}/${totalSessions} sessions)`,
+          `Syncing chunk ${chunkNum}/${totalChunks}… (${written}/${totalRows} sets)`,
           "syncing",
         );
 
-        const payload = JSON.stringify({
-          action: "bulk_sync",
-          history: historyChunk,
-          sessions: sessionChunk,
-          exercises: [],
-        });
-
-        const data = await this._postToSheets(payload);
+        const data = await this._getFromSheets(action, chunk);
 
         if (!data.ok) {
-          throw new Error(data.error || "Sync chunk " + chunkNum + " failed");
+          throw new Error(data.error || "Chunk " + chunkNum + " failed");
         }
 
-        historyWritten += data.history_written || 0;
-        sessionsWritten += data.sessions_written || 0;
+        written += data.rows_written || 0;
       }
 
-      updateStatus(
-        `Done! ${historyWritten} workouts, ${sessionsWritten} sessions, ${exercisesWritten} exercises synced.`,
-        "success",
-      );
-      this.showSuccessMessage(
-        `Bulk sync complete — ${historyWritten} workouts synced`,
-      );
+      updateStatus(`Done! ${written} sets synced.`, "success");
+      this.showSuccessMessage(`Bulk sync complete — ${written} sets synced`);
     } catch (err) {
       console.error("Bulk sync error:", err);
       updateStatus("Sync failed: " + err.message, "error");
@@ -7213,10 +7206,9 @@ class WorkoutTracker {
     if (autoSyncToggle) autoSyncToggle.checked = this.googleSheetsAutoSync;
 
     if (statusEl && !this.sheetsIsSyncing) {
-      const historyCount = this.workoutHistory.length;
-      const sessionCount = this.sessions.length;
+      const setCount = this._sessionsToSetRows(this.sessions).length;
       statusEl.textContent = this.googleSheetsUrl
-        ? `Ready · ${historyCount} workouts, ${sessionCount} exercise sessions available to sync`
+        ? `Ready · ${this.sessions.length} exercises, ${setCount} sets available to sync`
         : "Enter your Apps Script URL above to get started";
       statusEl.className = "sync-status";
     }
@@ -7249,9 +7241,10 @@ class WorkoutTracker {
     const bulkSyncBtn = document.getElementById("sheetsBulkSyncBtn");
     if (bulkSyncBtn) {
       bulkSyncBtn.addEventListener("click", () => {
+        const setCount = this._sessionsToSetRows(this.sessions).length;
         if (
           confirm(
-            `This will sync all ${this.workoutHistory.length} workouts and ${this.sessions.length} exercise sessions to your Google Sheet. Continue?`,
+            `This will clear the Log sheet and re-sync ${setCount} sets from ${this.sessions.length} exercises. Continue?`,
           )
         ) {
           this.bulkSyncToSheets();

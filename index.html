@@ -13,7 +13,7 @@
     <meta name="theme-color" content="#0a0a0a" />
     <title>Workout Tracker</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-    <link rel="stylesheet" href="styles.css?v=1.14.3" />
+    <link rel="stylesheet" href="styles.css?v=1.15.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -1420,9 +1420,7 @@
           <!-- Sync Tab -->
           <div id="syncTab" class="management-tab-content">
             <div class="management-section">
-              <h3 class="management-section-title">
-                Google Sheets Sync
-              </h3>
+              <h3 class="management-section-title">Google Sheets Sync</h3>
               <p class="section-subtext">
                 Connect your workout data to a Google Sheet so every completed
                 workout is automatically backed up. You can also bulk-export
@@ -1439,19 +1437,22 @@
                     <code>google-apps-script.js</code> from this project
                   </li>
                   <li>
-                    <strong>Important:</strong> Click <strong>Run</strong> on any
-                    function once (e.g. <code>doGet</code>) and
-                    <strong>authorise</strong> the permissions prompt &mdash; this
-                    grants the script access to your spreadsheet
+                    <strong>Important:</strong> Click <strong>Run</strong> on
+                    any function once (e.g. <code>doGet</code>) and
+                    <strong>authorise</strong> the permissions prompt &mdash;
+                    this grants the script access to your spreadsheet
                   </li>
                   <li>
-                    Click <strong>Deploy &rarr; New deployment &rarr; Web app</strong>
+                    Click
+                    <strong>Deploy &rarr; New deployment &rarr; Web app</strong>
                   </li>
                   <li>
                     Set <em>"Execute as"</em> = <strong>Me</strong> and
                     <em>"Who has access"</em> = <strong>Anyone</strong>
-                    <br /><small>(pick the option labelled <em>"Anyone"</em>,
-                    <strong>not</strong> "Anyone with Google Account")</small>
+                    <br /><small
+                      >(pick the option labelled <em>"Anyone"</em>,
+                      <strong>not</strong> "Anyone with Google Account")</small
+                    >
                   </li>
                   <li>Copy the Web App URL and paste it below</li>
                 </ol>
@@ -1482,23 +1483,20 @@
             </div>
 
             <div class="management-section">
-              <h3 class="management-section-title">
-                Bulk Export to Sheet
-              </h3>
+              <h3 class="management-section-title">Bulk Export to Sheet</h3>
               <p class="section-subtext">
-                Push all your existing workout history and exercise sessions to
-                Google Sheets in one go. Existing rows are updated (not
-                duplicated) so it's safe to run multiple times.
+                Push every set you've ever logged to a single "Log" sheet —
+                one row per set with date, exercise, reps and weight.
+                Clears and rewrites on each run so there are no duplicates.
               </p>
               <div class="sync-actions">
                 <button id="sheetsBulkSyncBtn" class="btn-primary">
-                  Sync all history to Google Sheets
+                  Sync all sets to Google Sheets
                 </button>
               </div>
               <div id="syncStatus" class="sync-status"></div>
             </div>
           </div>
-
         </div>
       </aside>
 
@@ -1827,6 +1825,6 @@
       </div>
     </div>
 
-    <script src="app.js?v=1.14.3"></script>
+    <script src="app.js?v=1.15.0"></script>
   </body>
 </html>

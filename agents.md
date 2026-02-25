@@ -49,8 +49,9 @@ Examples:
 
 ### Current Version
 
-**Current Version: 1.14.3** (as of 2026-02-25)
+**Current Version: 1.15.0** (as of 2026-02-25)
 
+- 1.15.0: Simplified sync — single "Log" sheet (date/workout/exercise/muscle/set/reps/kg), GET-only (fixes POST redirect), 15-row chunks
 - 1.14.3: Robust sync — batch writes in Apps Script, smaller chunks (5), 90s timeouts, response debugging
 - 1.14.2: Fixed sync to use POST (avoids URL length limits), improved CORS error messages, clearer setup instructions
 - 1.14.1: Fixed iOS PWA scroll lock in Manage/Edit modals, improved close button visibility
