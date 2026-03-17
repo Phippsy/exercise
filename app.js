@@ -7056,7 +7056,7 @@ class WorkoutTracker {
     } catch (err) {
       clearTimeout(timer);
       if (err.name === "AbortError") {
-        throw new Error("Request timed out after " + (timeoutMs / 1000) + "s");
+        throw new Error("Request timed out after " + timeoutMs / 1000 + "s");
       }
       throw err;
     }

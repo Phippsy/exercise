@@ -23,9 +23,11 @@ function getLogSheet() {
   }
   var first = sheet.getRange(1, 1).getValue();
   if (first !== "date") {
-    sheet.getRange(1, 1, 1, 7).setValues([
-      ["date", "workout", "exercise", "muscle_group", "set", "reps", "kg"]
-    ]);
+    sheet
+      .getRange(1, 1, 1, 7)
+      .setValues([
+        ["date", "workout", "exercise", "muscle_group", "set", "reps", "kg"],
+      ]);
   }
   return sheet;
 }
@@ -86,6 +88,7 @@ function appendRows(rows, clearFirst) {
 }
 
 function json(obj) {
-  return ContentService.createTextOutput(JSON.stringify(obj))
-    .setMimeType(ContentService.MimeType.JSON);
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(
+    ContentService.MimeType.JSON,
+  );
 }

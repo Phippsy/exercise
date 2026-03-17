@@ -729,6 +729,157 @@
                     "form_video": null
                 }
             ]
+        },
+        {
+            "id": 10,
+            "name": "TRX Full Body (≈60 min)",
+            "date": null,
+            "exercises": [
+                {
+                    "name": "TRX Scap Row",
+                    "muscle_group": "Back",
+                    "sets": 1,
+                    "reps": 12,
+                    "weight_kg": 0,
+                    "notes": "Warm-up",
+                    "form_video": null
+                },
+                {
+                    "name": "Arm Circles",
+                    "muscle_group": "Shoulders",
+                    "sets": 1,
+                    "reps": 10,
+                    "weight_kg": 0,
+                    "notes": "Each direction, warm-up",
+                    "form_video": null
+                },
+                {
+                    "name": "Thoracic Rotations",
+                    "muscle_group": "Mobility",
+                    "sets": 1,
+                    "reps": 8,
+                    "weight_kg": 0,
+                    "notes": "Per side, warm-up",
+                    "form_video": null
+                },
+                {
+                    "name": "Bodyweight Reverse Lunge",
+                    "muscle_group": "Legs",
+                    "sets": 1,
+                    "reps": 8,
+                    "weight_kg": 0,
+                    "notes": "Per side, warm-up",
+                    "form_video": null
+                },
+                {
+                    "name": "Hip Hinge Drill",
+                    "muscle_group": "Hamstrings/Glutes",
+                    "sets": 1,
+                    "reps": 12,
+                    "weight_kg": 0,
+                    "notes": "Warm-up",
+                    "form_video": null
+                },
+                {
+                    "name": "TRX Assisted Squat",
+                    "muscle_group": "Legs",
+                    "sets": 1,
+                    "reps": 12,
+                    "weight_kg": 0,
+                    "notes": "Warm-up",
+                    "form_video": null
+                },
+                {
+                    "name": "Dead Bug",
+                    "muscle_group": "Core",
+                    "sets": 4,
+                    "reps": 10,
+                    "weight_kg": 0,
+                    "notes": "Per side",
+                    "form_video": null
+                },
+                {
+                    "name": "TRX Low Row",
+                    "muscle_group": "Back",
+                    "sets": 3,
+                    "reps": 12,
+                    "weight_kg": 0,
+                    "notes": "Main block",
+                    "form_video": null
+                },
+                {
+                    "name": "TRX Assisted Reverse Lunge",
+                    "muscle_group": "Legs",
+                    "sets": 3,
+                    "reps": 10,
+                    "weight_kg": 0,
+                    "notes": "Per side",
+                    "form_video": null
+                },
+                {
+                    "name": "TRX Hinge",
+                    "muscle_group": "Hamstrings/Glutes",
+                    "sets": 3,
+                    "reps": 12,
+                    "weight_kg": 0,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "TRX Rear Delt Fly",
+                    "muscle_group": "Shoulders (Rear Delt)",
+                    "sets": 3,
+                    "reps": 12,
+                    "weight_kg": 0,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "Side Plank",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": 25,
+                    "weight_kg": 0,
+                    "notes": "Seconds per side",
+                    "form_video": null
+                },
+                {
+                    "name": "TRX Triceps Press",
+                    "muscle_group": "Triceps",
+                    "sets": 2,
+                    "reps": 12,
+                    "weight_kg": 0,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "TRX Biceps Curl",
+                    "muscle_group": "Biceps",
+                    "sets": 2,
+                    "reps": 12,
+                    "weight_kg": 0,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "TRX Hamstring Curl",
+                    "muscle_group": "Hamstrings",
+                    "sets": 2,
+                    "reps": 15,
+                    "weight_kg": 0,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "Bent-Knee Leg Raise",
+                    "muscle_group": "Core",
+                    "sets": 2,
+                    "reps": 15,
+                    "weight_kg": 0,
+                    "notes": null,
+                    "form_video": null
+                }
+            ]
         }
     ]
 }
