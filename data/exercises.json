@@ -932,6 +932,24 @@
                     "form_video": null
                 },
                 {
+                    "name": "Incline Dumbbell Curls",
+                    "muscle_group": "Biceps",
+                    "sets": 3,
+                    "reps": "10-12",
+                    "weight_kg": null,
+                    "notes": "Moderate load (2-3 sets)",
+                    "form_video": null
+                },
+                {
+                    "name": "Cable Triceps Pressdown",
+                    "muscle_group": "Triceps",
+                    "sets": 3,
+                    "reps": "10-12",
+                    "weight_kg": null,
+                    "notes": "Moderate load (2-3 sets)",
+                    "form_video": null
+                },
+                {
                     "name": "Cable Pallof Press",
                     "muscle_group": "Core",
                     "sets": 3,
@@ -1025,7 +1043,7 @@
                     "sets": 2,
                     "reps": "10-12",
                     "weight_kg": null,
-                    "notes": "Bodyweight or very light band",
+                    "notes": "Bodyweight / very light band if needed",
                     "form_video": null
                 },
                 {
@@ -1086,7 +1104,25 @@
                     "sets": 3,
                     "reps": "12-15",
                     "weight_kg": 40,
-                    "notes": "2-3 sets",
+                    "notes": "40kg (2-3 sets)",
+                    "form_video": null
+                },
+                {
+                    "name": "Hammer Curls or Cable Curls",
+                    "muscle_group": "Biceps",
+                    "sets": 3,
+                    "reps": "10-12",
+                    "weight_kg": null,
+                    "notes": "Moderate load (2-3 sets)",
+                    "form_video": null
+                },
+                {
+                    "name": "Overhead Cable Triceps Extension",
+                    "muscle_group": "Triceps",
+                    "sets": 3,
+                    "reps": "10-12",
+                    "weight_kg": null,
+                    "notes": "Moderate load (2-3 sets)",
                     "form_video": null
                 },
                 {
