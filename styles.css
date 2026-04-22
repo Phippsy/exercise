@@ -3146,7 +3146,9 @@ input[type="number"]::-webkit-outer-spin-button {
     align-items: end;
   }
 
-  .set-row .set-label {
+  /* Children of .set-row: [0] set-label, [1] reps input-group,
+     [2] weight input-group, [3] remove-button input-group. */
+  .set-row > .set-label {
     grid-area: label;
     font-size: 11px;
     font-weight: var(--font-weight-semibold);
@@ -3155,22 +3157,20 @@ input[type="number"]::-webkit-outer-spin-button {
     padding-bottom: 0;
   }
 
-  .set-row .input-group:nth-of-type(1) {
+  .set-row > .input-group:nth-child(2) {
     grid-area: reps;
   }
 
-  .set-row .input-group:nth-of-type(2) {
+  .set-row > .input-group:nth-child(3) {
     grid-area: weight;
   }
 
-  /* The third input-group wraps the × remove button. Strip its wrapper
-     styling so the button sits centered in its column. */
-  .set-row .input-group:nth-of-type(3) {
+  .set-row > .input-group:nth-child(4) {
     grid-area: remove;
     align-self: center;
   }
 
-  .set-row .input-group:nth-of-type(3) > label {
+  .set-row > .input-group:nth-child(4) > label {
     display: none;
   }
 
