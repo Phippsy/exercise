@@ -49,8 +49,9 @@ Examples:
 
 ### Current Version
 
-**Current Version: 1.18.2** (as of 2026-04-22)
+**Current Version: 1.18.3** (as of 2026-04-22)
 
+- 1.18.3: Fix squashed reps/weight inputs on mobile — set row had label + reps-cluster + weight-cluster + remove all on one line (10+ buttons across ~327px), leaving the number inputs ~8px wide. Set row now stacks reps and weight on their own full-width rows on narrow screens with proper input breathing room
 - 1.18.2: Fix workout edits not appearing on detail screen — `setCurrentSessionForWorkout` was preserving the stale `activeSessionDrafts` exercise list instead of reconciling it with the updated workout template, so newly added / removed / reordered exercises didn't show up until the draft was cleared. Now the draft's exercise list is always rebuilt from the latest workout definition (per-set progress lives in `this.sessions` so nothing is lost)
 - 1.18.1: Fix workout edits disappearing — removed a loadWorkouts seed-merge block that was silently re-adding seed exercises from `data/exercises.json` into existing local workouts on every page load, clobbering user edits
 - 1.18.0: Manage section revamp — collapsible Create forms (Exercise + Workout), richer cards (muscle badges, default chips, usage stats, last-done relative time), sort controls (A-Z / By muscle / Most used / Recently used for exercises; Favourites / A-Z / Recent / Most exercises for workouts), header stats counter, Duplicate actions for both exercises and workouts, smarter delete-confirm with usage warning, friendly empty states with CTAs
