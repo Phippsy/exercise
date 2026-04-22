@@ -33,10 +33,15 @@
   --bg-page: var(--dark-bg-page);
   --bg-surface: var(--dark-bg-surface);
   --bg-surface-subtle: var(--dark-bg-surface-subtle);
+  --bg-subtle: var(--dark-bg-surface-subtle);
   --border-subtle: var(--dark-border-subtle);
   --border-strong: var(--dark-border-strong);
   --text-primary: var(--dark-text-primary);
+  --text-secondary: #c7c7cc;
   --text-muted: var(--dark-text-muted);
+  --color-error: #e14b5a;
+  --radius-xs: 2px;
+  --spacing-xxs: 2px;
 
   /* Neutrals */
   --neutral-0: #050509;
@@ -108,9 +113,11 @@ body.light-mode {
   --bg-page: var(--light-bg-page);
   --bg-surface: var(--light-bg-surface);
   --bg-surface-subtle: var(--light-bg-surface-subtle);
+  --bg-subtle: var(--light-bg-surface-subtle);
   --border-subtle: var(--light-border-subtle);
   --border-strong: var(--light-border-strong);
   --text-primary: var(--light-text-primary);
+  --text-secondary: #3f3f46;
   --text-muted: var(--light-text-muted);
   --state-hover: #e4e4e7;
   --state-disabled-bg: #f4f4f5;
@@ -124,22 +131,41 @@ body.light-mode {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  -webkit-tap-highlight-color: rgba(133, 102, 179, 0.18);
 }
 
-html,
-body {
-  overflow-x: hidden;
-  width: 100%;
+html {
   height: 100%;
+  overflow-x: hidden;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
+  min-height: 100%;
+  min-height: 100dvh;
+  overflow-x: hidden;
   font-family: var(--font-family);
   font-size: var(--font-size-base);
   line-height: var(--line-height-normal);
   color: var(--text-primary);
   background-color: var(--bg-page);
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: none;
+  font-feature-settings: "tnum";
+  font-variant-numeric: tabular-nums;
+  position: relative;
+}
+
+/* Background gradients pinned as a fixed layer behind content —
+   avoids the iOS scroll-jank caused by background-attachment: fixed. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--bg-page);
   background-image:
     radial-gradient(
       1000px circle at 10% 10%,
@@ -156,9 +182,39 @@ body {
       rgba(90, 103, 204, 0.12),
       transparent 50%
     );
-  background-attachment: fixed;
-  font-feature-settings: "tnum";
-  font-variant-numeric: tabular-nums;
+  /* iOS Safari hint to promote to its own compositor layer */
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+body.light-mode::before {
+  background-image:
+    radial-gradient(
+      1000px circle at 10% 10%,
+      rgba(133, 102, 179, 0.08),
+      transparent 45%
+    ),
+    radial-gradient(
+      800px circle at 80% 0%,
+      rgba(99, 60, 153, 0.06),
+      transparent 40%
+    ),
+    radial-gradient(
+      700px circle at 20% 60%,
+      rgba(90, 103, 204, 0.05),
+      transparent 50%
+    );
+}
+
+/* Cut 300ms click delay + give all interactive elements a proper tap feel */
+button,
+a,
+[role="button"],
+input[type="checkbox"],
+.workout-card,
+.exercise-item,
+.history-list-item {
+  touch-action: manipulation;
 }
 
 /* ============================================
@@ -176,6 +232,7 @@ body {
   position: relative;
   isolation: isolate;
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .app-header {
@@ -184,10 +241,13 @@ body {
   left: 0;
   right: 0;
   z-index: 9999;
-  padding: calc(10px + env(safe-area-inset-top)) 14px 10px;
+  padding: calc(10px + env(safe-area-inset-top))
+    calc(14px + env(safe-area-inset-right)) 10px
+    calc(14px + env(safe-area-inset-left));
   background: var(--bg-surface);
   border-bottom: 1px solid var(--border-subtle);
   backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -1497,7 +1557,7 @@ button {
   min-width: 44px; /* iOS minimum touch target */
   min-height: 44px;
   padding: 0;
-  background-color: var(--bg-subtle);
+  background-color: var(--bg-surface-subtle);
   color: var(--text-primary);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
@@ -2716,8 +2776,9 @@ input[type="number"]::-webkit-outer-spin-button {
 
   .bottom-back-bar {
     display: block;
-    bottom: 76px;
-    padding: 10px 14px;
+    bottom: calc(70px + env(safe-area-inset-bottom));
+    padding: 10px calc(14px + env(safe-area-inset-right)) 10px
+      calc(14px + env(safe-area-inset-left));
   }
 
   /* Pin onboarding to bottom on mobile */
@@ -2744,13 +2805,27 @@ input[type="number"]::-webkit-outer-spin-button {
     bottom: 0;
     left: 0;
     right: 0;
-    padding: 10px 14px calc(12px + env(safe-area-inset-bottom));
+    padding: 10px calc(14px + env(safe-area-inset-right))
+      calc(12px + env(safe-area-inset-bottom))
+      calc(14px + env(safe-area-inset-left));
     justify-content: space-between;
     background: var(--bg-surface);
     border-top: 1px solid var(--border-subtle);
     backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     z-index: 20;
     box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .mobile-nav-btn {
+    min-width: 54px;
+    min-height: 48px;
+    padding: 6px 8px;
+    border-radius: 10px;
+  }
+
+  .mobile-nav-btn:active {
+    background: var(--state-hover);
   }
 
   .app-container {
@@ -2859,19 +2934,20 @@ input[type="number"]::-webkit-outer-spin-button {
 
   /* Set rows - optimized for mobile */
   .set-row {
-    grid-template-columns: 38px minmax(0, 1fr) minmax(0, 1fr) 32px;
-    gap: 4px;
-    padding: 6px;
+    grid-template-columns: 36px minmax(0, 1fr) minmax(0, 1fr) 36px;
+    gap: 6px;
+    padding: 8px;
+    align-items: center;
   }
 
   .set-label {
-    font-size: 10px;
+    font-size: 11px;
     flex-shrink: 0;
     white-space: nowrap;
   }
 
   .input-group {
-    gap: 2px;
+    gap: 3px;
   }
 
   .input-group label {
@@ -2879,24 +2955,29 @@ input[type="number"]::-webkit-outer-spin-button {
   }
 
   .input-with-controls {
-    gap: 2px;
+    gap: 4px;
   }
 
   .input-with-controls input {
     font-size: 16px; /* Prevent zoom on iOS */
     padding: 4px 2px;
-    min-height: 38px;
+    min-height: 40px;
     min-width: 0;
   }
 
   .btn-increment,
   .btn-decrement,
-  .btn-remove {
-    width: 32px;
-    height: 32px;
-    min-width: 32px;
-    min-height: 32px;
+  .btn-remove,
+  .btn-fill-down {
+    width: 36px;
+    height: 40px;
+    min-width: 36px;
+    min-height: 40px;
     flex-shrink: 0;
+  }
+
+  .btn-fill-down {
+    margin-left: 0;
   }
 
   /* Form actions */
@@ -3154,20 +3235,9 @@ input[type="number"]::-webkit-outer-spin-button {
 
 /* iOS specific fixes */
 @supports (-webkit-touch-callout: none) {
-  /* Fix for iOS safe areas */
-  .app-container {
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-
-  @media (max-width: 768px) {
-    .app-container {
-      padding-bottom: calc(env(safe-area-inset-bottom) + 140px);
-    }
-  }
-
+  /* Use dynamic viewport height where supported */
   .management-panel {
-    padding-bottom: env(safe-area-inset-bottom);
-    height: -webkit-fill-available; /* iOS-accurate viewport height */
+    height: 100dvh;
   }
 
   /* Prevent iOS text size adjustment */

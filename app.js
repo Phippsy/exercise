@@ -535,6 +535,13 @@ class WorkoutTracker {
       this.autoResizeExerciseTitles();
     });
 
+    // iOS keyboard / dynamic toolbars change visualViewport, not window.
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", () => {
+        this.updateLayoutOffsets();
+      });
+    }
+
     const exportSessionBtn = document.getElementById("exportSessionBtn");
     if (exportSessionBtn) {
       exportSessionBtn.addEventListener("click", () => {
@@ -2358,7 +2365,7 @@ class WorkoutTracker {
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14"/>
                         </svg>
                     </button>
-                    <input type="number" id="paired${exerciseNum}-reps-${setNum}" value="${repsValue}" min="0" step="1" required>
+                    <input type="number" id="paired${exerciseNum}-reps-${setNum}" inputmode="numeric" pattern="[0-9]*" enterkeyhint="next" value="${repsValue}" min="0" step="1" required>
                     <button type="button" class="btn-increment" data-target="paired${exerciseNum}-reps-${setNum}" aria-label="Increase reps">
                         <svg class="icon icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14"/>
@@ -2386,7 +2393,7 @@ class WorkoutTracker {
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14"/>
                         </svg>
                     </button>
-                    <input type="number" id="paired${exerciseNum}-weight-${setNum}" value="${weightValue}" min="0" step="0.5">
+                    <input type="number" id="paired${exerciseNum}-weight-${setNum}" inputmode="decimal" enterkeyhint="done" value="${weightValue}" min="0" step="0.5">
                     <button type="button" class="btn-increment" data-target="paired${exerciseNum}-weight-${setNum}" aria-label="Increase weight">
                         <svg class="icon icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14"/>
@@ -2765,7 +2772,7 @@ class WorkoutTracker {
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14"/>
                         </svg>
                     </button>
-                    <input type="number" id="reps-${setNum}" name="reps-${setNum}" value="${repsValue ?? ""}" min="0" step="1" required>
+                    <input type="number" id="reps-${setNum}" name="reps-${setNum}" inputmode="numeric" pattern="[0-9]*" enterkeyhint="next" value="${repsValue ?? ""}" min="0" step="1" required>
                     <button type="button" class="btn-increment" data-target="reps-${setNum}" aria-label="Increase reps">
                         <svg class="icon icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14"/>
@@ -2792,7 +2799,7 @@ class WorkoutTracker {
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14"/>
                         </svg>
                     </button>
-                    <input type="number" id="weight-${setNum}" name="weight-${setNum}" value="${weightValue ?? ""}" min="0" step="0.5">
+                    <input type="number" id="weight-${setNum}" name="weight-${setNum}" inputmode="decimal" enterkeyhint="done" value="${weightValue ?? ""}" min="0" step="0.5">
                     <button type="button" class="btn-increment" data-target="weight-${setNum}" aria-label="Increase weight">
                         <svg class="icon icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14"/>
