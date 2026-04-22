@@ -36,6 +36,37 @@ class WorkoutTracker {
       JSON.parse(localStorage.getItem("googleSheetsAutoSync")) || false;
     this.sheetsIsSyncing = false;
 
+    // Google Drive sync
+    this.DRIVE_SCOPE = "https://www.googleapis.com/auth/drive.file";
+    this.DRIVE_FILE_NAME = "workout-tracker-data.json";
+    this.driveClientId = localStorage.getItem("driveClientId") || "";
+    this.driveDeviceId =
+      localStorage.getItem("driveDeviceId") ||
+      (() => {
+        const id =
+          (typeof crypto !== "undefined" && crypto.randomUUID
+            ? crypto.randomUUID()
+            : "dev-" + Date.now() + "-" + Math.random().toString(36).slice(2));
+        localStorage.setItem("driveDeviceId", id);
+        return id;
+      })();
+    this.driveDeviceName = localStorage.getItem("driveDeviceName") || "";
+    this.driveAutoSync =
+      JSON.parse(localStorage.getItem("driveAutoSync") || "false") || false;
+    this.driveAutoPull =
+      JSON.parse(localStorage.getItem("driveAutoPull") || "false") || false;
+    this.driveLastPush = localStorage.getItem("driveLastPush") || "";
+    this.driveLastPull = localStorage.getItem("driveLastPull") || "";
+    this.driveLastLocalChange =
+      localStorage.getItem("driveLastLocalChange") || "";
+    this.driveLastRemoteDevice =
+      localStorage.getItem("driveLastRemoteDevice") || "";
+    this.driveAccessToken = null;
+    this.driveTokenClient = null;
+    this.driveRemoteInfo = null;
+    this.driveIsBusy = false;
+    this.driveGisReady = false;
+
     this.init();
   }
 
@@ -208,6 +239,7 @@ class WorkoutTracker {
 
   saveWorkouts() {
     localStorage.setItem("workouts", JSON.stringify(this.workouts));
+    this._markLocalChange();
   }
 
   saveExerciseLibrary() {
@@ -215,6 +247,7 @@ class WorkoutTracker {
       "exerciseLibrary",
       JSON.stringify(this.exerciseLibrary),
     );
+    this._markLocalChange();
   }
 
   loadSessions() {
@@ -224,6 +257,7 @@ class WorkoutTracker {
 
   saveSessions() {
     localStorage.setItem("workoutSessions", JSON.stringify(this.sessions));
+    this._markLocalChange();
   }
 
   loadActiveSessionDrafts() {
@@ -236,6 +270,7 @@ class WorkoutTracker {
       "activeSessionDrafts",
       JSON.stringify(this.activeSessionDrafts || {}),
     );
+    // Intentionally NOT marking local change — drafts churn per keystroke.
   }
 
   loadWorkoutHistory() {
@@ -248,6 +283,7 @@ class WorkoutTracker {
 
   saveWorkoutHistory() {
     localStorage.setItem("workoutHistory", JSON.stringify(this.workoutHistory));
+    this._markLocalChange();
   }
 
   loadUserName() {
@@ -539,6 +575,10 @@ class WorkoutTracker {
 
     // Google Sheets sync tab
     this.setupSyncTabListeners();
+    // Google Drive sync tab
+    this.setupDriveSyncListeners();
+    // Kick off optional silent auto-pull once the app has painted
+    setTimeout(() => this._driveAutoOpenInit(), 1200);
 
     const generateCoachSummaryBtn = document.getElementById(
       "generateCoachSummaryBtn",
@@ -3139,6 +3179,11 @@ class WorkoutTracker {
       this.syncWorkoutToSheets(summary, todaysSessions);
     }
 
+    // Auto-push to Google Drive if enabled
+    if (this.driveAutoSync && this.driveClientId) {
+      this._driveAutoPushAfterFinish();
+    }
+
     this.clearPersistedSession(this.currentWorkout.id);
     this.openHistoryView(summary.id);
   }
@@ -4513,6 +4558,11 @@ class WorkoutTracker {
     } else if (tabName === "sync") {
       document.getElementById("syncTab").classList.add("active");
       this.renderSyncTabStatus();
+      this.renderDriveSyncUI();
+      // Refresh remote info quietly when the tab is opened
+      if (this.driveAccessToken) {
+        this.driveRefreshRemote().then(() => this.renderDriveSyncUI());
+      }
     }
   }
 
@@ -7020,6 +7070,853 @@ class WorkoutTracker {
 
   scrollToTop() {
     window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // ============================================
+  // Google Drive Sync
+  // ============================================
+
+  _markLocalChange() {
+    this.driveLastLocalChange = new Date().toISOString();
+    localStorage.setItem("driveLastLocalChange", this.driveLastLocalChange);
+    // Re-render only if the Sync tab is currently visible (avoids churn).
+    const syncTab = document.getElementById("syncTab");
+    if (syncTab && syncTab.classList.contains("active")) {
+      this.renderDriveSyncUI();
+    }
+  }
+
+  _defaultDeviceName() {
+    const ua = navigator.userAgent || "";
+    if (/iPhone/i.test(ua)) return "iPhone";
+    if (/iPad/i.test(ua)) return "iPad";
+    if (/Android/i.test(ua)) return "Android";
+    if (/Macintosh/i.test(ua)) return "Mac";
+    if (/Windows/i.test(ua)) return "Windows";
+    return "Browser";
+  }
+
+  async _waitForGis(timeoutMs = 10000) {
+    if (typeof google !== "undefined" && google.accounts?.oauth2) {
+      this.driveGisReady = true;
+      return true;
+    }
+    return new Promise((resolve) => {
+      const start = Date.now();
+      const t = setInterval(() => {
+        if (typeof google !== "undefined" && google.accounts?.oauth2) {
+          clearInterval(t);
+          this.driveGisReady = true;
+          resolve(true);
+        } else if (Date.now() - start > timeoutMs) {
+          clearInterval(t);
+          resolve(false);
+        }
+      }, 250);
+    });
+  }
+
+  _driveInitTokenClient() {
+    if (!this.driveClientId) return false;
+    if (typeof google === "undefined" || !google.accounts?.oauth2) return false;
+    try {
+      this.driveTokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: this.driveClientId,
+        scope: this.DRIVE_SCOPE,
+        callback: () => {},
+      });
+      return true;
+    } catch (e) {
+      console.error("driveInit:", e);
+      return false;
+    }
+  }
+
+  async driveSignIn(interactive = true) {
+    if (!this.driveClientId) {
+      this.showSuccessMessage("Enter your Google Client ID first");
+      return false;
+    }
+    const ready = await this._waitForGis();
+    if (!ready) {
+      this.showSuccessMessage("Google Sign-In unavailable — check connection");
+      return false;
+    }
+    if (!this.driveTokenClient) this._driveInitTokenClient();
+    if (!this.driveTokenClient) {
+      this.showSuccessMessage("Invalid Client ID — check the value you pasted");
+      return false;
+    }
+    return new Promise((resolve) => {
+      this.driveTokenClient.callback = (resp) => {
+        if (resp.error) {
+          this.showSuccessMessage("Sign-in failed: " + resp.error);
+          resolve(false);
+          return;
+        }
+        this.driveAccessToken = resp.access_token;
+        if (interactive) {
+          this.showSuccessMessage("Connected to Google Drive");
+        }
+        this.driveRefreshRemote().then(() => this.renderDriveSyncUI());
+        resolve(true);
+      };
+      this.driveTokenClient.error_callback = (err) => {
+        if (interactive) {
+          this.showSuccessMessage("Sign-in cancelled");
+        }
+        resolve(false);
+      };
+      try {
+        this.driveTokenClient.requestAccessToken({
+          prompt: interactive ? "" : "none",
+        });
+      } catch (e) {
+        console.error(e);
+        resolve(false);
+      }
+    });
+  }
+
+  driveSignOut() {
+    if (this.driveAccessToken && typeof google !== "undefined") {
+      try {
+        google.accounts.oauth2.revoke(this.driveAccessToken, () => {});
+      } catch (_) {}
+    }
+    this.driveAccessToken = null;
+    this.driveRemoteInfo = null;
+    this.renderDriveSyncUI();
+  }
+
+  async _driveRequest(url, options = {}) {
+    if (!this.driveAccessToken) throw new Error("Not signed in to Google Drive");
+    const resp = await fetch(url, {
+      ...options,
+      headers: {
+        Authorization: `Bearer ${this.driveAccessToken}`,
+        ...(options.headers || {}),
+      },
+    });
+    if (resp.status === 401) {
+      this.driveAccessToken = null;
+      throw new Error("Session expired — sign in again");
+    }
+    if (!resp.ok) {
+      const text = await resp.text().catch(() => "");
+      throw new Error(`Drive API error (${resp.status}) ${text.slice(0, 200)}`);
+    }
+    return resp;
+  }
+
+  async driveFindFile() {
+    const name = this.DRIVE_FILE_NAME;
+    const q = encodeURIComponent(`name='${name}' and trashed=false`);
+    const resp = await this._driveRequest(
+      `https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,modifiedTime,size,appProperties)&spaces=drive`,
+    );
+    const data = await resp.json();
+    const f = data.files?.[0];
+    return f
+      ? {
+          id: f.id,
+          modifiedTime: f.modifiedTime,
+          size: f.size,
+          appProperties: f.appProperties || {},
+        }
+      : null;
+  }
+
+  async driveRefreshRemote() {
+    if (!this.driveAccessToken) return null;
+    try {
+      this.driveRemoteInfo = await this.driveFindFile();
+    } catch (e) {
+      console.error("driveRefreshRemote:", e);
+      this.driveRemoteInfo = null;
+    }
+    return this.driveRemoteInfo;
+  }
+
+  _buildSyncPayload() {
+    return {
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      deviceId: this.driveDeviceId,
+      deviceName: this.driveDeviceName || this._defaultDeviceName(),
+      data: {
+        workouts: this.workouts,
+        exerciseLibrary: this.exerciseLibrary,
+        workoutSessions: this.sessions,
+        workoutHistory: this.workoutHistory,
+        activeSessionDrafts: this.activeSessionDrafts,
+        userName: localStorage.getItem("userName") || "",
+        theme: localStorage.getItem("theme") || "dark",
+      },
+    };
+  }
+
+  _describePayload(p) {
+    const d = p?.data || {};
+    const sets = (d.workoutSessions || []).reduce(
+      (n, s) => n + (s.sets?.length || 0),
+      0,
+    );
+    return `${(d.workouts || []).length}w · ${(d.exerciseLibrary || []).length}ex · ${(d.workoutSessions || []).length}s (${sets} sets) · ${(d.workoutHistory || []).length}h`;
+  }
+
+  _applySyncPayload(payload) {
+    const d = payload?.data || payload?.payload || {};
+    if (Array.isArray(d.workouts)) {
+      this.workouts = d.workouts;
+      localStorage.setItem("workouts", JSON.stringify(this.workouts));
+    }
+    if (Array.isArray(d.exerciseLibrary)) {
+      this.exerciseLibrary = d.exerciseLibrary;
+      localStorage.setItem(
+        "exerciseLibrary",
+        JSON.stringify(this.exerciseLibrary),
+      );
+    }
+    if (Array.isArray(d.workoutSessions)) {
+      this.sessions = d.workoutSessions;
+      localStorage.setItem("workoutSessions", JSON.stringify(this.sessions));
+    }
+    if (Array.isArray(d.workoutHistory)) {
+      this.workoutHistory = d.workoutHistory;
+      this.workoutHistory.sort(
+        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+      );
+      localStorage.setItem(
+        "workoutHistory",
+        JSON.stringify(this.workoutHistory),
+      );
+    }
+    if (d.activeSessionDrafts && typeof d.activeSessionDrafts === "object") {
+      this.activeSessionDrafts = d.activeSessionDrafts;
+      localStorage.setItem(
+        "activeSessionDrafts",
+        JSON.stringify(this.activeSessionDrafts),
+      );
+    }
+    if (typeof d.userName === "string" && d.userName) {
+      localStorage.setItem("userName", d.userName);
+      this.loadUserName();
+    }
+    if (payload.deviceName) {
+      this.driveLastRemoteDevice = payload.deviceName;
+      localStorage.setItem("driveLastRemoteDevice", payload.deviceName);
+    }
+  }
+
+  _mergePayload(remote) {
+    const local = this._buildSyncPayload();
+    const rd = remote?.data || remote?.payload || {};
+    const ld = local.data;
+
+    const pickNewer = (a, b) => {
+      const aT = new Date(a.updatedAt || a.date || a.exportedAt || 0).getTime();
+      const bT = new Date(b.updatedAt || b.date || b.exportedAt || 0).getTime();
+      if (bT > aT) return b;
+      if (aT > bT) return a;
+      // Tie-breaker: prefer the larger/more detailed record
+      const aSize =
+        (a.sets?.length || 0) +
+        (a.exercises?.length || 0) +
+        (Object.keys(a).length || 0);
+      const bSize =
+        (b.sets?.length || 0) +
+        (b.exercises?.length || 0) +
+        (Object.keys(b).length || 0);
+      return bSize > aSize ? b : a;
+    };
+
+    const mergeById = (a = [], b = [], keyFn) => {
+      const map = new Map();
+      [...(a || []), ...(b || [])].forEach((item) => {
+        if (!item) return;
+        const k = keyFn(item);
+        if (k == null || k === "") return;
+        const existing = map.get(k);
+        map.set(k, existing ? pickNewer(existing, item) : item);
+      });
+      return Array.from(map.values());
+    };
+
+    const merged = {
+      workouts: mergeById(ld.workouts, rd.workouts, (w) => w.id),
+      exerciseLibrary: mergeById(ld.exerciseLibrary, rd.exerciseLibrary, (e) =>
+        (e.name || "").toLowerCase(),
+      ),
+      workoutSessions: mergeById(
+        ld.workoutSessions,
+        rd.workoutSessions,
+        (s) =>
+          `${s.date || ""}|${s.workoutId || ""}|${(s.exerciseName || "").toLowerCase()}`,
+      ),
+      workoutHistory: mergeById(
+        ld.workoutHistory,
+        rd.workoutHistory,
+        (h) => h.id || `${h.date}|${h.workoutId || ""}`,
+      ),
+      activeSessionDrafts: {
+        ...(rd.activeSessionDrafts || {}),
+        ...(ld.activeSessionDrafts || {}),
+      },
+      userName: ld.userName || rd.userName || "",
+      theme: ld.theme || rd.theme || "dark",
+    };
+
+    return {
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      deviceId: this.driveDeviceId,
+      deviceName: this.driveDeviceName || this._defaultDeviceName(),
+      data: merged,
+    };
+  }
+
+  async _driveUpdateFile(fileId, body, payload) {
+    await this._driveRequest(
+      `https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=media`,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body,
+      },
+    );
+    await this._driveRequest(
+      `https://www.googleapis.com/drive/v3/files/${fileId}`,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          appProperties: {
+            deviceId: this.driveDeviceId,
+            deviceName: payload.deviceName,
+            exportedAt: payload.exportedAt,
+          },
+        }),
+      },
+    );
+  }
+
+  async _driveCreateFile(body, payload) {
+    const metadata = {
+      name: this.DRIVE_FILE_NAME,
+      mimeType: "application/json",
+      appProperties: {
+        deviceId: this.driveDeviceId,
+        deviceName: payload.deviceName,
+        exportedAt: payload.exportedAt,
+      },
+    };
+    const boundary = "wt-boundary-" + Date.now();
+    const multipartBody = [
+      `--${boundary}`,
+      "Content-Type: application/json; charset=UTF-8",
+      "",
+      JSON.stringify(metadata),
+      `--${boundary}`,
+      "Content-Type: application/json",
+      "",
+      body,
+      `--${boundary}--`,
+    ].join("\r\n");
+
+    await this._driveRequest(
+      `https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart`,
+      {
+        method: "POST",
+        headers: { "Content-Type": `multipart/related; boundary=${boundary}` },
+        body: multipartBody,
+      },
+    );
+  }
+
+  async drivePush({ skipConflictCheck = false } = {}) {
+    if (this.driveIsBusy) return { ok: false, busy: true };
+    this.driveIsBusy = true;
+    this._driveStatus("Uploading to Drive…", "syncing");
+    try {
+      await this.driveRefreshRemote();
+
+      if (!skipConflictCheck && this.driveRemoteInfo && this.driveLastPush) {
+        const remoteT = new Date(this.driveRemoteInfo.modifiedTime).getTime();
+        const pushT = new Date(this.driveLastPush).getTime();
+        const remoteDevice = this.driveRemoteInfo.appProperties?.deviceId;
+        if (remoteT > pushT + 2000 && remoteDevice !== this.driveDeviceId) {
+          this._driveStatus(
+            "Drive has newer changes from another device — use Merge or Pull",
+            "error",
+          );
+          this.driveIsBusy = false;
+          this.renderDriveSyncUI();
+          return { ok: false, conflict: true };
+        }
+      }
+
+      const payload = this._buildSyncPayload();
+      const jsonData = JSON.stringify(payload);
+
+      if (this.driveRemoteInfo) {
+        await this._driveUpdateFile(this.driveRemoteInfo.id, jsonData, payload);
+      } else {
+        await this._driveCreateFile(jsonData, payload);
+      }
+
+      const now = new Date().toISOString();
+      this.driveLastPush = now;
+      localStorage.setItem("driveLastPush", now);
+      this.driveLastLocalChange = "";
+      localStorage.setItem("driveLastLocalChange", "");
+      await this.driveRefreshRemote();
+      this._driveStatus(`Pushed · ${this._describePayload(payload)}`, "success");
+      return { ok: true };
+    } catch (e) {
+      console.error("drivePush:", e);
+      this._driveStatus("Push failed — " + e.message, "error");
+      this.showSuccessMessage("Drive push failed — " + e.message);
+      return { ok: false };
+    } finally {
+      this.driveIsBusy = false;
+      this.renderDriveSyncUI();
+    }
+  }
+
+  async drivePull({ confirm: askConfirm = true } = {}) {
+    if (this.driveIsBusy) return { ok: false, busy: true };
+    this.driveIsBusy = true;
+    this._driveStatus("Downloading from Drive…", "syncing");
+    try {
+      await this.driveRefreshRemote();
+      if (!this.driveRemoteInfo) {
+        this._driveStatus("No backup on Drive yet", "");
+        return { ok: false, empty: true };
+      }
+      if (askConfirm) {
+        const localSetCount = this.sessions.reduce(
+          (n, s) => n + (s.sets?.length || 0),
+          0,
+        );
+        if (
+          !confirm(
+            `Replace this device's data with the Drive version?\n\nLocal: ${this.workouts.length} workouts, ${this.sessions.length} sessions (${localSetCount} sets), ${this.workoutHistory.length} history entries.\n\nThis cannot be undone.`,
+          )
+        ) {
+          this._driveStatus("Pull cancelled", "");
+          return { ok: false, cancelled: true };
+        }
+      }
+      const resp = await this._driveRequest(
+        `https://www.googleapis.com/drive/v3/files/${this.driveRemoteInfo.id}?alt=media`,
+      );
+      const payload = await resp.json();
+      this._applySyncPayload(payload);
+      const now = new Date().toISOString();
+      this.driveLastPull = now;
+      localStorage.setItem("driveLastPull", now);
+      this.driveLastLocalChange = "";
+      localStorage.setItem("driveLastLocalChange", "");
+      this._driveStatus(`Pulled · ${this._describePayload(payload)}`, "success");
+      this.showSuccessMessage("Pulled latest from Google Drive");
+      this._rerenderAllAfterSync();
+      return { ok: true };
+    } catch (e) {
+      console.error("drivePull:", e);
+      this._driveStatus("Pull failed — " + e.message, "error");
+      this.showSuccessMessage("Drive pull failed — " + e.message);
+      return { ok: false };
+    } finally {
+      this.driveIsBusy = false;
+      this.renderDriveSyncUI();
+    }
+  }
+
+  async driveMerge() {
+    if (this.driveIsBusy) return { ok: false, busy: true };
+    this.driveIsBusy = true;
+    this._driveStatus("Merging local + Drive…", "syncing");
+    try {
+      await this.driveRefreshRemote();
+      if (!this.driveRemoteInfo) {
+        this.driveIsBusy = false;
+        return this.drivePush({ skipConflictCheck: true });
+      }
+      const resp = await this._driveRequest(
+        `https://www.googleapis.com/drive/v3/files/${this.driveRemoteInfo.id}?alt=media`,
+      );
+      const remote = await resp.json();
+      const merged = this._mergePayload(remote);
+      this._applySyncPayload(merged);
+      this.driveIsBusy = false;
+      const pushed = await this.drivePush({ skipConflictCheck: true });
+      if (pushed.ok) {
+        this._rerenderAllAfterSync();
+        this.showSuccessMessage("Merged local + Drive");
+      }
+      return pushed;
+    } catch (e) {
+      console.error("driveMerge:", e);
+      this._driveStatus("Merge failed — " + e.message, "error");
+      this.showSuccessMessage("Drive merge failed — " + e.message);
+      this.driveIsBusy = false;
+      this.renderDriveSyncUI();
+      return { ok: false };
+    }
+  }
+
+  computeSyncState() {
+    if (!this.driveClientId)
+      return { kind: "unconfigured", label: "Set up Google Drive" };
+    if (!this.driveAccessToken)
+      return { kind: "signed-out", label: "Sign in to Google" };
+    if (!this.driveRemoteInfo)
+      return {
+        kind: "first-push",
+        label: "Back up to Drive",
+        primary: "push",
+      };
+
+    const localChanged = !!this.driveLastLocalChange;
+    const remoteModT = new Date(this.driveRemoteInfo.modifiedTime).getTime();
+    const lastPushT = this.driveLastPush
+      ? new Date(this.driveLastPush).getTime()
+      : 0;
+    const remoteDevice = this.driveRemoteInfo.appProperties?.deviceId;
+    const remoteChanged =
+      remoteDevice !== this.driveDeviceId && remoteModT > lastPushT + 2000;
+
+    if (!localChanged && !remoteChanged)
+      return { kind: "synced", label: "Up to date", primary: null };
+    if (localChanged && !remoteChanged)
+      return { kind: "push", label: "Push to Drive", primary: "push" };
+    if (!localChanged && remoteChanged)
+      return { kind: "pull", label: "Pull from Drive", primary: "pull" };
+    return { kind: "conflict", label: "Merge local + Drive", primary: "merge" };
+  }
+
+  async runSmartSync() {
+    const s = this.computeSyncState();
+    if (s.kind === "unconfigured") {
+      this.showSuccessMessage("Enter your Google Client ID first");
+      return;
+    }
+    if (s.kind === "signed-out") {
+      const ok = await this.driveSignIn(true);
+      if (ok) {
+        // After sign-in we know the state — if nothing remote, push; if remote is newer with no local change, pull.
+        const after = this.computeSyncState();
+        if (after.primary === "push") await this.drivePush();
+        else if (after.primary === "pull") await this.drivePull({ confirm: false });
+      }
+      return;
+    }
+    if (s.kind === "synced") return;
+    if (s.primary === "push") {
+      const r = await this.drivePush();
+      if (r?.conflict) {
+        // state updated by drivePush, user will see conflict CTA
+      }
+    } else if (s.primary === "pull") {
+      await this.drivePull({ confirm: false });
+    } else if (s.primary === "merge") {
+      await this.driveMerge();
+    }
+  }
+
+  async _driveAutoOpenInit() {
+    if (!this.driveClientId || !this.driveAutoPull) return;
+    const ok = await this._waitForGis(8000);
+    if (!ok) return;
+    if (!this._driveInitTokenClient()) return;
+    const signedIn = await new Promise((resolve) => {
+      this.driveTokenClient.callback = (resp) => {
+        if (resp.error) return resolve(false);
+        this.driveAccessToken = resp.access_token;
+        resolve(true);
+      };
+      this.driveTokenClient.error_callback = () => resolve(false);
+      try {
+        this.driveTokenClient.requestAccessToken({ prompt: "none" });
+      } catch (_) {
+        resolve(false);
+      }
+    });
+    if (!signedIn) return;
+    await this.driveRefreshRemote();
+    const state = this.computeSyncState();
+    if (state.kind === "pull") {
+      await this.drivePull({ confirm: false });
+    }
+    this.renderDriveSyncUI();
+  }
+
+  async _driveAutoPushAfterFinish() {
+    // Ensure we have a token; attempt silent sign-in first.
+    if (!this.driveAccessToken) {
+      const ok = await this._waitForGis(4000);
+      if (!ok) return;
+      if (!this._driveInitTokenClient()) return;
+      await new Promise((resolve) => {
+        this.driveTokenClient.callback = (resp) => {
+          if (resp.error) return resolve(false);
+          this.driveAccessToken = resp.access_token;
+          resolve(true);
+        };
+        this.driveTokenClient.error_callback = () => resolve(false);
+        try {
+          this.driveTokenClient.requestAccessToken({ prompt: "none" });
+        } catch (_) {
+          resolve(false);
+        }
+      });
+      if (!this.driveAccessToken) return;
+    }
+    await this.driveRefreshRemote();
+    const s = this.computeSyncState();
+    if (s.primary === "merge") {
+      await this.driveMerge();
+    } else {
+      await this.drivePush();
+    }
+  }
+
+  _driveStatus(msg, cls) {
+    const el = document.getElementById("driveSyncStatus");
+    if (!el) return;
+    el.textContent = msg || "";
+    el.className = "sync-status" + (cls ? " " + cls : "");
+  }
+
+  _rerenderAllAfterSync() {
+    try {
+      this.renderWorkoutList();
+      this.renderActivityOverview();
+      this.renderWorkoutOverview();
+      const mgmt = document.getElementById("managementView");
+      if (mgmt && !mgmt.classList.contains("hidden")) {
+        if (typeof this.renderExerciseLibrary === "function") {
+          this.renderExerciseLibrary();
+        }
+        if (typeof this.renderWorkoutManager === "function") {
+          this.renderWorkoutManager();
+        }
+      }
+    } catch (e) {
+      console.error("_rerenderAllAfterSync:", e);
+    }
+  }
+
+  _relTime(iso) {
+    if (!iso) return "—";
+    const t = new Date(iso).getTime();
+    if (!t || Number.isNaN(t)) return "—";
+    const diff = Date.now() - t;
+    if (diff < 45_000) return "just now";
+    const m = Math.round(diff / 60000);
+    if (m < 60) return `${m}m ago`;
+    const h = Math.round(m / 60);
+    if (h < 24) return `${h}h ago`;
+    const d = Math.round(h / 24);
+    return `${d}d ago`;
+  }
+
+  _formatSize(bytes) {
+    const n = parseInt(bytes, 10);
+    if (!n || Number.isNaN(n)) return "—";
+    if (n < 1024) return `${n} B`;
+    if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
+    return `${(n / 1024 / 1024).toFixed(2)} MB`;
+  }
+
+  renderDriveSyncUI() {
+    const section = document.getElementById("driveSyncSection");
+    if (!section) return;
+
+    const originHint = document.getElementById("driveOriginHint");
+    if (originHint) originHint.textContent = window.location.origin;
+
+    const clientIdInput = document.getElementById("driveClientIdInput");
+    if (clientIdInput && document.activeElement !== clientIdInput)
+      clientIdInput.value = this.driveClientId;
+    const deviceNameInput = document.getElementById("driveDeviceNameInput");
+    if (deviceNameInput && document.activeElement !== deviceNameInput)
+      deviceNameInput.value = this.driveDeviceName;
+
+    const signInBtn = document.getElementById("driveSignInBtn");
+    const signOutBtn = document.getElementById("driveSignOutBtn");
+    const statusCard = document.getElementById("driveStatusCard");
+    const badge = document.getElementById("driveSyncBadge");
+    const autoSync = document.getElementById("driveAutoSync");
+    const autoPull = document.getElementById("driveAutoPull");
+    if (autoSync) autoSync.checked = this.driveAutoSync;
+    if (autoPull) autoPull.checked = this.driveAutoPull;
+
+    const state = this.computeSyncState();
+    if (badge) {
+      badge.textContent =
+        {
+          unconfigured: "Not connected",
+          "signed-out": "Signed out",
+          "first-push": "Ready · no backup yet",
+          synced: "Up to date",
+          push: "Local changes pending",
+          pull: "Drive has new data",
+          conflict: "Diverged — needs merge",
+        }[state.kind] || "";
+      badge.dataset.state = state.kind;
+    }
+
+    if (!this.driveClientId) {
+      if (signInBtn) signInBtn.classList.add("hidden");
+      if (signOutBtn) signOutBtn.classList.add("hidden");
+      if (statusCard) statusCard.classList.add("hidden");
+      return;
+    }
+    if (signInBtn) signInBtn.classList.toggle("hidden", !!this.driveAccessToken);
+    if (signOutBtn)
+      signOutBtn.classList.toggle("hidden", !this.driveAccessToken);
+    if (statusCard)
+      statusCard.classList.toggle("hidden", !this.driveAccessToken);
+
+    if (!this.driveAccessToken) return;
+
+    const localSets = this.sessions.reduce(
+      (n, s) => n + (s.sets?.length || 0),
+      0,
+    );
+    const localCountsEl = document.getElementById("driveLocalCounts");
+    if (localCountsEl)
+      localCountsEl.textContent = `${this.workouts.length} workouts · ${this.exerciseLibrary.length} exercises · ${this.sessions.length} sessions (${localSets} sets) · ${this.workoutHistory.length} history`;
+
+    const localChangedEl = document.getElementById("driveLocalChanged");
+    if (localChangedEl) {
+      if (this.driveLastLocalChange) {
+        localChangedEl.textContent = `Unsynced changes · edited ${this._relTime(this.driveLastLocalChange)}`;
+      } else if (this.driveLastPush) {
+        localChangedEl.textContent = `Last pushed ${this._relTime(this.driveLastPush)}`;
+      } else {
+        localChangedEl.textContent = "No changes pushed yet";
+      }
+    }
+
+    const remoteEl = document.getElementById("driveRemoteCounts");
+    const remoteChangedEl = document.getElementById("driveRemoteChanged");
+    if (this.driveRemoteInfo) {
+      if (remoteEl)
+        remoteEl.textContent = `${this.DRIVE_FILE_NAME} · ${this._formatSize(this.driveRemoteInfo.size)}`;
+      if (remoteChangedEl) {
+        const who =
+          this.driveRemoteInfo.appProperties?.deviceName ||
+          this.driveLastRemoteDevice ||
+          "another device";
+        const isMe =
+          this.driveRemoteInfo.appProperties?.deviceId === this.driveDeviceId;
+        remoteChangedEl.textContent = `Updated ${this._relTime(this.driveRemoteInfo.modifiedTime)} · from ${isMe ? "this device" : who}`;
+      }
+    } else {
+      if (remoteEl) remoteEl.textContent = "No file on Drive yet";
+      if (remoteChangedEl) remoteChangedEl.textContent = "Push to create it";
+    }
+
+    const stateLine = document.getElementById("driveSyncStateLine");
+    if (stateLine) {
+      stateLine.dataset.state = state.kind;
+      stateLine.textContent =
+        {
+          "first-push":
+            "Ready for your first backup. Sync will upload this device to Drive.",
+          synced:
+            "Everything matches Drive. No sync needed right now.",
+          push:
+            "This device has unsynced changes. Sync will push them to Drive.",
+          pull:
+            "Drive has newer changes from another device. Sync will pull them in.",
+          conflict:
+            "Both this device and Drive have changes. Sync will merge them — nothing is lost.",
+        }[state.kind] || "";
+    }
+
+    const smartBtn = document.getElementById("driveSmartSyncBtn");
+    if (smartBtn) {
+      smartBtn.textContent =
+        state.kind === "synced" ? "Up to date" : state.label;
+      smartBtn.disabled = state.kind === "synced" || this.driveIsBusy;
+      smartBtn.dataset.state = state.kind;
+    }
+  }
+
+  setupDriveSyncListeners() {
+    const clientInput = document.getElementById("driveClientIdInput");
+    if (clientInput) {
+      clientInput.addEventListener("change", () => {
+        this.driveClientId = (clientInput.value || "").trim();
+        localStorage.setItem("driveClientId", this.driveClientId);
+        this.driveTokenClient = null;
+        this.driveAccessToken = null;
+        this.driveRemoteInfo = null;
+        this.renderDriveSyncUI();
+      });
+    }
+
+    const deviceInput = document.getElementById("driveDeviceNameInput");
+    if (deviceInput) {
+      deviceInput.addEventListener("change", () => {
+        this.driveDeviceName = (deviceInput.value || "").trim();
+        localStorage.setItem("driveDeviceName", this.driveDeviceName);
+        this.renderDriveSyncUI();
+      });
+    }
+
+    document
+      .getElementById("driveSignInBtn")
+      ?.addEventListener("click", () => this.driveSignIn(true));
+    document
+      .getElementById("driveSignOutBtn")
+      ?.addEventListener("click", () => this.driveSignOut());
+    document
+      .getElementById("driveSmartSyncBtn")
+      ?.addEventListener("click", () => this.runSmartSync());
+    document
+      .getElementById("driveRefreshBtn")
+      ?.addEventListener("click", async () => {
+        if (!this.driveAccessToken) return;
+        this._driveStatus("Checking Drive…", "syncing");
+        await this.driveRefreshRemote();
+        this._driveStatus("", "");
+        this.renderDriveSyncUI();
+      });
+    document
+      .getElementById("drivePushBtn")
+      ?.addEventListener("click", () => this.drivePush());
+    document
+      .getElementById("drivePullBtn")
+      ?.addEventListener("click", () => this.drivePull({ confirm: true }));
+    document
+      .getElementById("driveMergeBtn")
+      ?.addEventListener("click", () => this.driveMerge());
+
+    const autoSync = document.getElementById("driveAutoSync");
+    if (autoSync) {
+      autoSync.addEventListener("change", () => {
+        this.driveAutoSync = autoSync.checked;
+        localStorage.setItem(
+          "driveAutoSync",
+          JSON.stringify(this.driveAutoSync),
+        );
+      });
+    }
+    const autoPull = document.getElementById("driveAutoPull");
+    if (autoPull) {
+      autoPull.addEventListener("change", () => {
+        this.driveAutoPull = autoPull.checked;
+        localStorage.setItem(
+          "driveAutoPull",
+          JSON.stringify(this.driveAutoPull),
+        );
+      });
+    }
   }
 
   // ============================================

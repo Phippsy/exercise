@@ -13,12 +13,13 @@
     <meta name="theme-color" content="#0a0a0a" />
     <title>Workout Tracker</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-    <link rel="stylesheet" href="styles.css?v=1.15.1" />
+    <link rel="stylesheet" href="styles.css?v=1.16.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet" />
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
   </head>
   <body>
     <div class="app-container">
@@ -1419,6 +1420,154 @@
 
           <!-- Sync Tab -->
           <div id="syncTab" class="management-tab-content">
+            <div id="driveSyncSection" class="management-section drive-sync-section">
+              <div class="sync-section-header">
+                <h3 class="management-section-title">Google Drive Sync</h3>
+                <span id="driveSyncBadge" class="drive-sync-badge" data-state="unconfigured">Not connected</span>
+              </div>
+              <p class="section-subtext">
+                Keep workouts, exercises, sessions, and history in sync across
+                every device. Data lives in your own Google Drive as one
+                private JSON file only this app can see.
+              </p>
+
+              <details class="sync-setup-guide">
+                <summary>One-time Google setup</summary>
+                <ol class="sync-steps">
+                  <li>
+                    Open
+                    <a
+                      href="https://console.cloud.google.com/apis/credentials"
+                      target="_blank"
+                      rel="noopener"
+                      >Google Cloud Console &rarr; Credentials</a
+                    >
+                  </li>
+                  <li>
+                    Create an <strong>OAuth 2.0 Client ID</strong> (Application
+                    type: <em>Web application</em>)
+                  </li>
+                  <li>
+                    Add this URL to <em>Authorised JavaScript origins</em>:
+                    <code id="driveOriginHint">—</code>
+                  </li>
+                  <li>
+                    Enable the
+                    <a
+                      href="https://console.cloud.google.com/apis/library/drive.googleapis.com"
+                      target="_blank"
+                      rel="noopener"
+                      >Google Drive API</a
+                    >
+                  </li>
+                  <li>Paste the Client ID below and sign in</li>
+                </ol>
+                <p class="form-hint">
+                  The scope used is <code>drive.file</code> &mdash; this app
+                  can only see the single file it creates, nothing else in
+                  your Drive.
+                </p>
+              </details>
+
+              <div class="form-group">
+                <label for="driveClientIdInput">Google OAuth Client ID</label>
+                <input
+                  type="text"
+                  id="driveClientIdInput"
+                  placeholder="123456-abc.apps.googleusercontent.com"
+                  autocomplete="off"
+                  spellcheck="false" />
+              </div>
+
+              <div class="form-group">
+                <label for="driveDeviceNameInput">Device nickname</label>
+                <input
+                  type="text"
+                  id="driveDeviceNameInput"
+                  placeholder="e.g., Donal&rsquo;s iPhone"
+                  autocomplete="off"
+                  spellcheck="false" />
+                <p class="form-hint">
+                  Shown next to syncs so you know which device last pushed.
+                </p>
+              </div>
+
+              <div class="drive-sync-controls">
+                <button id="driveSignInBtn" class="btn-primary">
+                  Sign in with Google
+                </button>
+                <button id="driveSignOutBtn" class="btn-soft hidden">
+                  Sign out
+                </button>
+              </div>
+
+              <div id="driveStatusCard" class="drive-status-card hidden">
+                <div class="drive-status-grid">
+                  <div class="drive-status-block">
+                    <p class="drive-status-label">This device</p>
+                    <p class="drive-status-value" id="driveLocalCounts">—</p>
+                    <p class="drive-status-sub" id="driveLocalChanged">
+                      No changes
+                    </p>
+                  </div>
+                  <div class="drive-status-arrow" id="driveStatusArrow">
+                    ⇅
+                  </div>
+                  <div class="drive-status-block">
+                    <p class="drive-status-label">Google Drive</p>
+                    <p class="drive-status-value" id="driveRemoteCounts">—</p>
+                    <p class="drive-status-sub" id="driveRemoteChanged">
+                      Never synced
+                    </p>
+                  </div>
+                </div>
+
+                <p id="driveSyncStateLine" class="drive-state-line"></p>
+
+                <div class="drive-primary-actions">
+                  <button id="driveSmartSyncBtn" class="btn-primary">
+                    Sync
+                  </button>
+                  <button id="driveRefreshBtn" class="btn-soft">
+                    Refresh status
+                  </button>
+                </div>
+
+                <details class="drive-advanced">
+                  <summary>Advanced &amp; auto-sync</summary>
+                  <div class="drive-advanced-actions">
+                    <button id="drivePushBtn" class="btn-secondary" type="button">
+                      ↑ Push (overwrite Drive)
+                    </button>
+                    <button id="drivePullBtn" class="btn-secondary" type="button">
+                      ↓ Pull (overwrite local)
+                    </button>
+                    <button id="driveMergeBtn" class="btn-secondary" type="button">
+                      ⇅ Merge local + Drive
+                    </button>
+                  </div>
+                  <p class="form-hint">
+                    Merge keeps everything from both sides &mdash; safe when
+                    two devices have both made changes.
+                  </p>
+                  <div class="form-group sync-toggle-row">
+                    <label for="driveAutoSync" class="toggle-label">
+                      Auto-push after finishing a workout
+                    </label>
+                    <input type="checkbox" id="driveAutoSync" />
+                  </div>
+                  <div class="form-group sync-toggle-row">
+                    <label for="driveAutoPull" class="toggle-label">
+                      Auto-pull when the app opens
+                    </label>
+                    <input type="checkbox" id="driveAutoPull" />
+                  </div>
+                </details>
+
+                <div id="driveSyncStatus" class="sync-status"></div>
+              </div>
+            </div>
+
             <div class="management-section">
               <h3 class="management-section-title">Google Sheets Sync</h3>
               <p class="section-subtext">
@@ -1825,6 +1974,6 @@
       </div>
     </div>
 
-    <script src="app.js?v=1.15.1"></script>
+    <script src="app.js?v=1.16.0"></script>
   </body>
 </html>
