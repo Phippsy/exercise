@@ -1533,7 +1533,10 @@ button {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-lg);
+  padding: calc(var(--spacing-lg) + env(safe-area-inset-top))
+    calc(var(--spacing-lg) + env(safe-area-inset-right))
+    var(--spacing-lg)
+    calc(var(--spacing-lg) + env(safe-area-inset-left));
   border-bottom: 1px solid var(--border-subtle);
   flex-shrink: 0; /* never collapse */
   background-color: var(--bg-surface);
@@ -3249,7 +3252,10 @@ input[type="number"]::-webkit-outer-spin-button {
   }
 
   .management-header {
-    padding: var(--spacing-md);
+    padding: calc(var(--spacing-md) + env(safe-area-inset-top))
+      calc(var(--spacing-md) + env(safe-area-inset-right))
+      var(--spacing-md)
+      calc(var(--spacing-md) + env(safe-area-inset-left));
   }
 
   .management-title {
@@ -3262,7 +3268,9 @@ input[type="number"]::-webkit-outer-spin-button {
   }
 
   .management-tab-content {
-    padding: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-md)
+      calc(var(--spacing-md) + env(safe-area-inset-bottom))
+      var(--spacing-md);
   }
 
   .management-section {
