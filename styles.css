@@ -3134,31 +3134,25 @@ input[type="number"]::-webkit-outer-spin-button {
     gap: var(--spacing-sm);
   }
 
-  /* Set rows - stack reps/weight vertically on mobile so inputs aren't
-     squeezed to a few pixels wide by the inline +/- and fill-down buttons */
+  /* Set rows - compact single-row layout on mobile.
+     Hide the fill-down buttons (available on desktop) to give the number
+     inputs real breathing room. Layout: label | reps | weight | remove. */
   .set-row {
     display: grid;
-    grid-template-columns: 1fr auto;
-    grid-template-areas:
-      "label remove"
-      "reps reps"
-      "weight weight";
-    gap: 6px 8px;
+    grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr) auto;
+    grid-template-areas: "label reps weight remove";
+    gap: 6px;
     padding: 10px;
-    align-items: center;
+    align-items: end;
   }
 
   .set-row .set-label {
     grid-area: label;
-    font-size: 12px;
-    flex-shrink: 0;
-    white-space: nowrap;
+    font-size: 11px;
     font-weight: var(--font-weight-semibold);
-  }
-
-  .set-row .btn-remove {
-    grid-area: remove;
-    justify-self: end;
+    white-space: nowrap;
+    align-self: center;
+    padding-bottom: 0;
   }
 
   .set-row .input-group:nth-of-type(1) {
@@ -3169,34 +3163,57 @@ input[type="number"]::-webkit-outer-spin-button {
     grid-area: weight;
   }
 
+  /* The third input-group wraps the × remove button. Strip its wrapper
+     styling so the button sits centered in its column. */
+  .set-row .input-group:nth-of-type(3) {
+    grid-area: remove;
+    align-self: center;
+  }
+
+  .set-row .input-group:nth-of-type(3) > label {
+    display: none;
+  }
+
+  /* Hide fill-down on narrow screens to free up room for the inputs. */
+  .set-row .btn-fill-down {
+    display: none;
+  }
+
   .input-group {
-    gap: 3px;
+    gap: 2px;
   }
 
   .input-group label {
     font-size: 10px;
+    letter-spacing: 0.04em;
   }
 
   .input-with-controls {
-    gap: 6px;
+    gap: 4px;
   }
 
   .input-with-controls input {
     font-size: 16px; /* Prevent zoom on iOS */
-    padding: 6px 8px;
-    min-height: 40px;
+    padding: 4px 4px;
+    min-height: 38px;
     min-width: 0;
     flex: 1;
   }
 
   .btn-increment,
-  .btn-decrement,
-  .btn-remove,
-  .btn-fill-down {
-    width: 40px;
-    height: 40px;
-    min-width: 40px;
-    min-height: 40px;
+  .btn-decrement {
+    width: 32px;
+    height: 38px;
+    min-width: 32px;
+    min-height: 38px;
+    flex-shrink: 0;
+  }
+
+  .btn-remove {
+    width: 36px;
+    height: 38px;
+    min-width: 36px;
+    min-height: 38px;
     flex-shrink: 0;
   }
 

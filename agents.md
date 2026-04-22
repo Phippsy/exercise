@@ -49,8 +49,9 @@ Examples:
 
 ### Current Version
 
-**Current Version: 1.18.4** (as of 2026-04-22)
+**Current Version: 1.18.5** (as of 2026-04-22)
 
+- 1.18.5: Restore single-row set layout on mobile — the v1.18.3 stacked layout was ugly. Set row is now a compact 4-col grid (label / reps / weight / remove) with the fill-down buttons hidden on narrow screens (still available on desktop) so the number inputs get real breathing room
 - 1.18.4: Fix unreachable close button in Manage panel on iPhone — `.management-header` had no safe-area-inset padding so on devices with Dynamic Island / notch and `viewport-fit=cover`, the close (×) button sat behind the status bar. Now respects safe-area-inset-top/left/right; tab content also respects safe-area-inset-bottom so the last row isn't hidden under the home indicator
 - 1.18.3: Fix squashed reps/weight inputs on mobile — set row had label + reps-cluster + weight-cluster + remove all on one line (10+ buttons across ~327px), leaving the number inputs ~8px wide. Set row now stacks reps and weight on their own full-width rows on narrow screens with proper input breathing room
 - 1.18.2: Fix workout edits not appearing on detail screen — `setCurrentSessionForWorkout` was preserving the stale `activeSessionDrafts` exercise list instead of reconciling it with the updated workout template, so newly added / removed / reordered exercises didn't show up until the draft was cleared. Now the draft's exercise list is always rebuilt from the latest workout definition (per-set progress lives in `this.sessions` so nothing is lost)
