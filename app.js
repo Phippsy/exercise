@@ -1677,13 +1677,21 @@ class WorkoutTracker {
 
   setCurrentSessionForWorkout(workout) {
     const persisted = this.activeSessionDrafts?.[workout.id];
+    const workoutExercises = (workout.exercises || []).map((exercise) => ({
+      ...exercise,
+    }));
 
     if (persisted?.exercises?.length) {
+      // Reconcile the persisted draft with the current workout definition so
+      // edits to the workout (add / remove / reorder exercises) are reflected
+      // on the detail screen. The draft itself doesn't store per-set progress
+      // (sets live in this.sessions keyed by date + exercise name), so it is
+      // safe to rebuild the exercise list from the workout.
       this.currentSession = {
         ...persisted,
         workoutId: workout.id,
         workoutName: workout.name,
-        exercises: persisted.exercises.map((exercise) => ({ ...exercise })),
+        exercises: workoutExercises,
       };
     } else {
       this.currentSession = this.createSessionFromWorkout(workout);
