@@ -122,31 +122,11 @@ class WorkoutTracker {
           workoutsUpdated = true;
         }
 
-        // Merge newly-seeded exercises into existing workouts without removing user edits
-        (data.workouts || []).forEach((seedWorkout) => {
-          const localWorkout = this.workouts.find((w) => w.id === seedWorkout.id);
-          if (!localWorkout) return;
-
-          if (!Array.isArray(localWorkout.exercises)) {
-            localWorkout.exercises = [];
-          }
-
-          const existingExerciseNames = new Set(
-            localWorkout.exercises
-              .map((exercise) => exercise?.name?.toLowerCase())
-              .filter(Boolean),
-          );
-
-          (seedWorkout.exercises || []).forEach((seedExercise) => {
-            if (!seedExercise?.name) return;
-            const key = seedExercise.name.toLowerCase();
-            if (!existingExerciseNames.has(key)) {
-              localWorkout.exercises.push({ ...seedExercise });
-              existingExerciseNames.add(key);
-              workoutsUpdated = true;
-            }
-          });
-        });
+        // NOTE: we intentionally do NOT merge seed exercises back into
+        // existing local workouts. Doing so would silently re-add any
+        // exercises the user removed via the edit flow. Users who want
+        // the latest seed content can delete the workout and let the
+        // new one come through on next load.
 
         if (workoutsUpdated) {
           this.saveWorkouts();
