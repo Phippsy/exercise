@@ -49,8 +49,9 @@ Examples:
 
 ### Current Version
 
-**Current Version: 1.17.1** (as of 2026-04-22)
+**Current Version: 1.18.0** (as of 2026-04-22)
 
+- 1.18.0: Manage section revamp — collapsible Create forms (Exercise + Workout), richer cards (muscle badges, default chips, usage stats, last-done relative time), sort controls (A-Z / By muscle / Most used / Recently used for exercises; Favourites / A-Z / Recent / Most exercises for workouts), header stats counter, Duplicate actions for both exercises and workouts, smarter delete-confirm with usage warning, friendly empty states with CTAs
 - 1.17.1: Fix desktop scroll lock — simplified html/body height rules (removed `html { height: 100% }` + body `overflow-x: hidden` combo that broke wheel scroll on desktop)
 - 1.17.0: iPhone PWA polish pass — added web manifest + apple-touch-icon, `viewport-fit=cover` for Dynamic Island, `100dvh` throughout, moved body gradients to fixed pseudo-layer (fixes iOS scroll jank), global `touch-action: manipulation` + tap-highlight, `overscroll-behavior-y: none`, `inputmode=numeric/decimal` + `enterkeyhint` on all reps/weight inputs, bigger mobile tap targets (36×40 for +/- buttons, 54px-wide bottom-nav), horizontal safe-area padding, defined previously-missing `--text-secondary` and `--bg-subtle` CSS vars, `visualViewport` resize hook for keyboard
 - 1.16.0: Google Drive sync — bi-directional cross-device sync (workouts, exercises, sessions, history). Smart sync button detects push/pull/merge state, with sophisticated merge (union by id) for conflict-free cross-device editing. Stores a single `workout-tracker-data.json` in user's Drive using `drive.file` scope (no backend, no credentials on server)

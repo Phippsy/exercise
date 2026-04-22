@@ -23,6 +23,10 @@ class WorkoutTracker {
     this.latestShareDataUrl = null;
     this.currentSession = null;
     this.exerciseLibraryFilters = { search: "", muscles: new Set() };
+    this.exerciseLibrarySort =
+      localStorage.getItem("exerciseLibrarySort") || "alpha";
+    this.workoutManagerSort =
+      localStorage.getItem("workoutManagerSort") || "favorite";
     this.workoutFilters = new Set();
     this.workoutSearchTerm = "";
     this.favoriteFilterOnly =
@@ -80,6 +84,7 @@ class WorkoutTracker {
     this.loadTheme();
     this.setupEventListeners();
     this.setupExerciseLibraryFilters();
+    this.setupManagementSorts();
     this.setupWorkoutFilters();
     this.renderWorkoutList();
     this.renderActivityOverview();
@@ -885,6 +890,28 @@ class WorkoutTracker {
     this.renderExerciseLibrary();
   }
 
+  setupManagementSorts() {
+    const exerciseSort = document.getElementById("exerciseLibrarySort");
+    if (exerciseSort) {
+      exerciseSort.value = this.exerciseLibrarySort;
+      exerciseSort.addEventListener("change", (e) => {
+        this.exerciseLibrarySort = e.target.value;
+        localStorage.setItem("exerciseLibrarySort", this.exerciseLibrarySort);
+        this.renderExerciseLibrary();
+      });
+    }
+
+    const workoutSort = document.getElementById("workoutManagerSort");
+    if (workoutSort) {
+      workoutSort.value = this.workoutManagerSort;
+      workoutSort.addEventListener("change", (e) => {
+        this.workoutManagerSort = e.target.value;
+        localStorage.setItem("workoutManagerSort", this.workoutManagerSort);
+        this.renderWorkoutManager();
+      });
+    }
+  }
+
   setupWorkoutFilters() {
     const filterContainer = document.getElementById("workoutFilters");
     const favoriteToggle = document.getElementById("favoritesOnlyToggle");
@@ -1520,6 +1547,7 @@ class WorkoutTracker {
     this.workouts.push(copy);
     this.saveWorkouts();
     this.renderWorkoutList();
+    this.renderWorkoutManager();
     this.showSuccessMessage("Workout duplicated. Edit to customize.");
   }
 
@@ -4616,6 +4644,8 @@ class WorkoutTracker {
 
     // Reset form
     document.getElementById("createExerciseForm").reset();
+    const section = document.getElementById("createExerciseSection");
+    if (section) section.open = false;
 
     // Refresh library display
     this.renderExerciseLibrary();
@@ -4756,11 +4786,26 @@ class WorkoutTracker {
   }
 
   deleteExercise(exerciseName) {
-    if (
-      !confirm(
-        `Delete "${exerciseName}"? This will remove it from all workouts.`,
-      )
-    ) {
+    const usedInWorkouts = this.workouts.filter((w) =>
+      (w.exercises || []).some((e) => e.name === exerciseName),
+    ).length;
+    const sessionCount = this.sessions.filter(
+      (s) => s.exerciseName === exerciseName,
+    ).length;
+
+    const lines = [`Delete "${exerciseName}"?`];
+    if (usedInWorkouts > 0) {
+      lines.push(
+        `It will be removed from ${usedInWorkouts} workout${usedInWorkouts === 1 ? "" : "s"}.`,
+      );
+    }
+    if (sessionCount > 0) {
+      lines.push(
+        `${sessionCount} logged session${sessionCount === 1 ? "" : "s"} will also be deleted.`,
+      );
+    }
+
+    if (!confirm(lines.join("\n\n"))) {
       return;
     }
 
@@ -4800,77 +4845,275 @@ class WorkoutTracker {
 
   renderExerciseLibrary() {
     const container = document.getElementById("exerciseLibrary");
+    const statsEl = document.getElementById("exerciseLibraryStats");
 
     if (this.exerciseLibrary.length === 0) {
-      container.innerHTML =
-        '<p class="exercise-selector-empty">No exercises yet. Create one above!</p>';
+      if (statsEl) statsEl.textContent = "";
+      container.innerHTML = `
+        <div class="management-empty">
+          <p class="management-empty-title">No exercises yet</p>
+          <p class="management-empty-body">Add your first exercise to start building workouts.</p>
+          <button type="button" class="btn-primary" id="emptyExerciseCta">+ Add exercise</button>
+        </div>`;
+      const cta = document.getElementById("emptyExerciseCta");
+      if (cta) {
+        cta.addEventListener("click", () => {
+          const section = document.getElementById("createExerciseSection");
+          if (section) section.open = true;
+          document.getElementById("exerciseName")?.focus();
+        });
+      }
       return;
+    }
+
+    const usage = this.getExerciseUsageMap();
+
+    const filtered = this.exerciseLibrary.filter((exercise) =>
+      this.matchesExerciseLibraryFilters(exercise),
+    );
+
+    const sorted = this.sortExerciseLibrary(filtered, usage);
+
+    if (statsEl) {
+      const total = this.exerciseLibrary.length;
+      const shown = sorted.length;
+      statsEl.textContent =
+        total === shown
+          ? `${total} exercise${total === 1 ? "" : "s"}`
+          : `${shown} of ${total}`;
     }
 
     container.innerHTML = "";
 
-    // Sort alphabetically
-    const sorted = [...this.exerciseLibrary].sort((a, b) =>
-      a.name.localeCompare(b.name),
-    );
-
-    const filtered = sorted.filter((exercise) =>
-      this.matchesExerciseLibraryFilters(exercise),
-    );
-
-    if (filtered.length === 0) {
+    if (sorted.length === 0) {
       container.innerHTML =
         '<p class="exercise-selector-empty">No exercises match your filters.</p>';
       return;
     }
 
-    filtered.forEach((exercise) => {
-      const item = document.createElement("div");
-      item.className = "exercise-library-item";
-      item.dataset.muscleGroup = exercise.muscle_group;
+    const groupByMuscle = this.exerciseLibrarySort === "muscle";
 
-      const info = document.createElement("div");
-      info.className = "exercise-library-info";
+    if (groupByMuscle) {
+      const groups = new Map();
+      sorted.forEach((exercise) => {
+        const key = exercise.muscle_group || "Other";
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(exercise);
+      });
 
-      const name = document.createElement("div");
-      name.className = "exercise-library-name";
-      name.textContent = exercise.name;
+      groups.forEach((items, muscle) => {
+        const heading = document.createElement("div");
+        heading.className = "exercise-library-group-heading";
+        heading.textContent = `${muscle} · ${items.length}`;
+        container.appendChild(heading);
+        items.forEach((exercise) => {
+          container.appendChild(this.createExerciseLibraryCard(exercise, usage));
+        });
+      });
+      return;
+    }
 
-      const meta = document.createElement("div");
-      meta.className = "exercise-library-meta";
-      const parts = [exercise.muscle_group];
-      if (exercise.sets) parts.push(`${exercise.sets} sets`);
-      if (exercise.reps) parts.push(`${exercise.reps} reps`);
-      if (exercise.weight_kg) parts.push(`${exercise.weight_kg} kg`);
-      meta.textContent = parts.join(" • ");
-
-      info.appendChild(name);
-      info.appendChild(meta);
-
-      const actions = document.createElement("div");
-      actions.className = "exercise-library-actions";
-
-      const editBtn = document.createElement("button");
-      editBtn.className = "btn-secondary";
-      editBtn.textContent = "Edit";
-      editBtn.addEventListener("click", () =>
-        this.openEditExercise(exercise.name),
-      );
-
-      const deleteBtn = document.createElement("button");
-      deleteBtn.className = "btn-delete";
-      deleteBtn.textContent = "Delete";
-      deleteBtn.addEventListener("click", () =>
-        this.deleteExercise(exercise.name),
-      );
-
-      actions.appendChild(editBtn);
-      actions.appendChild(deleteBtn);
-
-      item.appendChild(info);
-      item.appendChild(actions);
-      container.appendChild(item);
+    sorted.forEach((exercise) => {
+      container.appendChild(this.createExerciseLibraryCard(exercise, usage));
     });
+  }
+
+  createExerciseLibraryCard(exercise, usageMap) {
+    const usage = usageMap.get(exercise.name) || {
+      workoutCount: 0,
+      sessionCount: 0,
+      lastSessionDate: null,
+    };
+
+    const item = document.createElement("div");
+    item.className = "exercise-library-item";
+    item.dataset.muscleGroup = exercise.muscle_group;
+    item.dataset.muscleAccent = this.slugifyMuscle(exercise.muscle_group);
+
+    const info = document.createElement("div");
+    info.className = "exercise-library-info";
+
+    const name = document.createElement("div");
+    name.className = "exercise-library-name";
+    name.textContent = exercise.name;
+    info.appendChild(name);
+
+    const muscleRow = document.createElement("div");
+    muscleRow.className = "exercise-library-muscle";
+    const muscleBadge = document.createElement("span");
+    muscleBadge.className = "workout-muscle-badge";
+    muscleBadge.textContent = exercise.muscle_group || "Unassigned";
+    muscleRow.appendChild(muscleBadge);
+    info.appendChild(muscleRow);
+
+    const defaults = [];
+    if (exercise.sets) defaults.push(`${exercise.sets} sets`);
+    if (exercise.reps) defaults.push(`${exercise.reps} reps`);
+    if (exercise.weight_kg) defaults.push(`${exercise.weight_kg} kg`);
+    if (defaults.length) {
+      const chips = document.createElement("div");
+      chips.className = "exercise-library-chips";
+      defaults.forEach((text) => {
+        const chip = document.createElement("span");
+        chip.className = "chip";
+        chip.textContent = text;
+        chips.appendChild(chip);
+      });
+      info.appendChild(chips);
+    }
+
+    const stats = document.createElement("div");
+    stats.className = "exercise-library-stats";
+    const parts = [];
+    parts.push(
+      `In ${usage.workoutCount} workout${usage.workoutCount === 1 ? "" : "s"}`,
+    );
+    if (usage.sessionCount > 0) {
+      parts.push(
+        `${usage.sessionCount} session${usage.sessionCount === 1 ? "" : "s"}`,
+      );
+      if (usage.lastSessionDate) {
+        parts.push(`Last ${this.formatRelativeDay(usage.lastSessionDate)}`);
+      }
+    } else {
+      parts.push("Never logged");
+    }
+    stats.textContent = parts.join(" · ");
+    info.appendChild(stats);
+
+    const actions = document.createElement("div");
+    actions.className = "exercise-library-actions";
+
+    const editBtn = document.createElement("button");
+    editBtn.className = "btn-secondary btn-sm";
+    editBtn.type = "button";
+    editBtn.textContent = "Edit";
+    editBtn.addEventListener("click", () => this.openEditExercise(exercise.name));
+
+    const duplicateBtn = document.createElement("button");
+    duplicateBtn.className = "btn-secondary btn-sm";
+    duplicateBtn.type = "button";
+    duplicateBtn.textContent = "Duplicate";
+    duplicateBtn.addEventListener("click", () => this.duplicateExercise(exercise));
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "btn-delete";
+    deleteBtn.type = "button";
+    deleteBtn.textContent = "Delete";
+    deleteBtn.addEventListener("click", () => this.deleteExercise(exercise.name));
+
+    actions.appendChild(editBtn);
+    actions.appendChild(duplicateBtn);
+    actions.appendChild(deleteBtn);
+
+    item.appendChild(info);
+    item.appendChild(actions);
+    return item;
+  }
+
+  getExerciseUsageMap() {
+    const map = new Map();
+
+    this.exerciseLibrary.forEach((exercise) => {
+      map.set(exercise.name, {
+        workoutCount: 0,
+        sessionCount: 0,
+        lastSessionDate: null,
+      });
+    });
+
+    this.workouts.forEach((workout) => {
+      const seenInWorkout = new Set();
+      (workout.exercises || []).forEach((ex) => {
+        if (!ex || !ex.name || seenInWorkout.has(ex.name)) return;
+        seenInWorkout.add(ex.name);
+        const entry = map.get(ex.name);
+        if (entry) entry.workoutCount += 1;
+      });
+    });
+
+    this.sessions.forEach((session) => {
+      const entry = map.get(session.exerciseName);
+      if (!entry) return;
+      entry.sessionCount += 1;
+      if (
+        !entry.lastSessionDate ||
+        new Date(session.date) > new Date(entry.lastSessionDate)
+      ) {
+        entry.lastSessionDate = session.date;
+      }
+    });
+
+    return map;
+  }
+
+  sortExerciseLibrary(list, usageMap) {
+    const sorted = [...list];
+    const byName = (a, b) => a.name.localeCompare(b.name);
+
+    switch (this.exerciseLibrarySort) {
+      case "muscle":
+        sorted.sort((a, b) => {
+          const ma = (a.muscle_group || "").toLowerCase();
+          const mb = (b.muscle_group || "").toLowerCase();
+          if (ma !== mb) return ma.localeCompare(mb);
+          return byName(a, b);
+        });
+        break;
+      case "most-used":
+        sorted.sort((a, b) => {
+          const ua = usageMap.get(a.name) || { workoutCount: 0, sessionCount: 0 };
+          const ub = usageMap.get(b.name) || { workoutCount: 0, sessionCount: 0 };
+          const scoreA = ua.workoutCount * 10 + ua.sessionCount;
+          const scoreB = ub.workoutCount * 10 + ub.sessionCount;
+          if (scoreB !== scoreA) return scoreB - scoreA;
+          return byName(a, b);
+        });
+        break;
+      case "recent":
+        sorted.sort((a, b) => {
+          const ua = usageMap.get(a.name)?.lastSessionDate || null;
+          const ub = usageMap.get(b.name)?.lastSessionDate || null;
+          if (ua && ub) return new Date(ub) - new Date(ua);
+          if (ua) return -1;
+          if (ub) return 1;
+          return byName(a, b);
+        });
+        break;
+      case "alpha":
+      default:
+        sorted.sort(byName);
+    }
+
+    return sorted;
+  }
+
+  slugifyMuscle(muscleGroup) {
+    if (!muscleGroup) return "other";
+    return muscleGroup
+      .toLowerCase()
+      .split(/[·,/&\s]+/)[0]
+      .replace(/[^a-z0-9]/g, "") || "other";
+  }
+
+  duplicateExercise(exercise) {
+    const base = `${exercise.name} (Copy)`;
+    let candidate = base;
+    let i = 2;
+    while (
+      this.exerciseLibrary.some(
+        (e) => e.name.toLowerCase() === candidate.toLowerCase(),
+      )
+    ) {
+      candidate = `${base} ${i++}`;
+    }
+
+    const copy = { ...exercise, name: candidate };
+    this.exerciseLibrary.push(copy);
+    this.saveExerciseLibrary();
+    this.renderExerciseLibrary();
+    this.renderExerciseSelector();
+    this.showSuccessMessage(`Exercise duplicated as "${candidate}"`);
   }
 
   matchesExerciseLibraryFilters(exercise) {
@@ -4960,6 +5203,8 @@ class WorkoutTracker {
     // Reset form
     document.getElementById("createWorkoutForm").reset();
     selectedCheckboxes.forEach((cb) => (cb.checked = false));
+    const section = document.getElementById("createWorkoutSection");
+    if (section) section.open = false;
 
     // Refresh displays
     this.renderWorkoutManager();
@@ -5331,68 +5576,224 @@ class WorkoutTracker {
 
   renderWorkoutManager() {
     const container = document.getElementById("workoutManager");
+    const statsEl = document.getElementById("workoutManagerStats");
+    if (!container) return;
 
     if (this.workouts.length === 0) {
-      container.innerHTML =
-        '<p class="exercise-selector-empty">No workouts yet. Create one above!</p>';
+      if (statsEl) statsEl.textContent = "";
+      container.innerHTML = `
+        <div class="management-empty">
+          <p class="management-empty-title">No workouts yet</p>
+          <p class="management-empty-body">Group your exercises into a workout so you can launch it in one tap.</p>
+          <button type="button" class="btn-primary" id="emptyWorkoutCta">+ Add workout</button>
+        </div>`;
+      const cta = document.getElementById("emptyWorkoutCta");
+      if (cta) {
+        cta.addEventListener("click", () => {
+          const section = document.getElementById("createWorkoutSection");
+          if (section) section.open = true;
+          document.getElementById("workoutName")?.focus();
+        });
+      }
       return;
+    }
+
+    const stats = this.getWorkoutStatsMap();
+    const sorted = this.sortWorkoutsForManager(stats);
+
+    if (statsEl) {
+      const total = this.workouts.length;
+      statsEl.textContent = `${total} workout${total === 1 ? "" : "s"}`;
     }
 
     container.innerHTML = "";
 
-    this.workouts.forEach((workout) => {
-      const item = document.createElement("div");
-      item.className = "workout-manager-item";
+    sorted.forEach((workout) => {
+      container.appendChild(this.createWorkoutManagerCard(workout, stats));
+    });
+  }
 
-      const header = document.createElement("div");
-      header.className = "workout-manager-header";
+  createWorkoutManagerCard(workout, statsMap) {
+    const stat = statsMap.get(workout.id) || {
+      sessionCount: 0,
+      lastDate: null,
+    };
 
-      const name = document.createElement("div");
-      name.className = "workout-manager-name";
-      name.textContent = workout.name;
+    const item = document.createElement("div");
+    item.className = "workout-manager-item";
+    if (workout.favorite) item.classList.add("is-favorite");
 
-      const actions = document.createElement("div");
-      actions.className = "workout-manager-actions";
+    const header = document.createElement("div");
+    header.className = "workout-manager-header";
 
-      const exportBtn = document.createElement("button");
-      exportBtn.className = "btn-secondary btn-sm";
-      exportBtn.type = "button"; // Prevent form submission/navigation
-      exportBtn.textContent = "Export";
-      exportBtn.addEventListener("click", () => {
-        this.exportWorkout(workout.id);
+    const headerMain = document.createElement("div");
+    headerMain.className = "workout-manager-heading";
+
+    const name = document.createElement("div");
+    name.className = "workout-manager-name";
+    name.textContent = workout.name;
+    if (workout.favorite) {
+      const star = document.createElement("span");
+      star.className = "workout-manager-favorite";
+      star.setAttribute("aria-label", "Favourite");
+      star.textContent = "★";
+      name.prepend(star);
+    }
+    headerMain.appendChild(name);
+
+    const summary = document.createElement("div");
+    summary.className = "workout-manager-summary";
+    const count = workout.exercises?.length || 0;
+    const summaryParts = [`${count} exercise${count === 1 ? "" : "s"}`];
+    if (stat.sessionCount > 0) {
+      summaryParts.push(
+        `${stat.sessionCount} session${stat.sessionCount === 1 ? "" : "s"}`,
+      );
+    }
+    if (stat.lastDate) {
+      summaryParts.push(`Last ${this.formatRelativeDay(stat.lastDate)}`);
+    } else {
+      summaryParts.push("Never run");
+    }
+    summary.textContent = summaryParts.join(" · ");
+    headerMain.appendChild(summary);
+
+    const muscles = this.getWorkoutMuscleGroups(workout);
+    if (muscles.length > 0) {
+      const badges = document.createElement("div");
+      badges.className = "workout-muscle-badges";
+      muscles.forEach((muscle) => {
+        const badge = document.createElement("span");
+        badge.className = "workout-muscle-badge";
+        badge.textContent = muscle;
+        badges.appendChild(badge);
       });
+      headerMain.appendChild(badges);
+    }
 
-      const editBtn = document.createElement("button");
-      editBtn.className = "btn-secondary btn-sm";
-      editBtn.type = "button"; // Prevent form submission/navigation
-      editBtn.textContent = "Edit";
-      editBtn.addEventListener("click", () => this.editWorkout(workout.id));
+    header.appendChild(headerMain);
 
-      const deleteBtn = document.createElement("button");
-      deleteBtn.className = "btn-delete";
-      deleteBtn.type = "button"; // Prevent form submission/navigation
-      deleteBtn.textContent = "Delete";
-      deleteBtn.addEventListener("click", () => this.deleteWorkout(workout.id));
+    const actions = document.createElement("div");
+    actions.className = "workout-manager-actions";
 
-      actions.appendChild(exportBtn);
-      actions.appendChild(editBtn);
-      actions.appendChild(deleteBtn);
+    const editBtn = document.createElement("button");
+    editBtn.className = "btn-secondary btn-sm";
+    editBtn.type = "button";
+    editBtn.textContent = "Edit";
+    editBtn.addEventListener("click", () => this.editWorkout(workout.id));
 
-      header.appendChild(name);
-      header.appendChild(actions);
+    const duplicateBtn = document.createElement("button");
+    duplicateBtn.className = "btn-secondary btn-sm";
+    duplicateBtn.type = "button";
+    duplicateBtn.textContent = "Duplicate";
+    duplicateBtn.addEventListener("click", () => this.duplicateWorkout(workout));
 
-      const exercises = document.createElement("ul");
-      exercises.className = "workout-manager-exercises";
+    const exportBtn = document.createElement("button");
+    exportBtn.className = "btn-soft btn-sm";
+    exportBtn.type = "button";
+    exportBtn.textContent = "Export";
+    exportBtn.addEventListener("click", () => this.exportWorkout(workout.id));
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "btn-delete";
+    deleteBtn.type = "button";
+    deleteBtn.textContent = "Delete";
+    deleteBtn.addEventListener("click", () => this.deleteWorkout(workout.id));
+
+    actions.appendChild(editBtn);
+    actions.appendChild(duplicateBtn);
+    actions.appendChild(exportBtn);
+    actions.appendChild(deleteBtn);
+
+    header.appendChild(actions);
+    item.appendChild(header);
+
+    if (count > 0) {
+      const exList = document.createElement("ul");
+      exList.className = "workout-manager-exercises";
       workout.exercises.forEach((exercise) => {
         const li = document.createElement("li");
         li.textContent = `${exercise.name} (${exercise.muscle_group})`;
-        exercises.appendChild(li);
+        exList.appendChild(li);
       });
+      item.appendChild(exList);
+    }
 
-      item.appendChild(header);
-      item.appendChild(exercises);
-      container.appendChild(item);
+    return item;
+  }
+
+  getWorkoutStatsMap() {
+    const map = new Map();
+    this.workouts.forEach((workout) => {
+      map.set(workout.id, { sessionCount: 0, lastDate: null });
     });
+
+    // Count distinct session dates per workout
+    const dateSets = new Map();
+    this.sessions.forEach((session) => {
+      if (!map.has(session.workoutId)) return;
+      const dayKey = this.getLocalDateKey(new Date(session.date));
+      if (!dateSets.has(session.workoutId)) {
+        dateSets.set(session.workoutId, new Set());
+      }
+      dateSets.get(session.workoutId).add(dayKey);
+
+      const entry = map.get(session.workoutId);
+      if (!entry.lastDate || new Date(session.date) > new Date(entry.lastDate)) {
+        entry.lastDate = session.date;
+      }
+    });
+
+    dateSets.forEach((set, workoutId) => {
+      const entry = map.get(workoutId);
+      if (entry) entry.sessionCount = set.size;
+    });
+
+    // Fold in workout history entries too (explicit finishes)
+    this.workoutHistory.forEach((entry) => {
+      const stat = map.get(entry.workoutId);
+      if (!stat) return;
+      if (!stat.lastDate || new Date(entry.date) > new Date(stat.lastDate)) {
+        stat.lastDate = entry.date;
+      }
+    });
+
+    return map;
+  }
+
+  sortWorkoutsForManager(statsMap) {
+    const sorted = [...this.workouts];
+    const byName = (a, b) => a.name.localeCompare(b.name);
+
+    switch (this.workoutManagerSort) {
+      case "alpha":
+        sorted.sort(byName);
+        break;
+      case "recent":
+        sorted.sort((a, b) => {
+          const la = statsMap.get(a.id)?.lastDate || null;
+          const lb = statsMap.get(b.id)?.lastDate || null;
+          if (la && lb) return new Date(lb) - new Date(la);
+          if (la) return -1;
+          if (lb) return 1;
+          return byName(a, b);
+        });
+        break;
+      case "size":
+        sorted.sort((a, b) => {
+          const diff = (b.exercises?.length || 0) - (a.exercises?.length || 0);
+          return diff !== 0 ? diff : byName(a, b);
+        });
+        break;
+      case "favorite":
+      default:
+        sorted.sort((a, b) => {
+          if (!!b.favorite !== !!a.favorite) return b.favorite ? 1 : -1;
+          return byName(a, b);
+        });
+    }
+
+    return sorted;
   }
 
   // ============================================

@@ -19,7 +19,7 @@
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <link rel="apple-touch-icon" href="favicon.svg" />
     <link rel="manifest" href="manifest.webmanifest" />
-    <link rel="stylesheet" href="styles.css?v=1.17.1" />
+    <link rel="stylesheet" href="styles.css?v=1.18.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -1052,8 +1052,20 @@
 
           <!-- Exercises Tab -->
           <div id="exercisesTab" class="management-tab-content active">
-            <div class="management-section">
-              <h3 class="management-section-title">Create New Exercise</h3>
+            <details id="createExerciseSection" class="management-section management-section-collapsible">
+              <summary class="management-section-summary">
+                <span class="summary-label">
+                  <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14" />
+                  </svg>
+                  New exercise
+                </span>
+                <span class="summary-chevron" aria-hidden="true">
+                  <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6" />
+                  </svg>
+                </span>
+              </summary>
               <form id="createExerciseForm" class="management-form">
                 <div class="form-group">
                   <label for="exerciseName">Exercise Name *</label>
@@ -1140,10 +1152,24 @@
                   Create Exercise
                 </button>
               </form>
-            </div>
+            </details>
 
             <div class="management-section">
-              <h3 class="management-section-title">All Exercises</h3>
+              <div class="management-list-header">
+                <h3 class="management-section-title">All Exercises</h3>
+                <div class="management-list-meta">
+                  <span id="exerciseLibraryStats" class="list-stats"></span>
+                  <label class="sort-control">
+                    <span class="sort-control-label">Sort</span>
+                    <select id="exerciseLibrarySort" class="sort-select">
+                      <option value="alpha">A–Z</option>
+                      <option value="muscle">By muscle</option>
+                      <option value="most-used">Most used</option>
+                      <option value="recent">Recently used</option>
+                    </select>
+                  </label>
+                </div>
+              </div>
               <div class="exercise-filters" id="exerciseLibraryFilters">
                 <input
                   type="text"
@@ -1238,8 +1264,20 @@
 
           <!-- Workouts Tab -->
           <div id="workoutsTab" class="management-tab-content">
-            <div class="management-section">
-              <h3 class="management-section-title">Create New Workout</h3>
+            <details id="createWorkoutSection" class="management-section management-section-collapsible">
+              <summary class="management-section-summary">
+                <span class="summary-label">
+                  <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14" />
+                  </svg>
+                  New workout
+                </span>
+                <span class="summary-chevron" aria-hidden="true">
+                  <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6" />
+                  </svg>
+                </span>
+              </summary>
               <form id="createWorkoutForm" class="management-form">
                 <div class="form-group">
                   <label for="workoutName">Workout Name *</label>
@@ -1358,10 +1396,24 @@
                   Create Workout
                 </button>
               </form>
-            </div>
+            </details>
 
             <div class="management-section">
-              <h3 class="management-section-title">Your Workouts</h3>
+              <div class="management-list-header">
+                <h3 class="management-section-title">Your Workouts</h3>
+                <div class="management-list-meta">
+                  <span id="workoutManagerStats" class="list-stats"></span>
+                  <label class="sort-control">
+                    <span class="sort-control-label">Sort</span>
+                    <select id="workoutManagerSort" class="sort-select">
+                      <option value="favorite">Favourites first</option>
+                      <option value="alpha">A–Z</option>
+                      <option value="recent">Recently done</option>
+                      <option value="size">Most exercises</option>
+                    </select>
+                  </label>
+                </div>
+              </div>
               <div id="workoutManager" class="workout-manager"></div>
             </div>
           </div>
@@ -1986,6 +2038,6 @@
       </div>
     </div>
 
-    <script src="app.js?v=1.17.1"></script>
+    <script src="app.js?v=1.18.0"></script>
   </body>
 </html>
