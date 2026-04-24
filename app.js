@@ -1682,16 +1682,18 @@ class WorkoutTracker {
     }));
 
     if (persisted?.exercises?.length) {
-      // Reconcile the persisted draft with the current workout definition so
-      // edits to the workout (add / remove / reorder exercises) are reflected
-      // on the detail screen. The draft itself doesn't store per-set progress
-      // (sets live in this.sessions keyed by date + exercise name), so it is
-      // safe to rebuild the exercise list from the workout.
+      // Reconcile the persisted draft with the current workout template so
+      // template edits (add/remove/reorder via Manage) are reflected, while
+      // exercises the user added to this specific session are preserved.
+      const templateNames = new Set(workoutExercises.map((e) => e.name));
+      const sessionAddedExercises = persisted.exercises.filter(
+        (e) => e.sessionAdded && !templateNames.has(e.name),
+      );
       this.currentSession = {
         ...persisted,
         workoutId: workout.id,
         workoutName: workout.name,
-        exercises: workoutExercises,
+        exercises: [...workoutExercises, ...sessionAddedExercises],
       };
     } else {
       this.currentSession = this.createSessionFromWorkout(workout);
@@ -2089,7 +2091,7 @@ class WorkoutTracker {
       return;
     }
 
-    this.currentSession.exercises.push({ ...exercise });
+    this.currentSession.exercises.push({ ...exercise, sessionAdded: true });
     this.renderExerciseList();
     this.updateSessionChecklist(this.currentWorkout);
     this.persistCurrentSession();
