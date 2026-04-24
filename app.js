@@ -2400,6 +2400,7 @@ class WorkoutTracker {
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v10"/>
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8 11l4 4 4-4"/>
                         </svg>
+                        <span class="fill-label">Fill reps ↓</span>
                     </button>
                 </div>
             </div>
@@ -2428,6 +2429,7 @@ class WorkoutTracker {
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v10"/>
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8 11l4 4 4-4"/>
                         </svg>
+                        <span class="fill-label">Fill weight ↓</span>
                     </button>
                 </div>
             </div>
@@ -2464,6 +2466,11 @@ class WorkoutTracker {
     row.querySelector(".btn-remove").addEventListener("click", () => {
       row.remove();
       this.renumberPairedSets(exerciseNum);
+    });
+
+    // Tap set label to mark the set done (visual only, not persisted)
+    row.querySelector(".set-label").addEventListener("click", () => {
+      row.classList.toggle("set-done");
     });
 
     // Add event listeners for fill-down buttons
@@ -2806,6 +2813,7 @@ class WorkoutTracker {
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v10"/>
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8 11l4 4 4-4"/>
                         </svg>
+                        <span class="fill-label">Fill reps ↓</span>
                     </button>
                 </div>
             </div>
@@ -2833,6 +2841,7 @@ class WorkoutTracker {
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v10"/>
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8 11l4 4 4-4"/>
                         </svg>
+                        <span class="fill-label">Fill weight ↓</span>
                     </button>
                 </div>
             </div>
@@ -2874,6 +2883,11 @@ class WorkoutTracker {
     row.querySelector(".btn-remove").addEventListener("click", () => {
       row.remove();
       this.renumberSets();
+    });
+
+    // Tap set label to mark the set done (visual only, not persisted)
+    row.querySelector(".set-label").addEventListener("click", () => {
+      row.classList.toggle("set-done");
     });
 
     // Add event listeners for fill-down buttons
