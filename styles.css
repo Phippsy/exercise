@@ -823,6 +823,10 @@ button {
   margin-left: 4px;
 }
 
+.fill-label {
+  display: none;
+}
+
 .btn-remove {
   border-color: var(--color-danger);
   color: var(--color-danger);
@@ -2495,6 +2499,19 @@ button {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
   color: var(--text-muted);
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.15s;
+}
+
+.set-done {
+  opacity: 0.45;
+}
+
+.set-done .set-label {
+  color: var(--color-success);
+  text-decoration: line-through;
+  opacity: 1;
 }
 
 .input-group {
@@ -3174,9 +3191,32 @@ input[type="number"]::-webkit-outer-spin-button {
     display: none;
   }
 
-  /* Hide fill-down on narrow screens to free up room for the inputs. */
+  /* Fill-down: wrap below the −/input/+ row so it's accessible on mobile. */
+  .set-row .input-with-controls {
+    flex-wrap: wrap;
+  }
+
   .set-row .btn-fill-down {
-    display: none;
+    display: flex;
+    order: 10;
+    width: 100%;
+    height: 26px;
+    min-height: 26px;
+    margin: 3px 0 0;
+    gap: 4px;
+    font-size: 10px;
+    color: var(--text-muted);
+    background: transparent;
+    border-color: var(--border-subtle);
+  }
+
+  .set-row .btn-fill-down:active {
+    background-color: var(--state-hover);
+  }
+
+  .fill-label {
+    display: inline;
+    letter-spacing: 0.02em;
   }
 
   .input-group {
@@ -3215,10 +3255,6 @@ input[type="number"]::-webkit-outer-spin-button {
     min-width: 36px;
     min-height: 38px;
     flex-shrink: 0;
-  }
-
-  .btn-fill-down {
-    margin-left: 0;
   }
 
   /* Form actions */
