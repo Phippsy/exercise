@@ -2930,9 +2930,14 @@ input[type="number"]::-webkit-outer-spin-button {
       );
   }
 
-  /* Keep header visible at top without covering content */
+  /* Keep header visible at top without covering content. Preserve the
+     iOS safe-area inset so PWA users on devices with a notch / Dynamic
+     Island don't see the header obscured. */
   .app-header {
-    padding: var(--spacing-sm);
+    padding: calc(var(--spacing-sm) + env(safe-area-inset-top))
+      calc(var(--spacing-sm) + env(safe-area-inset-right))
+      var(--spacing-sm)
+      calc(var(--spacing-sm) + env(safe-area-inset-left));
   }
 
   .header-top {

@@ -1684,16 +1684,27 @@ class WorkoutTracker {
     if (persisted?.exercises?.length) {
       // Reconcile the persisted draft with the current workout template so
       // template edits (add/remove/reorder via Manage) are reflected, while
-      // exercises the user added to this specific session are preserved.
-      const templateNames = new Set(workoutExercises.map((e) => e.name));
+      // exercises the user added or removed in this specific session are preserved.
+      const liveTemplateNames = new Set(workoutExercises.map((e) => e.name));
+      const persistedRemovedNames = persisted.removedTemplateNames || [];
+      // Drop stale removal entries for templates that no longer exist
+      // (e.g. the user later removed the exercise from the template via Manage).
+      const removedTemplateNames = persistedRemovedNames.filter((name) =>
+        liveTemplateNames.has(name),
+      );
+      const removedTemplateNameSet = new Set(removedTemplateNames);
+      const visibleTemplateExercises = workoutExercises.filter(
+        (e) => !removedTemplateNameSet.has(e.name),
+      );
       const sessionAddedExercises = persisted.exercises.filter(
-        (e) => e.sessionAdded && !templateNames.has(e.name),
+        (e) => e.sessionAdded && !liveTemplateNames.has(e.name),
       );
       this.currentSession = {
         ...persisted,
         workoutId: workout.id,
         workoutName: workout.name,
-        exercises: [...workoutExercises, ...sessionAddedExercises],
+        exercises: [...visibleTemplateExercises, ...sessionAddedExercises],
+        removedTemplateNames,
       };
     } else {
       this.currentSession = this.createSessionFromWorkout(workout);
@@ -1711,6 +1722,7 @@ class WorkoutTracker {
       exercises: (this.currentSession.exercises || []).map((exercise) => ({
         ...exercise,
       })),
+      removedTemplateNames: [...(this.currentSession.removedTemplateNames || [])],
       updatedAt: new Date().toISOString(),
     };
 
@@ -1986,13 +1998,20 @@ class WorkoutTracker {
 
   removeExerciseFromSession(index) {
     if (!this.currentSession?.exercises) return;
-    const removed = this.currentSession.exercises.splice(index, 1);
+    const [removed] = this.currentSession.exercises.splice(index, 1);
+    if (removed && !removed.sessionAdded) {
+      // Persist the removal so it survives navigation away/back; otherwise
+      // setCurrentSessionForWorkout would re-add it from the template.
+      const tracked = new Set(this.currentSession.removedTemplateNames || []);
+      tracked.add(removed.name);
+      this.currentSession.removedTemplateNames = [...tracked];
+    }
     this.renderExerciseList();
     this.updateSessionChecklist(this.currentWorkout);
     this.persistCurrentSession();
-    if (removed[0]) {
+    if (removed) {
       this.showSuccessMessage(
-        `${removed[0].name} removed from this session only`,
+        `${removed.name} removed from this session only`,
       );
     }
   }
@@ -2092,6 +2111,15 @@ class WorkoutTracker {
     }
 
     this.currentSession.exercises.push({ ...exercise, sessionAdded: true });
+    // If this exercise was previously removed from the template in this
+    // session, clear it from the removed-list so the template version is
+    // restored on the next reconcile (rather than being filtered out twice).
+    if (this.currentSession.removedTemplateNames?.includes(exercise.name)) {
+      this.currentSession.removedTemplateNames =
+        this.currentSession.removedTemplateNames.filter(
+          (name) => name !== exercise.name,
+        );
+    }
     this.renderExerciseList();
     this.updateSessionChecklist(this.currentWorkout);
     this.persistCurrentSession();
