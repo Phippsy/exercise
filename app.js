@@ -65,7 +65,7 @@ class WorkoutTracker {
       localStorage.getItem("driveLastLocalChange") || "";
     this.driveLastRemoteDevice =
       localStorage.getItem("driveLastRemoteDevice") || "";
-    this.driveAccessToken = null;
+    this.driveAccessToken = sessionStorage.getItem("driveAccessToken") || null;
     this.driveTokenClient = null;
     this.driveRemoteInfo = null;
     this.driveIsBusy = false;
@@ -7595,6 +7595,7 @@ class WorkoutTracker {
           return;
         }
         this.driveAccessToken = resp.access_token;
+        sessionStorage.setItem("driveAccessToken", resp.access_token);
         if (interactive) {
           this.showSuccessMessage("Connected to Google Drive");
         }
@@ -7625,6 +7626,7 @@ class WorkoutTracker {
       } catch (_) {}
     }
     this.driveAccessToken = null;
+    sessionStorage.removeItem("driveAccessToken");
     this.driveRemoteInfo = null;
     this.renderDriveSyncUI();
   }
@@ -7640,6 +7642,7 @@ class WorkoutTracker {
     });
     if (resp.status === 401) {
       this.driveAccessToken = null;
+      sessionStorage.removeItem("driveAccessToken");
       throw new Error("Session expired — sign in again");
     }
     if (!resp.ok) {
@@ -8066,7 +8069,28 @@ class WorkoutTracker {
   }
 
   async _driveAutoOpenInit() {
-    if (!this.driveClientId || !this.driveAutoPull) return;
+    if (!this.driveClientId || (!this.driveAutoPull && !this.driveAutoSync))
+      return;
+
+    if (this.driveAccessToken) {
+      try {
+        await this.driveRefreshRemote();
+        const state = this.computeSyncState();
+        if (state.kind === "pull" && this.driveAutoPull) {
+          await this.drivePull({ confirm: false });
+        } else if (state.kind === "push" && this.driveAutoSync) {
+          await this.drivePush();
+        } else if (state.kind === "conflict" && this.driveAutoSync) {
+          await this.driveMerge();
+        }
+        this.renderDriveSyncUI();
+        return;
+      } catch (_) {
+        this.driveAccessToken = null;
+        sessionStorage.removeItem("driveAccessToken");
+      }
+    }
+
     const ok = await this._waitForGis(8000);
     if (!ok) return;
     if (!this._driveInitTokenClient()) return;
@@ -8074,6 +8098,7 @@ class WorkoutTracker {
       this.driveTokenClient.callback = (resp) => {
         if (resp.error) return resolve(false);
         this.driveAccessToken = resp.access_token;
+        sessionStorage.setItem("driveAccessToken", resp.access_token);
         resolve(true);
       };
       this.driveTokenClient.error_callback = () => resolve(false);
@@ -8086,8 +8111,12 @@ class WorkoutTracker {
     if (!signedIn) return;
     await this.driveRefreshRemote();
     const state = this.computeSyncState();
-    if (state.kind === "pull") {
+    if (state.kind === "pull" && this.driveAutoPull) {
       await this.drivePull({ confirm: false });
+    } else if (state.kind === "push" && this.driveAutoSync) {
+      await this.drivePush();
+    } else if (state.kind === "conflict" && this.driveAutoSync) {
+      await this.driveMerge();
     }
     this.renderDriveSyncUI();
   }
@@ -8102,6 +8131,7 @@ class WorkoutTracker {
         this.driveTokenClient.callback = (resp) => {
           if (resp.error) return resolve(false);
           this.driveAccessToken = resp.access_token;
+          sessionStorage.setItem("driveAccessToken", resp.access_token);
           resolve(true);
         };
         this.driveTokenClient.error_callback = () => resolve(false);
@@ -8295,6 +8325,7 @@ class WorkoutTracker {
         localStorage.setItem("driveClientId", this.driveClientId);
         this.driveTokenClient = null;
         this.driveAccessToken = null;
+        sessionStorage.removeItem("driveAccessToken");
         this.driveRemoteInfo = null;
         this.renderDriveSyncUI();
       });
@@ -8329,7 +8360,18 @@ class WorkoutTracker {
       });
     document
       .getElementById("drivePushBtn")
-      ?.addEventListener("click", () => this.drivePush());
+      ?.addEventListener("click", async () => {
+        const state = this.computeSyncState();
+        if (state.kind === "conflict") {
+          const ok = confirm(
+            "Drive has newer changes from another device.\n\nPush anyway? This will overwrite the Drive copy with your local data.",
+          );
+          if (!ok) return;
+          await this.drivePush({ skipConflictCheck: true });
+        } else {
+          await this.drivePush();
+        }
+      });
     document
       .getElementById("drivePullBtn")
       ?.addEventListener("click", () => this.drivePull({ confirm: true }));
