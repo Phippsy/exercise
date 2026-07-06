@@ -68,15 +68,18 @@
   --state-selected: rgba(143, 109, 191, 0.16);
   --state-disabled-bg: rgba(255, 255, 255, 0.04);
 
-  /* Typography — Geist for UI, Instrument Serif for display, Geist Mono for numbers */
+  /* Typography — one type family for cohesion.
+     Geist for everything, tighter tracking + heavier weight for display.
+     Geist Mono for numbers/data (sets, reps, weights, counts). */
   --font-sans:
     "Geist", "Geist Fallback", -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
-  --font-serif:
-    "Instrument Serif", "Iowan Old Style", "Palatino", Georgia, serif;
+  --font-display: var(--font-sans);
   --font-mono:
     "Geist Mono", "SF Mono", "JetBrains Mono", ui-monospace, Menlo, monospace;
   --font-family: var(--font-sans);
+  /* Legacy alias kept so any lingering reference still resolves. */
+  --font-serif: var(--font-display);
 
   --font-size-xs: 11px;
   --font-size-sm: 12px;
@@ -285,11 +288,13 @@ input[type="checkbox"],
   padding: calc(10px + env(safe-area-inset-top))
     calc(14px + env(safe-area-inset-right)) 10px
     calc(14px + env(safe-area-inset-left));
-  background: var(--bg-surface);
+  background: color-mix(in oklab, var(--bg-surface) 92%, transparent);
   border-bottom: 1px solid var(--border-subtle);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  box-shadow:
+    0 1px 0 color-mix(in oklab, var(--color-accent) 6%, transparent),
+    0 6px 24px rgba(20, 15, 40, 0.10);
 }
 
 .header-top {
@@ -340,12 +345,14 @@ input[type="checkbox"],
 }
 
 .app-title {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-medium);
-  line-height: var(--line-height-tight);
-  color: var(--text-secondary);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.2;
+  letter-spacing: -0.008em;
+  color: var(--text-muted);
   margin-bottom: 0;
-  opacity: 0.7;
+  opacity: 0.85;
 }
 
 .header-context-row {
@@ -360,11 +367,11 @@ input[type="checkbox"],
 
 .header-context-title {
   color: var(--color-accent);
-  font-family: var(--font-serif);
-  font-size: 30px;
-  font-weight: 400;
-  letter-spacing: -0.02em;
-  line-height: 1.05;
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.015em;
+  line-height: 1.15;
   flex: 1;
   min-width: 0;
   overflow-wrap: anywhere;
@@ -439,10 +446,10 @@ input[type="checkbox"],
   cursor: text;
   border-bottom: 1px dashed transparent;
   color: var(--color-accent);
-  font-family: var(--font-serif);
-  font-size: 1.1em;
-  font-weight: 400;
-  letter-spacing: -0.02em;
+  font-family: var(--font-display);
+  font-size: 1.05em;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.015em;
 }
 
 .workout-name-editable:not(:focus) {
@@ -504,10 +511,10 @@ input[type="checkbox"],
 }
 
 .workouts-section-title {
-  font-family: var(--font-serif);
-  font-size: 30px;
-  font-weight: 400;
-  letter-spacing: -0.02em;
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.015em;
   color: var(--text-primary);
   margin-bottom: var(--spacing-md);
   margin-top: var(--spacing-xl);
@@ -574,11 +581,11 @@ input[type="checkbox"],
 }
 
 .section-title {
-  font-family: var(--font-serif);
-  font-size: 32px;
-  font-weight: 400;
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: var(--font-weight-bold);
   letter-spacing: -0.02em;
-  line-height: 1.05;
+  line-height: 1.1;
   margin-bottom: var(--spacing-sm);
 }
 
@@ -642,18 +649,24 @@ input[type="checkbox"],
 }
 
 .workout-notes {
-  margin-top: var(--spacing-sm);
-  padding: var(--spacing-md);
-  background-color: var(--bg-surface-subtle);
-  border-left: 3px solid var(--color-primary);
-  border-radius: var(--radius-sm);
+  margin-top: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: linear-gradient(
+    145deg,
+    color-mix(in oklab, var(--color-accent) 8%, var(--bg-surface)),
+    var(--bg-surface)
+  );
+  border: 1px solid color-mix(in oklab, var(--color-accent) 24%, var(--border-subtle));
+  border-left: 3px solid var(--color-accent);
+  border-radius: var(--radius-md);
+  box-shadow: var(--elevation-low);
 }
 
 .workout-notes p {
-  color: var(--text-muted);
-  font-size: var(--font-size-sm);
-  line-height: var(--line-height-relaxed);
-  font-style: italic;
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1.55;
   margin: 0;
 }
 
@@ -808,12 +821,15 @@ button {
   bottom: 70px;
   left: 0;
   right: 0;
-  padding: 8px 14px;
-  background: var(--bg-surface);
+  padding: 10px 14px;
+  background: color-mix(in oklab, var(--bg-surface) 92%, transparent);
   border-top: 1px solid var(--border-subtle);
-  backdrop-filter: blur(14px);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
   z-index: 19;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 -1px 0 color-mix(in oklab, var(--color-accent) 6%, transparent),
+    0 -6px 24px rgba(20, 15, 40, 0.12);
 }
 
 .bottom-back-bar-content {
@@ -928,12 +944,12 @@ button {
 }
 
 .card-title {
-  font-family: var(--font-serif);
-  font-size: 24px;
-  font-weight: 400;
-  letter-spacing: -0.015em;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.008em;
   margin-bottom: var(--spacing-md);
-  line-height: 1.15;
+  line-height: 1.25;
 }
 
 .card-title-sm {
@@ -984,11 +1000,12 @@ button {
 }
 
 .quote-text {
-  font-family: var(--font-serif);
-  font-size: 22px;
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: var(--font-weight-medium);
   font-style: italic;
-  line-height: 1.35;
-  letter-spacing: -0.01em;
+  line-height: 1.5;
+  letter-spacing: -0.005em;
   margin: 0 0 var(--spacing-sm);
   color: var(--text-primary);
   text-wrap: balance;
@@ -996,11 +1013,11 @@ button {
 
 .quote-mark {
   color: color-mix(in oklab, var(--color-accent) 65%, var(--text-muted));
-  font-family: var(--font-serif);
-  font-size: 1.15em;
+  font-family: var(--font-display);
+  font-size: 1.05em;
   padding: 0 2px;
   font-style: normal;
-  font-weight: 400;
+  font-weight: var(--font-weight-semibold);
 }
 
 .quote-attribution {
@@ -1089,22 +1106,27 @@ button {
 }
 
 .pill {
-  padding: 6px 10px;
+  padding: 4px 10px;
   border-radius: var(--radius-pill);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.005em;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  line-height: 1.4;
 }
 
 .pill-soft {
-  background-color: var(--state-hover);
+  background-color: color-mix(in oklab, var(--color-accent) 10%, var(--bg-surface));
   color: var(--text-primary);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid color-mix(in oklab, var(--color-accent) 20%, var(--border-subtle));
 }
 
 .pill-success {
-  background-color: rgba(123, 153, 60, 0.2);
+  background-color: color-mix(in oklab, var(--color-success) 15%, transparent);
   color: var(--color-success);
-  border: 1px solid rgba(123, 153, 60, 0.6);
+  border: 1px solid color-mix(in oklab, var(--color-success) 40%, transparent);
 }
 
 .insight-meta {
@@ -1118,11 +1140,17 @@ button {
   color: var(--text-muted);
   font-size: var(--font-size-xs);
   margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: var(--font-weight-semibold);
 }
 
 .insight-value {
+  font-family: var(--font-mono);
   font-weight: var(--font-weight-semibold);
-  font-size: var(--font-size-md);
+  font-size: 18px;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
 }
 
 .exercise-insight-card {
@@ -1175,11 +1203,11 @@ button {
 }
 
 .workout-card-title {
-  font-family: var(--font-serif);
-  font-size: var(--font-size-xl);
-  font-weight: 400;
-  letter-spacing: -0.015em;
-  line-height: 1.15;
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.012em;
+  line-height: 1.25;
   margin-bottom: var(--spacing-sm);
   color: var(--text-primary);
   text-wrap: balance;
@@ -1433,14 +1461,20 @@ button {
 }
 
 .exercise-item-name {
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-medium);
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
   margin-bottom: var(--spacing-xs);
+  line-height: 1.3;
 }
 
 .exercise-item-meta {
+  font-family: var(--font-mono);
   font-size: var(--font-size-sm);
   color: var(--text-muted);
+  letter-spacing: -0.005em;
 }
 
 .exercise-muscle-badges {
@@ -1506,37 +1540,51 @@ button {
 }
 
 .reorder-btn {
-  background: var(--bg-surface-subtle);
+  background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
-  padding: 4px;
-  color: var(--text-secondary);
+  padding: 6px;
+  color: var(--text-muted);
+  min-width: 32px;
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   transition:
-    background-color 0.15s var(--ease-standard),
-    border-color 0.15s var(--ease-standard),
-    color 0.15s var(--ease-standard);
+    background-color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard);
 }
 
 .reorder-btn:hover {
-  background: var(--bg-surface-strong);
+  background: var(--bg-surface-subtle);
   border-color: var(--border-strong);
   color: var(--text-primary);
 }
 
+.reorder-btn:active {
+  transform: scale(0.94);
+}
+
 .reorder-btn.danger {
-  border-color: rgba(239, 68, 68, 0.4);
-  color: #ef4444;
+  border-color: color-mix(in oklab, var(--color-danger) 35%, transparent);
+  color: var(--color-danger);
 }
 
 .reorder-btn.danger:hover {
-  background: rgba(239, 68, 68, 0.08);
-  border-color: rgba(239, 68, 68, 0.6);
-  color: #dc2626;
+  background: color-mix(in oklab, var(--color-danger) 10%, transparent);
+  border-color: var(--color-danger);
 }
 
 .reorder-btn:disabled {
-  opacity: 0.6;
+  opacity: 0.4;
   cursor: not-allowed;
+}
+
+.reorder-btn:focus-visible {
+  outline: 2px solid var(--state-focus);
+  outline-offset: 2px;
 }
 
 /* ============================================
@@ -1596,9 +1644,11 @@ button {
 }
 
 .paired-exercise-title {
-  font-size: var(--font-size-lg);
+  font-family: var(--font-display);
+  font-size: 18px;
   font-weight: var(--font-weight-semibold);
-  line-height: var(--line-height-tight);
+  letter-spacing: -0.012em;
+  line-height: 1.2;
   overflow-wrap: anywhere;
 }
 
@@ -1624,7 +1674,7 @@ button {
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 1000;
+  z-index: 10000;
   display: flex;
   align-items: flex-start;
   justify-content: flex-end;
@@ -1649,18 +1699,25 @@ button {
 .management-panel {
   position: relative;
   width: 100%;
-  max-width: 600px;
-  height: 100dvh; /* dvh respects iOS dynamic viewport */
-  height: 100vh; /* fallback for older browsers */
-  background-color: var(--bg-surface);
+  max-width: 640px;
+  height: 100dvh;
+  height: 100vh;
+  background: var(--bg-page);
+  background-image:
+    radial-gradient(
+      900px circle at 100% 0%,
+      color-mix(in oklab, var(--color-accent) 10%, transparent),
+      transparent 55%
+    );
   border-left: 1px solid var(--border-subtle);
   display: flex;
   flex-direction: column;
-  animation: slideInRight 0.3s var(--ease-standard);
+  animation: slideInRight 0.3s var(--ease-out-soft);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
   z-index: 2;
+  box-shadow: -20px 0 60px rgba(20, 15, 40, 0.35);
 }
 
 @supports (height: 100dvh) {
@@ -1693,8 +1750,11 @@ button {
 }
 
 .management-title {
-  font-size: var(--font-size-xl);
+  font-family: var(--font-display);
+  font-size: 24px;
   font-weight: var(--font-weight-bold);
+  letter-spacing: -0.015em;
+  line-height: 1.15;
 }
 
 .btn-close {
@@ -1706,43 +1766,74 @@ button {
   min-width: 44px; /* iOS minimum touch target */
   min-height: 44px;
   padding: 0;
-  background-color: var(--bg-surface-subtle);
-  color: var(--text-primary);
+  background-color: var(--bg-surface);
+  color: var(--text-muted);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   cursor: pointer;
-  transition: all 0.15s var(--ease-standard);
+  transition:
+    transform var(--duration-fast) var(--ease-standard),
+    background-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard);
 }
 
 .btn-close:hover {
-  background-color: var(--state-hover);
+  background-color: var(--bg-surface-subtle);
   color: var(--text-primary);
+  border-color: var(--border-strong);
+}
+
+.btn-close:active {
+  transform: scale(0.96);
+}
+
+.btn-close:focus-visible {
+  outline: 2px solid var(--state-focus);
+  outline-offset: 3px;
 }
 
 .management-tabs {
   display: flex;
   border-bottom: 1px solid var(--border-subtle);
   background-color: var(--bg-surface);
-  flex-shrink: 0; /* never collapse */
+  flex-shrink: 0;
   z-index: 9;
+  padding: 0 4px;
+  gap: 2px;
 }
 
 .management-tab {
   flex: 1;
-  padding: var(--spacing-md) var(--spacing-lg);
+  padding: 14px 12px;
   background-color: transparent;
   color: var(--text-muted);
   border: none;
   border-bottom: 2px solid transparent;
+  font-family: var(--font-sans);
   font-size: var(--font-size-base);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.005em;
   cursor: pointer;
-  transition: all 0.15s var(--ease-standard);
+  transition:
+    color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-base) var(--ease-out-soft),
+    background-color var(--duration-fast) var(--ease-standard);
+  position: relative;
 }
 
 .management-tab:hover {
   color: var(--text-primary);
   background-color: var(--state-hover);
+}
+
+.management-tab:active {
+  transform: scale(0.98);
+}
+
+.management-tab:focus-visible {
+  outline: 2px solid var(--state-focus);
+  outline-offset: -2px;
+  border-radius: 4px;
 }
 
 .management-tab.active {
@@ -1769,18 +1860,22 @@ button {
 }
 
 .management-section-title {
-  font-size: var(--font-size-lg);
+  font-family: var(--font-display);
+  font-size: 22px;
   font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.012em;
   margin-bottom: var(--spacing-md);
   padding-bottom: var(--spacing-sm);
   border-bottom: 1px solid var(--border-subtle);
+  line-height: 1.2;
 }
 
 .section-subtext {
   color: var(--text-muted);
   font-size: var(--font-size-sm);
-  line-height: 1.6;
+  line-height: 1.55;
   margin-bottom: var(--spacing-md);
+  max-width: 62ch;
 }
 
 .coach-summary-actions {
@@ -1799,10 +1894,15 @@ button {
   border: 1px solid var(--border-subtle);
   background: var(--bg-subtle);
   color: var(--text-primary);
-  font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: var(--font-size-sm);
-  line-height: 1.5;
+  line-height: 1.55;
   resize: vertical;
+  /* Disable ligatures + contextual alternates so hyphens don't render as
+     en/em dashes (Geist Mono and SF Mono both do this by default). */
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "clig" 0, "calt" 0;
+  -webkit-font-feature-settings: "liga" 0, "clig" 0, "calt" 0;
 }
 
 /* ── Google Sheets Sync Tab ── */
@@ -1811,20 +1911,47 @@ button {
   margin-bottom: var(--spacing-md);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: 12px var(--spacing-md);
   background: var(--bg-subtle);
 }
 
 .sync-setup-guide summary {
   cursor: pointer;
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-semibold);
   font-size: var(--font-size-sm);
-  color: var(--text-secondary);
+  color: var(--text-primary);
   user-select: none;
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: -0.005em;
+}
+
+.sync-setup-guide summary::-webkit-details-marker,
+.sync-setup-guide summary::marker {
+  display: none;
+  content: "";
+}
+
+.sync-setup-guide summary::before {
+  content: "";
+  width: 0;
+  height: 0;
+  border-left: 5px solid currentColor;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  transition: transform var(--duration-base) var(--ease-out-soft);
+  transform-origin: 25% 50%;
+}
+
+.sync-setup-guide[open] summary::before {
+  transform: rotate(90deg);
 }
 
 .sync-setup-guide summary:hover {
-  color: var(--text-primary);
+  color: var(--color-accent);
 }
 
 .sync-steps {
@@ -1991,33 +2118,53 @@ button {
 }
 
 .muscle-filter-btn {
-  padding: var(--spacing-xs) var(--spacing-sm);
+  padding: 5px 11px;
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-medium);
   border-radius: var(--radius-pill);
-  background-color: var(--bg-surface);
+  background-color: transparent;
   color: var(--text-muted);
   border: 1px solid var(--border-subtle);
   cursor: pointer;
-  transition: all 0.15s var(--ease-standard);
+  transition:
+    color var(--duration-fast) var(--ease-standard),
+    background-color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard);
   white-space: nowrap;
+  min-height: 30px;
 }
 
 .muscle-filter-btn:hover {
-  background-color: var(--state-hover);
+  color: var(--text-primary);
   border-color: var(--border-strong);
 }
 
-.muscle-filter-btn.active {
-  background-color: var(--color-primary);
-  color: #ffffff;
-  border-color: var(--color-primary);
+.muscle-filter-btn:active {
+  transform: scale(0.96);
 }
 
+.muscle-filter-btn:focus-visible {
+  outline: 2px solid var(--state-focus);
+  outline-offset: 2px;
+}
+
+/* Active state: subtle tinted fill rather than dominant solid purple.
+   Twelve chips at full accent read as visual noise; a tint reads as
+   "included in the filter" without competing with the workout cards. */
+.muscle-filter-btn.active {
+  background-color: color-mix(in oklab, var(--color-accent) 14%, transparent);
+  color: var(--text-primary);
+  border-color: color-mix(in oklab, var(--color-accent) 40%, var(--border-subtle));
+}
+
+/* The "All" affordance keeps a solid accent so it reads as a distinct
+   summary/reset action. */
 .muscle-filter-btn[data-muscle="all"].active {
   background-color: var(--color-accent);
   color: #ffffff;
   border-color: var(--color-accent);
+  box-shadow: 0 4px 12px color-mix(in oklab, var(--color-accent) 30%, transparent);
 }
 
 /* ============================================
@@ -2068,10 +2215,10 @@ button {
 }
 
 .collection-section-title {
-  font-family: var(--font-serif);
-  font-size: 24px;
-  font-weight: 400;
-  letter-spacing: -0.01em;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.012em;
   color: var(--text-primary);
   margin: 0;
   line-height: 1.15;
@@ -2587,10 +2734,21 @@ button {
   align-items: flex-start;
   gap: var(--spacing-md);
   padding: var(--spacing-md);
-  background-color: var(--bg-surface-subtle);
+  background-color: var(--bg-surface);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   position: relative;
+  box-shadow: var(--elevation-low);
+  transition:
+    transform var(--duration-base) var(--ease-out-soft),
+    box-shadow var(--duration-base) var(--ease-out-soft),
+    border-color var(--duration-fast) var(--ease-standard);
+}
+
+.exercise-library-item:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--elevation-medium);
+  border-color: color-mix(in oklab, var(--color-accent) 30%, var(--border-subtle));
 }
 
 .exercise-library-info {
@@ -2602,8 +2760,11 @@ button {
 }
 
 .exercise-library-name {
+  font-family: var(--font-display);
   font-weight: var(--font-weight-semibold);
-  font-size: var(--font-size-md);
+  font-size: 15px;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
 }
 
 .exercise-library-muscle {
@@ -2682,9 +2843,14 @@ button {
 }
 
 .list-stats {
-  font-size: var(--font-size-xs);
+  font-family: var(--font-mono);
+  font-size: 11px;
   color: var(--text-muted);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.005em;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  background: color-mix(in oklab, var(--color-accent) 10%, transparent);
 }
 
 .sort-control {
@@ -2699,6 +2865,7 @@ button {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   font-weight: var(--font-weight-semibold);
+  font-size: 10px;
 }
 
 .sort-select {
@@ -2707,14 +2874,17 @@ button {
   color: var(--text-primary);
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   min-height: 36px;
 }
 
 /* Collapsible create sections */
 .management-section-collapsible {
   padding: 0;
-  overflow: hidden;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--elevation-low);
 }
 
 .management-section-summary {
@@ -2723,10 +2893,19 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-family: var(--font-display);
+  font-size: 16px;
   font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.008em;
   user-select: none;
   touch-action: manipulation;
+  transition: background-color var(--duration-fast) var(--ease-standard);
+  border-radius: inherit;
+}
+
+.management-section-summary:hover {
+  background: var(--state-hover);
 }
 
 .management-section-summary::-webkit-details-marker {
@@ -2743,7 +2922,7 @@ button {
 .management-section-summary .summary-chevron {
   display: inline-flex;
   color: var(--text-muted);
-  transition: transform 0.2s var(--ease-standard);
+  transition: transform var(--duration-base) var(--ease-out-soft);
 }
 
 .management-section-collapsible[open] .summary-chevron {
@@ -2764,7 +2943,7 @@ button {
   text-align: center;
   background: var(--bg-surface-subtle);
   border: 1px dashed var(--border-subtle);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2772,8 +2951,11 @@ button {
 }
 
 .management-empty-title {
+  font-family: var(--font-display);
   font-weight: var(--font-weight-semibold);
   color: var(--text-primary);
+  font-size: 16px;
+  letter-spacing: -0.01em;
 }
 
 .management-empty-body {
@@ -2783,20 +2965,36 @@ button {
 }
 
 .btn-delete {
-  padding: var(--spacing-xs) var(--spacing-sm);
+  padding: 6px 10px;
   background-color: transparent;
   color: var(--color-danger);
-  border: 1px solid var(--color-danger);
-  border-radius: var(--radius-sm);
+  border: 1px solid color-mix(in oklab, var(--color-danger) 40%, transparent);
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
   font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
-  transition: all 0.15s var(--ease-standard);
+  transition:
+    background-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard);
+  min-height: 32px;
 }
 
 .btn-delete:hover {
-  background-color: var(--color-danger);
-  color: #ffffff;
+  background-color: color-mix(in oklab, var(--color-danger) 12%, transparent);
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+}
+
+.btn-delete:active {
+  transform: scale(0.97);
+}
+
+.btn-delete:focus-visible {
+  outline: 2px solid var(--color-danger);
+  outline-offset: 3px;
 }
 
 .workout-manager {
@@ -2846,11 +3044,15 @@ button {
 }
 
 .workout-manager-name {
+  font-family: var(--font-display);
   font-weight: var(--font-weight-semibold);
-  font-size: var(--font-size-md);
+  font-size: 17px;
+  letter-spacing: -0.012em;
+  color: var(--text-primary);
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-xs);
+  line-height: 1.25;
 }
 
 .workout-manager-favorite {
@@ -2886,13 +3088,26 @@ button {
    ============================================ */
 
 .muscle-badge {
-  display: inline-block;
-  padding: var(--spacing-xs) var(--spacing-md);
-  background-color: var(--color-primary);
-  color: #ffffff;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  background-color: color-mix(in oklab, var(--color-accent) 16%, var(--bg-surface));
+  color: var(--text-primary);
+  border: 1px solid color-mix(in oklab, var(--color-accent) 35%, transparent);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
   border-radius: var(--radius-pill);
+  letter-spacing: -0.005em;
+}
+
+.muscle-badge::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  flex-shrink: 0;
 }
 
 .exercise-meta {
@@ -2928,22 +3143,29 @@ button {
 }
 
 .session-quick-actions {
-  margin: var(--spacing-sm) 0;
-  padding: 10px 14px;
+  margin: var(--spacing-md) 0;
+  padding: 14px 16px;
   border: 1px dashed var(--border-subtle);
   border-radius: var(--radius-md);
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-md);
   background: var(--bg-surface-subtle);
 }
 
 .session-template-note {
   margin: 0;
   color: var(--text-muted);
-  line-height: 1.4;
-  font-size: 0.95rem;
+  line-height: 1.5;
+  font-size: 13px;
+  flex: 1;
+  min-width: 0;
+}
+
+#openSessionAddPanel {
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .session-add-panel {
@@ -3047,10 +3269,42 @@ button {
 }
 
 .btn-soft {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  padding: 8px var(--spacing-md);
   background: var(--bg-surface);
   color: var(--text-primary);
   border: 1px solid var(--border-subtle);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  box-shadow: var(--elevation-low);
+  transition:
+    background-color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
+  min-height: 34px;
+}
+
+.btn-soft:hover {
+  background: var(--bg-surface-subtle);
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
+  box-shadow: var(--elevation-medium);
+}
+
+.btn-soft:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.btn-soft:focus-visible {
+  outline: 2px solid var(--state-focus);
+  outline-offset: 3px;
 }
 
 .set-row {
@@ -3128,7 +3382,8 @@ select {
 /* Numeric inputs read as tactile data. Slightly larger, mono-typed. */
 input[type="number"] {
   font-family: var(--font-mono);
-  font-feature-settings: "tnum", "ss01";
+  font-feature-settings: "tnum", "ss01", "liga" 0, "calt" 0;
+  font-variant-ligatures: none;
   font-weight: var(--font-weight-medium);
   letter-spacing: -0.01em;
 }
@@ -3182,20 +3437,27 @@ input[type="number"]::-webkit-outer-spin-button {
 .previous-set {
   display: flex;
   justify-content: space-between;
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: 8px 12px;
   background-color: var(--bg-surface-subtle);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
   font-size: var(--font-size-sm);
 }
 
 .previous-set-label {
-  font-weight: var(--font-weight-medium);
+  font-family: var(--font-mono);
+  font-weight: var(--font-weight-semibold);
   color: var(--text-muted);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  font-size: 11px;
 }
 
 .previous-set-values {
+  font-family: var(--font-mono);
   font-weight: var(--font-weight-semibold);
   color: var(--text-primary);
+  letter-spacing: -0.01em;
 }
 
 .session-meta {
@@ -3236,12 +3498,16 @@ input[type="number"]::-webkit-outer-spin-button {
 
 .session-summary-title {
   margin: 0;
+  font-family: var(--font-display);
   font-weight: var(--font-weight-bold);
+  font-size: 20px;
+  letter-spacing: -0.015em;
 }
 
 .session-summary-meta {
   margin: 0;
   color: var(--text-muted);
+  font-size: var(--font-size-sm);
 }
 
 .pr-badge {
@@ -3252,8 +3518,12 @@ input[type="number"]::-webkit-outer-spin-button {
   background: var(--color-accent);
   color: #0b0b0f;
   border-radius: 999px;
+  font-family: var(--font-display);
   font-weight: var(--font-weight-bold);
-  box-shadow: 0 8px 22px rgba(133, 102, 179, 0.35);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  box-shadow: var(--elevation-accent-glow);
 }
 
 .history-item-pr {
@@ -3265,6 +3535,9 @@ input[type="number"]::-webkit-outer-spin-button {
   border: 1px solid var(--border-subtle);
   color: var(--text-muted);
   font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
 .session-history-empty {
@@ -3274,16 +3547,20 @@ input[type="number"]::-webkit-outer-spin-button {
 
 .history-item {
   padding: var(--spacing-md);
-  background-color: var(--bg-surface-subtle);
+  background-color: var(--bg-surface);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
+  box-shadow: var(--elevation-low);
 }
 
 .history-item-date {
-  font-size: var(--font-size-sm);
+  font-family: var(--font-mono);
+  font-size: 11px;
   font-weight: var(--font-weight-semibold);
   color: var(--color-accent);
   margin-bottom: var(--spacing-sm);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
 .history-item-sets {
@@ -3300,12 +3577,18 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 .history-set-label {
+  font-family: var(--font-mono);
   color: var(--text-muted);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
 .history-set-values {
+  font-family: var(--font-mono);
   color: var(--text-primary);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.01em;
 }
 
 .history-visual-grid {
@@ -3603,23 +3886,39 @@ input[type="number"]::-webkit-outer-spin-button {
       calc(12px + env(safe-area-inset-bottom))
       calc(14px + env(safe-area-inset-left));
     justify-content: space-between;
-    background: var(--bg-surface);
+    background: color-mix(in oklab, var(--bg-surface) 92%, transparent);
     border-top: 1px solid var(--border-subtle);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
     z-index: 20;
-    box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.3);
+    box-shadow:
+      0 -1px 0 color-mix(in oklab, var(--color-accent) 6%, transparent),
+      0 -6px 28px rgba(20, 15, 40, 0.24);
   }
 
   .mobile-nav-btn {
     min-width: 54px;
     min-height: 48px;
     padding: 6px 8px;
-    border-radius: 10px;
+    border-radius: var(--radius-md);
+    transition:
+      background-color var(--duration-fast) var(--ease-standard),
+      color var(--duration-fast) var(--ease-standard),
+      transform var(--duration-fast) var(--ease-standard);
+  }
+
+  .mobile-nav-btn:hover {
+    color: var(--color-accent);
   }
 
   .mobile-nav-btn:active {
     background: var(--state-hover);
+    transform: scale(0.96);
+  }
+
+  .mobile-nav-btn:focus-visible {
+    outline: 2px solid var(--state-focus);
+    outline-offset: 2px;
   }
 
   .app-container {
@@ -3635,7 +3934,7 @@ input[type="number"]::-webkit-outer-spin-button {
   }
 
   .section-title {
-    font-size: 20px;
+    font-size: 22px;
     margin-top: var(--spacing-lg);
   }
 
@@ -3819,8 +4118,13 @@ input[type="number"]::-webkit-outer-spin-button {
     gap: var(--spacing-sm);
   }
 
-  .btn-primary,
-  .btn-secondary {
+  /* Full-width primary/secondary buttons ONLY when explicitly opted in
+     (.btn-full) or when they live inside a form-actions row. Never blanket-
+     stretch every button — that turned the workout-manager and exercise
+     library action rows into giant stacked blocks on mobile. */
+  .form-actions .btn-primary,
+  .form-actions .btn-secondary,
+  .btn-full {
     width: 100%;
     justify-content: center;
     min-height: 48px;
@@ -3828,7 +4132,9 @@ input[type="number"]::-webkit-outer-spin-button {
   }
 
   .btn-sm {
-    min-height: 40px;
+    min-height: 36px;
+    padding: 6px 10px;
+    font-size: var(--font-size-sm);
   }
 
   /* Previous session & history */
@@ -4150,30 +4456,34 @@ input[type="number"]::-webkit-outer-spin-button {
 .history-list-item {
   width: 100%;
   text-align: left;
-  background: var(--bg-surface-subtle);
+  background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: var(--spacing-md);
   cursor: pointer;
+  box-shadow: var(--elevation-low);
   transition:
-    border 0.2s var(--ease-standard),
-    box-shadow 0.2s var(--ease-standard),
-    transform 0.1s var(--ease-standard);
+    border-color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-base) var(--ease-out-soft),
+    transform var(--duration-base) var(--ease-out-soft);
 }
 
 .history-list-item:hover {
-  border-color: var(--border-strong);
-  box-shadow: var(--elevation-low);
+  border-color: color-mix(in oklab, var(--color-accent) 40%, var(--border-subtle));
+  box-shadow: var(--elevation-medium);
   transform: translateY(-1px);
 }
 
 .history-list-item.active {
   border-color: var(--color-accent);
-  box-shadow: 0 8px 28px rgba(88, 28, 135, 0.25);
+  box-shadow: var(--elevation-accent-glow);
 }
 
 .history-list-title {
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-semibold);
+  font-size: 15px;
+  letter-spacing: -0.01em;
   color: var(--text-primary);
 }
 
@@ -4446,14 +4756,15 @@ input[type="number"]::-webkit-outer-spin-button {
 /* Utility: mono-typed numbers for data displays. */
 .mono-num {
   font-family: var(--font-mono);
-  font-feature-settings: "tnum", "ss01";
+  font-feature-settings: "tnum", "ss01", "liga" 0, "calt" 0;
   letter-spacing: -0.01em;
 }
 
 /* Utility: editorial serif accent for headings that want more presence. */
+.font-display,
 .font-serif {
-  font-family: var(--font-serif);
-  font-weight: 400;
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-semibold);
   letter-spacing: -0.015em;
 }
 
