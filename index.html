@@ -19,7 +19,7 @@
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <link rel="apple-touch-icon" href="favicon.svg" />
     <link rel="manifest" href="manifest.webmanifest" />
-    <link rel="stylesheet" href="styles.css?v=1.21.0" />
+    <link rel="stylesheet" href="styles.css?v=1.22.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -326,120 +326,135 @@
             aria-label="Filter by collection"></div>
           <div class="workout-filter-bar">
             <div class="filter-row">
-              <div class="filter-label">Filter workouts</div>
+              <label class="workout-search" for="workoutSearchInput">
+                <span class="sr-only">Search workouts</span>
+                <div class="search-input">
+                  <svg
+                    class="icon icon-sm"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M21 21l-4.35-4.35m0 0a6.65 6.65 0 10-9.4-9.4 6.65 6.65 0 009.4 9.4z" />
+                  </svg>
+                  <input
+                    id="workoutSearchInput"
+                    type="search"
+                    name="workoutSearch"
+                    placeholder="Search workouts"
+                    autocomplete="off" />
+                </div>
+              </label>
               <button
                 type="button"
                 id="favoritesOnlyToggle"
                 class="favorite-filter-btn"
-                aria-pressed="false">
+                aria-pressed="false"
+                aria-label="Show only favourite workouts">
                 <svg viewBox="0 0 24 24" aria-hidden="true">
                   <path
                     d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
                 </svg>
-                Favourites only
+                <span class="favorite-filter-label">Favourites</span>
               </button>
             </div>
-            <label class="workout-search" for="workoutSearchInput">
-              <span class="filter-label">Search workouts</span>
-              <div class="search-input">
+            <details class="muscle-filter-disclosure">
+              <summary class="muscle-filter-summary">
+                <span class="muscle-filter-summary-label">Filter by muscle</span>
+                <span class="muscle-filter-summary-count" id="muscleFilterCount"></span>
                 <svg
-                  class="icon icon-sm"
+                  class="icon icon-sm muscle-filter-summary-chevron"
                   viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
                   aria-hidden="true">
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M21 21l-4.35-4.35m0 0a6.65 6.65 0 10-9.4-9.4 6.65 6.65 0 009.4 9.4z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6" />
                 </svg>
-                <input
-                  id="workoutSearchInput"
-                  type="search"
-                  name="workoutSearch"
-                  placeholder="Search by name"
-                  autocomplete="off" />
+              </summary>
+              <div id="workoutFilters" class="muscle-group-filters">
+                <button
+                  type="button"
+                  class="muscle-filter-btn active"
+                  data-muscle="all">
+                  All
+                </button>
+                <button
+                  type="button"
+                  class="muscle-filter-btn active"
+                  data-muscle="Chest">
+                  Chest
+                </button>
+                <button
+                  type="button"
+                  class="muscle-filter-btn active"
+                  data-muscle="Back">
+                  Back
+                </button>
+                <button
+                  type="button"
+                  class="muscle-filter-btn active"
+                  data-muscle="Shoulders">
+                  Shoulders
+                </button>
+                <button
+                  type="button"
+                  class="muscle-filter-btn active"
+                  data-muscle="Biceps">
+                  Biceps
+                </button>
+                <button
+                  type="button"
+                  class="muscle-filter-btn active"
+                  data-muscle="Triceps">
+                  Triceps
+                </button>
+                <button
+                  type="button"
+                  class="muscle-filter-btn active"
+                  data-muscle="Legs">
+                  Legs
+                </button>
+                <button
+                  type="button"
+                  class="muscle-filter-btn active"
+                  data-muscle="Quads">
+                  Quads
+                </button>
+                <button
+                  type="button"
+                  class="muscle-filter-btn active"
+                  data-muscle="Hamstrings">
+                  Hamstrings
+                </button>
+                <button
+                  type="button"
+                  class="muscle-filter-btn active"
+                  data-muscle="Glutes">
+                  Glutes
+                </button>
+                <button
+                  type="button"
+                  class="muscle-filter-btn active"
+                  data-muscle="Core">
+                  Core
+                </button>
+                <button
+                  type="button"
+                  class="muscle-filter-btn active"
+                  data-muscle="Calves">
+                  Calves
+                </button>
+                <button
+                  type="button"
+                  class="muscle-filter-btn active"
+                  data-muscle="Forearms">
+                  Forearms
+                </button>
               </div>
-            </label>
-            <div id="workoutFilters" class="muscle-group-filters">
-              <button
-                type="button"
-                class="muscle-filter-btn active"
-                data-muscle="all">
-                All
-              </button>
-              <button
-                type="button"
-                class="muscle-filter-btn active"
-                data-muscle="Chest">
-                Chest
-              </button>
-              <button
-                type="button"
-                class="muscle-filter-btn active"
-                data-muscle="Back">
-                Back
-              </button>
-              <button
-                type="button"
-                class="muscle-filter-btn active"
-                data-muscle="Shoulders">
-                Shoulders
-              </button>
-              <button
-                type="button"
-                class="muscle-filter-btn active"
-                data-muscle="Biceps">
-                Biceps
-              </button>
-              <button
-                type="button"
-                class="muscle-filter-btn active"
-                data-muscle="Triceps">
-                Triceps
-              </button>
-              <button
-                type="button"
-                class="muscle-filter-btn active"
-                data-muscle="Legs">
-                Legs
-              </button>
-              <button
-                type="button"
-                class="muscle-filter-btn active"
-                data-muscle="Quads">
-                Quads
-              </button>
-              <button
-                type="button"
-                class="muscle-filter-btn active"
-                data-muscle="Hamstrings">
-                Hamstrings
-              </button>
-              <button
-                type="button"
-                class="muscle-filter-btn active"
-                data-muscle="Glutes">
-                Glutes
-              </button>
-              <button
-                type="button"
-                class="muscle-filter-btn active"
-                data-muscle="Core">
-                Core
-              </button>
-              <button
-                type="button"
-                class="muscle-filter-btn active"
-                data-muscle="Calves">
-                Calves
-              </button>
-              <button
-                type="button"
-                class="muscle-filter-btn active"
-                data-muscle="Forearms">
-                Forearms
-              </button>
-            </div>
+            </details>
           </div>
           <div id="workoutList" class="workout-grid"></div>
           <div id="dailyQuoteCard" class="card quote-card" aria-live="polite">
@@ -576,8 +591,7 @@
             </div>
             <div class="session-quick-actions">
               <p class="session-template-note">
-                Start a session from this workout template. Add or remove
-                exercises for today without changing the original plan.
+                Log or tweak today's session. The original template stays untouched.
               </p>
               <button
                 id="openSessionAddPanel"
@@ -594,7 +608,7 @@
                     stroke-linejoin="round"
                     d="M12 5v14m-7-7h14" />
                 </svg>
-                Add session exercise
+                Add exercise
               </button>
             </div>
             <div
@@ -921,11 +935,23 @@
 
             <div class="card history-detail-card">
               <div id="historyEmptyState" class="history-empty">
+                <div class="history-empty-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 3v2m6-2v2M3 9h18M5 5h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 15l2 2 4-4" />
+                  </svg>
+                </div>
                 <p class="history-empty-title">No workouts saved yet</p>
                 <p class="history-empty-body">
-                  End a workout to capture a recap here. We'll bundle sets,
-                  volume, and every exercise you touched.
+                  Finish a workout to capture a recap here. Every set, kg-rep,
+                  and PR gets bundled into a shareable card.
                 </p>
+                <button
+                  type="button"
+                  id="historyEmptyCta"
+                  class="btn-primary">
+                  Pick a workout to start
+                </button>
               </div>
               <div id="historyDetail" class="hidden">
                 <div class="history-detail-header">
@@ -2096,6 +2122,6 @@
       </div>
     </div>
 
-    <script src="app.js?v=1.21.0"></script>
+    <script src="app.js?v=1.22.0"></script>
   </body>
 </html>

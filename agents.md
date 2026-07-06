@@ -84,8 +84,15 @@ Examples:
 
 ### Current Version
 
-**Current Version: 1.21.0** (as of 2026-07-06)
+**Current Version: 1.22.0** (as of 2026-07-06)
 
+- 1.22.0: Quality-of-life pass.
+  Compact filter bar on the workout list: search + Favourites now sit on a single row (star-only on narrow screens) and the 13-chip muscle filter collapses behind a disclosure with a live "All" / "n/12" count. Frees roughly 250px of above-the-fold real estate so the phase chips and workout cards get the attention.
+  Subtle card entry stagger (cardEnter keyframe + inline --stagger-index cap of 8) applied to workout cards and phase section headers so the list resolves gracefully on load. Gated by prefers-reduced-motion.
+  Haptic feedback: single delegated pointerdown listener fires navigator.vibrate(6) on primary interactions (primary/secondary buttons, workout cards, exercise items, favourite toggle, bottom nav, collection chips, +/- steppers, management tabs). Silent no-op on desktops.
+  Toast: showSuccessMessage rebuilt as a bottom-centred glass pill with proper enter/leave animation, role=status, safe-area-aware bottom offset, prefers-reduced-motion gate. Replaces the inline-styled top-right box.
+  History empty state upgraded from bare text to a designed empty state with an accent-tinted icon tile, sharper copy, and a "Pick a workout to start" CTA that jumps back to the workout list.
+  Session-quick-actions callout on the exercise-list screen tightened: shorter copy ("Log or tweak today's session. The original template stays untouched.") and the CTA is now just "Add exercise".
 - 1.21.0: Design fixes + typography retune.
   Typography: dropped Instrument Serif entirely (too tall, wrong tone for a fitness tracker). Every display heading now uses Geist at semibold/bold with tighter negative letter-spacing. One type family across the whole app for cohesion, mono for numbers only.
   Consistency pass across every screen: Manage view now sits above the app header (was hidden behind the fixed header), Manage tabs get proper hover/active/focus states, section-collapsible containers no longer clip their expanded content with `overflow: hidden` (this was cutting Collections and New workout sections to a 2px sliver), collapsed disclosures now show their summary rows correctly.

@@ -523,6 +523,24 @@ class WorkoutTracker {
       this.toggleTheme();
     });
 
+    // Delegated haptic feedback for primary-touch interactions on mobile.
+    // Silent no-op on desktop and on browsers that don't implement the API.
+    document.addEventListener(
+      "pointerdown",
+      (event) => {
+        if (event.pointerType !== "touch") return;
+        const target = event.target.closest(
+          ".btn-primary, .workout-card, .exercise-item, .favorite-toggle, " +
+          ".mobile-nav-btn, .collection-chip, .management-tab, " +
+          ".btn-increment, .btn-decrement",
+        );
+        if (target && !target.disabled) {
+          this.haptic(6);
+        }
+      },
+      { passive: true },
+    );
+
     // Daily quote - no interactions needed
 
     // Workout search
@@ -543,6 +561,14 @@ class WorkoutTracker {
       this.pairedExercises = null;
       this.showExerciseList(this.currentWorkout);
     });
+
+    // History empty-state CTA jumps back to the workout list
+    const historyEmptyCta = document.getElementById("historyEmptyCta");
+    if (historyEmptyCta) {
+      historyEmptyCta.addEventListener("click", () => {
+        this.showView("workoutListView");
+      });
+    }
 
     // Session form
     document.getElementById("sessionForm").addEventListener("submit", (e) => {
@@ -1103,7 +1129,29 @@ class WorkoutTracker {
       .map((btn) => btn.dataset.muscle);
 
     this.workoutFilters = new Set(activeMuscles);
+    this.updateMuscleFilterSummary(filterContainer);
     this.renderWorkoutList();
+  }
+
+  updateMuscleFilterSummary(filterContainer) {
+    const el = document.getElementById("muscleFilterCount");
+    if (!el) return;
+    const allBtn = filterContainer.querySelector(
+      '.muscle-filter-btn[data-muscle="all"]',
+    );
+    const total = filterContainer.querySelectorAll(
+      '.muscle-filter-btn:not([data-muscle="all"])',
+    ).length;
+    const active = filterContainer.querySelectorAll(
+      '.muscle-filter-btn.active:not([data-muscle="all"])',
+    ).length;
+    if (allBtn?.classList.contains("active") || active === total) {
+      el.textContent = "All";
+      el.classList.remove("is-narrowed");
+    } else {
+      el.textContent = `${active}/${total}`;
+      el.classList.add("is-narrowed");
+    }
   }
 
   // ============================================
@@ -1864,8 +1912,10 @@ class WorkoutTracker {
 
     const grid = document.createElement("div");
     grid.className = "workout-grid workout-grid-flat";
-    sortedWorkouts.forEach((workout) => {
-      grid.appendChild(this.createWorkoutCard(workout));
+    sortedWorkouts.forEach((workout, i) => {
+      const card = this.createWorkoutCard(workout);
+      card.style.setProperty("--stagger-index", String(Math.min(i, 8)));
+      grid.appendChild(card);
     });
     container.appendChild(grid);
   }
@@ -1887,21 +1937,31 @@ class WorkoutTracker {
       col.workoutIds.forEach((id) => assignedWorkoutIds.add(id)),
     );
 
+    let staggerCursor = 0;
     orderedCollections.forEach((col) => {
       const workouts = col.workoutIds
         .map((id) => this.workouts.find((w) => w.id === id))
         .filter(Boolean);
       if (workouts.length === 0) return;
 
-      container.appendChild(
-        this.createCollectionSectionHeader(col, workouts.length),
-      );
+      const header = this.createCollectionSectionHeader(col, workouts.length);
+      header.style.setProperty("--stagger-index", String(Math.min(staggerCursor, 8)));
+      container.appendChild(header);
+      staggerCursor += 1;
 
       const grid = document.createElement("div");
       grid.className = "workout-grid workout-grid-grouped";
-      workouts.forEach((workout) =>
-        grid.appendChild(this.createWorkoutCard(workout, { showCollectionBadges: false })),
-      );
+      workouts.forEach((workout) => {
+        const card = this.createWorkoutCard(workout, {
+          showCollectionBadges: false,
+        });
+        card.style.setProperty(
+          "--stagger-index",
+          String(Math.min(staggerCursor, 8)),
+        );
+        grid.appendChild(card);
+        staggerCursor += 1;
+      });
       container.appendChild(grid);
     });
 
@@ -1928,9 +1988,14 @@ class WorkoutTracker {
           if (!!b.favorite !== !!a.favorite) return b.favorite ? 1 : -1;
           return a.name.localeCompare(b.name);
         })
-        .forEach((workout) =>
-          grid.appendChild(this.createWorkoutCard(workout)),
-        );
+        .forEach((workout, i) => {
+          const card = this.createWorkoutCard(workout);
+          card.style.setProperty(
+            "--stagger-index",
+            String(Math.min(i, 8)),
+          );
+          grid.appendChild(card);
+        });
       container.appendChild(grid);
     }
   }
@@ -9246,7 +9311,6 @@ class WorkoutTracker {
   }
 
   showSuccessMessage(message) {
-    // Simple alert for now - could be enhanced with a toast notification
     const existingMessage = document.querySelector(".success-message");
     if (existingMessage) {
       existingMessage.remove();
@@ -9254,26 +9318,31 @@ class WorkoutTracker {
 
     const messageDiv = document.createElement("div");
     messageDiv.className = "success-message";
-    messageDiv.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: var(--color-success);
-            color: var(--dark-text-primary);
-            padding: var(--spacing-md) var(--spacing-lg);
-            border-radius: var(--radius-sm);
-            box-shadow: var(--elevation-medium);
-            z-index: 1000;
-            animation: slideIn 0.3s ease;
-        `;
+    messageDiv.setAttribute("role", "status");
+    messageDiv.setAttribute("aria-live", "polite");
     messageDiv.textContent = message;
 
     document.body.appendChild(messageDiv);
 
+    // Auto-dismiss.
     setTimeout(() => {
-      messageDiv.style.animation = "slideOut 0.3s ease";
-      setTimeout(() => messageDiv.remove(), 300);
-    }, 3000);
+      messageDiv.classList.add("is-leaving");
+      setTimeout(() => messageDiv.remove(), 260);
+    }, 2600);
+  }
+
+  /**
+   * Fire a short haptic pulse on devices that support it. Silent no-op on
+   * desktops and browsers that ignore the API, so it's safe to call anywhere.
+   * @param {number|number[]} pattern
+   */
+  haptic(pattern = 8) {
+    if (typeof navigator === "undefined" || !navigator.vibrate) return;
+    try {
+      navigator.vibrate(pattern);
+    } catch (_err) {
+      /* devices without vibrator throw silently */
+    }
   }
 }
 
