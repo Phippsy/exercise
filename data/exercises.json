@@ -1426,6 +1426,994 @@
                     "form_video": null
                 }
             ]
+        },
+        {
+            "id": 17,
+            "name": "Consolidation A \u2014 Upper + Shoulder Quality",
+            "date": null,
+            "notes": "Phase 0 reset. No grinding. Aim: leave the gym feeling better than you arrived.",
+            "exercises": [
+                {
+                    "name": "Pull-Ups",
+                    "muscle_group": "Back",
+                    "sets": 3,
+                    "reps": "6-8",
+                    "weight_kg": null,
+                    "notes": "Easy reps, stop well before failure.",
+                    "form_video": null
+                },
+                {
+                    "name": "Chest Press - Flat Bench (Dumbbells)",
+                    "muscle_group": "Chest",
+                    "sets": 3,
+                    "reps": "8-10",
+                    "weight_kg": 22.5,
+                    "notes": "About 80% of your usual effort.",
+                    "form_video": "https://www.youtube.com/watch?v=pKZMNVbfUzQ"
+                },
+                {
+                    "name": "Seated Cable Row",
+                    "muscle_group": "Back",
+                    "sets": 3,
+                    "reps": "10-12",
+                    "weight_kg": 65,
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=A77hAjcpN1s"
+                },
+                {
+                    "name": "Landmine Shoulder Press",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "8-10",
+                    "weight_kg": 30,
+                    "notes": "Smooth reps, no push for a top set.",
+                    "form_video": "https://www.youtube.com/watch?v=M1k-y3X-xkc"
+                },
+                {
+                    "name": "Reverse Pec Deck / Rear Delt Flys",
+                    "muscle_group": "Shoulders",
+                    "sets": 2,
+                    "reps": "12-15",
+                    "weight_kg": null,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "Cable Pallof Press",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "10-12 per side",
+                    "weight_kg": 7.5,
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=xeFp4MXad98"
+                },
+                {
+                    "name": "Dolphin Scap Push-Ups",
+                    "muscle_group": "Serratus Anterior",
+                    "sets": 2,
+                    "reps": "10-12",
+                    "weight_kg": null,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "Wall-Facing Forearm Hold",
+                    "muscle_group": "Shoulders",
+                    "sets": 2,
+                    "reps": "20-30 sec",
+                    "weight_kg": null,
+                    "notes": null,
+                    "form_video": null
+                }
+            ]
+        },
+        {
+            "id": 18,
+            "name": "Consolidation B \u2014 Lower + Trunk",
+            "date": null,
+            "notes": "Should leave you feeling better afterwards, not depleted.",
+            "exercises": [
+                {
+                    "name": "Stiff-Leg Deadlift",
+                    "muscle_group": "Hamstrings",
+                    "sets": 3,
+                    "reps": 8,
+                    "weight_kg": 70,
+                    "notes": "Maybe 75kg if very fresh.",
+                    "form_video": null
+                },
+                {
+                    "name": "Leg Press",
+                    "muscle_group": "Legs",
+                    "sets": 3,
+                    "reps": "10-12",
+                    "weight_kg": 100,
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=SWd6n6T9Fcw"
+                },
+                {
+                    "name": "Reverse Alternating Lunge (Kettlebell)",
+                    "muscle_group": "Legs",
+                    "sets": 2,
+                    "reps": "10 per side",
+                    "weight_kg": 12,
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=iwRSeGbZ1uw"
+                },
+                {
+                    "name": "Farmers Carry (Kettlebell)",
+                    "muscle_group": "Full Body",
+                    "sets": 3,
+                    "reps": "20-30 metres",
+                    "weight_kg": 24,
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=fxwrTkKUkTo"
+                },
+                {
+                    "name": "Dead Bug",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "10-12",
+                    "weight_kg": null,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "Roman Chair Side Bend",
+                    "muscle_group": "Core",
+                    "sets": 2,
+                    "reps": "12-15 per side",
+                    "weight_kg": null,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "Serratus Wall Slides",
+                    "muscle_group": "Serratus Anterior",
+                    "sets": 2,
+                    "reps": "10-12",
+                    "weight_kg": null,
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=XwQEKFHYBHw"
+                }
+            ]
+        },
+        {
+            "id": 19,
+            "name": "Phase 1A \u2014 Upper Quality + Pincha Support",
+            "date": null,
+            "notes": "Weeks 1\u20134. RPE 7\u20138. Clean movement, moderate volume, full range, no failure.",
+            "exercises": [
+                {
+                    "name": "Pull-Ups",
+                    "muscle_group": "Back",
+                    "sets": 3,
+                    "reps": "8-10",
+                    "weight_kg": null,
+                    "notes": "Leave 1\u20132 reps in reserve.",
+                    "form_video": null
+                },
+                {
+                    "name": "Chest Press - Flat Bench (Dumbbells)",
+                    "muscle_group": "Chest",
+                    "sets": 3,
+                    "reps": "10-12",
+                    "weight_kg": 25,
+                    "notes": "Start around 25\u201326kg.",
+                    "form_video": "https://www.youtube.com/watch?v=pKZMNVbfUzQ"
+                },
+                {
+                    "name": "Seated Cable Row",
+                    "muscle_group": "Back",
+                    "sets": 3,
+                    "reps": "12-15",
+                    "weight_kg": 65,
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=A77hAjcpN1s"
+                },
+                {
+                    "name": "Landmine Shoulder Press",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "8-10",
+                    "weight_kg": 35,
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=M1k-y3X-xkc"
+                },
+                {
+                    "name": "Reverse Pec Deck / Rear Delt Flys",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "12-15",
+                    "weight_kg": null,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "Cable Pallof Press",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "10-12 per side",
+                    "weight_kg": 7.5,
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=xeFp4MXad98"
+                },
+                {
+                    "name": "Dolphin Scap Push-Ups",
+                    "muscle_group": "Serratus Anterior",
+                    "sets": 3,
+                    "reps": "10-13",
+                    "weight_kg": null,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "Wall-Facing Forearm Hold",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "30 sec",
+                    "weight_kg": null,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "Incline Dumbbell Curls",
+                    "muscle_group": "Biceps",
+                    "sets": 2,
+                    "reps": "10-12",
+                    "weight_kg": null,
+                    "notes": "Optional if fresh. One arm movement per session, not both.",
+                    "form_video": null
+                }
+            ]
+        },
+        {
+            "id": 20,
+            "name": "Phase 1B \u2014 Lower Capacity + Carries",
+            "date": null,
+            "notes": "Resist adding upper-body work. Let lower day actually be lower day.",
+            "exercises": [
+                {
+                    "name": "Stiff-Leg Deadlift",
+                    "muscle_group": "Hamstrings",
+                    "sets": 3,
+                    "reps": "8-10",
+                    "weight_kg": 75,
+                    "notes": "70\u201380kg depending on freshness. No grinding.",
+                    "form_video": null
+                },
+                {
+                    "name": "Leg Press",
+                    "muscle_group": "Legs",
+                    "sets": 3,
+                    "reps": "12-15",
+                    "weight_kg": 100,
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=SWd6n6T9Fcw"
+                },
+                {
+                    "name": "Reverse Alternating Lunge (Kettlebell)",
+                    "muscle_group": "Legs",
+                    "sets": 3,
+                    "reps": "10-12 per side",
+                    "weight_kg": 12,
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=iwRSeGbZ1uw"
+                },
+                {
+                    "name": "Farmers Carry (Kettlebell)",
+                    "muscle_group": "Full Body",
+                    "sets": 4,
+                    "reps": "20-30 metres",
+                    "weight_kg": 24,
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=fxwrTkKUkTo"
+                },
+                {
+                    "name": "Dead Bug",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "12-14",
+                    "weight_kg": null,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "Roman Chair Side Bend",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "12-18 per side",
+                    "weight_kg": null,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "Serratus Wall Slides",
+                    "muscle_group": "Serratus Anterior",
+                    "sets": 3,
+                    "reps": "10-12",
+                    "weight_kg": null,
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=XwQEKFHYBHw"
+                },
+                {
+                    "name": "Weighted Wide-Leg Forward Fold",
+                    "muscle_group": "Hamstrings",
+                    "sets": 2,
+                    "reps": "6-8 slow reps",
+                    "weight_kg": null,
+                    "notes": "Loaded hamstring mobility. Move slowly.",
+                    "form_video": null
+                }
+            ]
+        },
+        {
+            "id": 21,
+            "name": "Phase 1C \u2014 Shoulder Stability + Trunk Integration",
+            "date": null,
+            "notes": "One arm finisher only, not three.",
+            "exercises": [
+                {
+                    "name": "Close-Grip Cable Row",
+                    "muscle_group": "Back",
+                    "sets": 3,
+                    "reps": "12-15",
+                    "weight_kg": 70,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "Straight Arm Lat Pulldown",
+                    "muscle_group": "Back",
+                    "sets": 3,
+                    "reps": "10-12",
+                    "weight_kg": 42.5,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "Landmine Lateral Raise to Press",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "8-10",
+                    "weight_kg": 20,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "Cable Face Pulls / Rear Delt Flys",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "12-15",
+                    "weight_kg": 35,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "Push Ups",
+                    "muscle_group": "Chest",
+                    "sets": 3,
+                    "reps": "12-20",
+                    "weight_kg": null,
+                    "notes": "Smooth and controlled.",
+                    "form_video": null
+                },
+                {
+                    "name": "Hollow Body Hold",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "35-45 sec",
+                    "weight_kg": null,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "Hanging Leg Raise",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "10-12",
+                    "weight_kg": null,
+                    "notes": "Or captain's chair leg raise.",
+                    "form_video": null
+                },
+                {
+                    "name": "Dolphin Scap Push-Ups",
+                    "muscle_group": "Serratus Anterior",
+                    "sets": 2,
+                    "reps": "10-12",
+                    "weight_kg": null,
+                    "notes": "Or forearm plank scap shifts.",
+                    "form_video": null
+                }
+            ]
+        },
+        {
+            "id": 22,
+            "name": "Phase 2A \u2014 Upper Strength",
+            "date": null,
+            "notes": "Weeks 5\u20138. RPE ~8, leave 1\u20132 reps in reserve. Longer rests. Fewer exercises. Should feel more focused.",
+            "exercises": [
+                {
+                    "name": "Pull-Ups",
+                    "muscle_group": "Back",
+                    "sets": 4,
+                    "reps": "6-8",
+                    "weight_kg": null,
+                    "notes": "If bodyweight is easy, add slow tempo before added weight.",
+                    "form_video": null
+                },
+                {
+                    "name": "Chest Press - Flat Bench (Dumbbells)",
+                    "muscle_group": "Chest",
+                    "sets": 4,
+                    "reps": "6-8",
+                    "weight_kg": 27.5,
+                    "notes": "Only move up if clean.",
+                    "form_video": "https://www.youtube.com/watch?v=pKZMNVbfUzQ"
+                },
+                {
+                    "name": "Landmine Shoulder Press",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "6-8",
+                    "weight_kg": 37.5,
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=M1k-y3X-xkc"
+                },
+                {
+                    "name": "Seated Cable Row",
+                    "muscle_group": "Back",
+                    "sets": 3,
+                    "reps": "8-10",
+                    "weight_kg": 75,
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=A77hAjcpN1s"
+                },
+                {
+                    "name": "Reverse Pec Deck / Rear Delt Flys",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "10-12",
+                    "weight_kg": null,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "Cable Pallof Press",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "8-10 per side",
+                    "weight_kg": 10,
+                    "notes": "Slightly heavier than Phase 1.",
+                    "form_video": "https://www.youtube.com/watch?v=xeFp4MXad98"
+                },
+                {
+                    "name": "Wall-Facing Forearm Hold",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "30 sec",
+                    "weight_kg": null,
+                    "notes": "Calm and precise.",
+                    "form_video": null
+                },
+                {
+                    "name": "Cable Triceps Pressdown",
+                    "muscle_group": "Triceps",
+                    "sets": 2,
+                    "reps": "8-10",
+                    "weight_kg": null,
+                    "notes": "Optional arm finisher. Pick this OR incline curls, not both unless very fresh.",
+                    "form_video": null
+                }
+            ]
+        },
+        {
+            "id": 23,
+            "name": "Phase 2B \u2014 Lower Strength + Carry",
+            "date": null,
+            "notes": "Careful not to add pull-ups, push-ups, curls, extra chest. Let lower day be lower day.",
+            "exercises": [
+                {
+                    "name": "Stiff-Leg Deadlift",
+                    "muscle_group": "Hamstrings",
+                    "sets": 4,
+                    "reps": "5-8",
+                    "weight_kg": 80,
+                    "notes": "75\u201385kg range. Stop before form changes.",
+                    "form_video": null
+                },
+                {
+                    "name": "Leg Press",
+                    "muscle_group": "Legs",
+                    "sets": 4,
+                    "reps": "8-10",
+                    "weight_kg": 120,
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=SWd6n6T9Fcw"
+                },
+                {
+                    "name": "Reverse Alternating Lunge (Kettlebell)",
+                    "muscle_group": "Legs",
+                    "sets": 3,
+                    "reps": "8-10 per side",
+                    "weight_kg": 16,
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=iwRSeGbZ1uw"
+                },
+                {
+                    "name": "Farmers Carry (Kettlebell)",
+                    "muscle_group": "Full Body",
+                    "sets": 5,
+                    "reps": "20-30 metres",
+                    "weight_kg": 32,
+                    "notes": "Heavier than Phase 1.",
+                    "form_video": "https://www.youtube.com/watch?v=fxwrTkKUkTo"
+                },
+                {
+                    "name": "Roman Chair Side Bend",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "10-15 per side",
+                    "weight_kg": null,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "Dead Bug with Kettlebell",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "10-12",
+                    "weight_kg": 8,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "Serratus Wall Slides",
+                    "muscle_group": "Serratus Anterior",
+                    "sets": 2,
+                    "reps": "10-12",
+                    "weight_kg": null,
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=XwQEKFHYBHw"
+                }
+            ]
+        },
+        {
+            "id": 24,
+            "name": "Phase 2C \u2014 Pull / Shoulder Density",
+            "date": null,
+            "notes": "Keeps vertical/pulling/shoulder theme, trims accessory sprawl.",
+            "exercises": [
+                {
+                    "name": "Pull-Ups",
+                    "muscle_group": "Back",
+                    "sets": 3,
+                    "reps": "8-10",
+                    "weight_kg": null,
+                    "notes": "Or 5x5 if you want a different strength feel.",
+                    "form_video": null
+                },
+                {
+                    "name": "Close-Grip Cable Row",
+                    "muscle_group": "Back",
+                    "sets": 4,
+                    "reps": "8-10",
+                    "weight_kg": 80,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "Landmine Lateral Raise to Press",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "6-8",
+                    "weight_kg": 22.5,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "Straight Arm Lat Pulldown",
+                    "muscle_group": "Back",
+                    "sets": 3,
+                    "reps": "8-10",
+                    "weight_kg": 45,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "Cable Face Pulls / Rear Delt Flys",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "10-12",
+                    "weight_kg": 40,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "Hollow Body Hold",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "40-50 sec",
+                    "weight_kg": null,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "Leg Raises",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "8-12",
+                    "weight_kg": null,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "Overhead Cable Triceps Extension",
+                    "muscle_group": "Triceps",
+                    "sets": 2,
+                    "reps": "8-10",
+                    "weight_kg": null,
+                    "notes": "Or hammer curls. Pick one.",
+                    "form_video": null
+                }
+            ]
+        },
+        {
+            "id": 25,
+            "name": "Phase 3A \u2014 Pincha Strength + Upper Control",
+            "date": null,
+            "notes": "Weeks 9\u201312. Not a bodybuilding upper day \u2014 shoulder/trunk architecture. Moderate loads, crisp, controlled.",
+            "exercises": [
+                {
+                    "name": "Wall-Facing Forearm Hold",
+                    "muscle_group": "Shoulders",
+                    "sets": 4,
+                    "reps": "20-40 sec",
+                    "weight_kg": null,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "Dolphin Scap Push-Ups",
+                    "muscle_group": "Serratus Anterior",
+                    "sets": 4,
+                    "reps": "8-12",
+                    "weight_kg": null,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "Pull-Ups",
+                    "muscle_group": "Back",
+                    "sets": 3,
+                    "reps": "6-10",
+                    "weight_kg": null,
+                    "notes": "Smooth, no maxing.",
+                    "form_video": null
+                },
+                {
+                    "name": "Landmine Shoulder Press",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "8-10",
+                    "weight_kg": 32.5,
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=M1k-y3X-xkc"
+                },
+                {
+                    "name": "Chest Press - Flat Bench (Dumbbells)",
+                    "muscle_group": "Chest",
+                    "sets": 3,
+                    "reps": "8-12",
+                    "weight_kg": 22.5,
+                    "notes": "Or tempo push-ups (3-second lower).",
+                    "form_video": "https://www.youtube.com/watch?v=pKZMNVbfUzQ"
+                },
+                {
+                    "name": "Single Arm Pulldown - Kneeling",
+                    "muscle_group": "Back",
+                    "sets": 3,
+                    "reps": "10-12 per side",
+                    "weight_kg": 35,
+                    "notes": "Or single-arm cable row.",
+                    "form_video": "https://www.youtube.com/watch?v=Vu3OrBHrMNk"
+                },
+                {
+                    "name": "Cable Pallof Press",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "10-12 per side",
+                    "weight_kg": 7.5,
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=xeFp4MXad98"
+                },
+                {
+                    "name": "Hollow Body Hold",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "30-45 sec",
+                    "weight_kg": null,
+                    "notes": null,
+                    "form_video": null
+                }
+            ]
+        },
+        {
+            "id": 26,
+            "name": "Phase 3B \u2014 Mobility Strength + Lower Control",
+            "date": null,
+            "notes": "Goal is not to crush posterior chain. Build lower-body control, tissue tolerance, trunk integrity.",
+            "exercises": [
+                {
+                    "name": "Single-Leg Romanian Deadlift",
+                    "muscle_group": "Hamstrings",
+                    "sets": 3,
+                    "reps": "8-10 per side",
+                    "weight_kg": 12,
+                    "notes": "Light-to-moderate, balance and hamstring control.",
+                    "form_video": null
+                },
+                {
+                    "name": "Leg Press",
+                    "muscle_group": "Legs",
+                    "sets": 3,
+                    "reps": "10-12",
+                    "weight_kg": 100,
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=SWd6n6T9Fcw"
+                },
+                {
+                    "name": "Bulgarian Split Squat (DB/KB)",
+                    "muscle_group": "Quads/Glutes",
+                    "sets": 3,
+                    "reps": "8-10 per side",
+                    "weight_kg": 12,
+                    "notes": "Or reverse lunge.",
+                    "form_video": "https://www.youtube.com/watch?v=o7yFuIR9XVU"
+                },
+                {
+                    "name": "Farmers Carry (Kettlebell)",
+                    "muscle_group": "Full Body",
+                    "sets": 4,
+                    "reps": "20-30 metres",
+                    "weight_kg": 24,
+                    "notes": "Or suitcase carry (one KB at a time).",
+                    "form_video": "https://www.youtube.com/watch?v=fxwrTkKUkTo"
+                },
+                {
+                    "name": "Copenhagen Plank",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "20-30 sec per side",
+                    "weight_kg": null,
+                    "notes": "Regressed to top-knee-on-bench if needed.",
+                    "form_video": null
+                },
+                {
+                    "name": "Dead Bug",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "12-14",
+                    "weight_kg": null,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "Weighted Wide-Leg Forward Fold",
+                    "muscle_group": "Hamstrings",
+                    "sets": 3,
+                    "reps": "6-8 slow reps",
+                    "weight_kg": null,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "Serratus Wall Slides",
+                    "muscle_group": "Serratus Anterior",
+                    "sets": 3,
+                    "reps": "10-12",
+                    "weight_kg": null,
+                    "notes": null,
+                    "form_video": "https://www.youtube.com/watch?v=XwQEKFHYBHw"
+                },
+                {
+                    "name": "Tibialis Raise",
+                    "muscle_group": "Calves",
+                    "sets": 2,
+                    "reps": "12-15",
+                    "weight_kg": null,
+                    "notes": "Optional. Or calf raise.",
+                    "form_video": null
+                }
+            ]
+        },
+        {
+            "id": 27,
+            "name": "Phase 3C \u2014 Athletic Trunk + Scapular Integration",
+            "date": null,
+            "notes": "The most \u201cgym supports yoga\u201d session.",
+            "exercises": [
+                {
+                    "name": "Bear Crawl",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "20-30 sec",
+                    "weight_kg": null,
+                    "notes": "Or slow bear hover.",
+                    "form_video": null
+                },
+                {
+                    "name": "Close-Grip Cable Row",
+                    "muscle_group": "Back",
+                    "sets": 3,
+                    "reps": "10-12",
+                    "weight_kg": 70,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "Landmine Lateral Raise to Press",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "8-10",
+                    "weight_kg": 20,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "Straight Arm Lat Pulldown",
+                    "muscle_group": "Back",
+                    "sets": 3,
+                    "reps": "10-12",
+                    "weight_kg": 42.5,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "Push Ups",
+                    "muscle_group": "Chest",
+                    "sets": 3,
+                    "reps": "12-20",
+                    "weight_kg": null,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "Hanging Leg Raise",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "8-12",
+                    "weight_kg": null,
+                    "notes": "Hanging knee raise if straight-leg is too much.",
+                    "form_video": null
+                },
+                {
+                    "name": "L-Sit Tuck Hold",
+                    "muscle_group": "Core",
+                    "sets": 4,
+                    "reps": "10-20 sec",
+                    "weight_kg": null,
+                    "notes": "Or seated compression lift.",
+                    "form_video": null
+                },
+                {
+                    "name": "Cable Face Pulls / Rear Delt Flys",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "12-15",
+                    "weight_kg": 35,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "Hollow Body Hold",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "30-45 sec",
+                    "weight_kg": null,
+                    "notes": "Or hollow-to-arch sequence, 3 rounds.",
+                    "form_video": null
+                }
+            ]
+        },
+        {
+            "id": 28,
+            "name": "Week 13 \u2014 Deload & Test Markers",
+            "date": null,
+            "notes": "Not a max-out week. Two lighter sessions plus markers. Test quality, not maxes.",
+            "exercises": [
+                {
+                    "name": "Pull-Ups",
+                    "muscle_group": "Back",
+                    "sets": 1,
+                    "reps": "AMRAP - clean only",
+                    "weight_kg": null,
+                    "notes": "One clean set, stop before ugly reps.",
+                    "form_video": null
+                },
+                {
+                    "name": "Chest Press - Flat Bench (Dumbbells)",
+                    "muscle_group": "Chest",
+                    "sets": 1,
+                    "reps": "AMRAP at 27.5kg",
+                    "weight_kg": 27.5,
+                    "notes": "Clean reps only. Not a max attempt.",
+                    "form_video": "https://www.youtube.com/watch?v=pKZMNVbfUzQ"
+                },
+                {
+                    "name": "Stiff-Leg Deadlift",
+                    "muscle_group": "Hamstrings",
+                    "sets": 1,
+                    "reps": "5-8",
+                    "weight_kg": 80,
+                    "notes": "Clean controlled reps.",
+                    "form_video": null
+                },
+                {
+                    "name": "Hollow Body Hold",
+                    "muscle_group": "Core",
+                    "sets": 1,
+                    "reps": "Max clean hold",
+                    "weight_kg": null,
+                    "notes": null,
+                    "form_video": null
+                },
+                {
+                    "name": "Wall-Facing Forearm Hold",
+                    "muscle_group": "Shoulders",
+                    "sets": 1,
+                    "reps": "Calmness / alignment / breathing",
+                    "weight_kg": null,
+                    "notes": "Quality > duration.",
+                    "form_video": null
+                },
+                {
+                    "name": "Dolphin Scap Push-Ups",
+                    "muscle_group": "Serratus Anterior",
+                    "sets": 1,
+                    "reps": "Quality set",
+                    "weight_kg": null,
+                    "notes": null,
+                    "form_video": null
+                }
+            ]
+        }
+    ],
+    "collections": [
+        {
+            "id": 100,
+            "name": "Consolidation",
+            "color": "#94a3b8",
+            "description": "Phase 0 reset week. Reduce fatigue, tidy technique, prepare for Phase 1.",
+            "workoutIds": [17, 18]
+        },
+        {
+            "id": 101,
+            "name": "Phase 1 \u2014 Capacity",
+            "color": "#2dd4bf",
+            "description": "Weeks 1\u20134. Clean movement, moderate volume, RPE 7\u20138. Add reps first, then small load bumps.",
+            "workoutIds": [19, 20, 21]
+        },
+        {
+            "id": 102,
+            "name": "Phase 2 \u2014 Strength",
+            "color": "#f59e0b",
+            "description": "Weeks 5\u20138. Heavier work, fewer exercises, longer rests, RPE ~8.",
+            "workoutIds": [22, 23, 24]
+        },
+        {
+            "id": 103,
+            "name": "Phase 3 \u2014 Athletic",
+            "color": "#a78bfa",
+            "description": "Weeks 9\u201312. Convert strength into usable body control. Yoga/pincha/trunk integration.",
+            "workoutIds": [25, 26, 27]
+        },
+        {
+            "id": 104,
+            "name": "Week 13 \u2014 Deload/Test",
+            "color": "#fb7185",
+            "description": "Two lighter sessions plus test markers. Check progress without maxing out.",
+            "workoutIds": [28]
         }
     ]
 }

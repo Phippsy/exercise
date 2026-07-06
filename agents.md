@@ -84,8 +84,9 @@ Examples:
 
 ### Current Version
 
-**Current Version: 1.18.6** (as of 2026-04-22)
+**Current Version: 1.19.0** (as of 2026-07-06)
 
+- 1.19.0: Training phases + workout collections — introduced a first-class collections system (folders for grouping workouts, e.g. training phases). Added 12 new coach-authored workouts covering Phase 0 Consolidation, Phase 1 Capacity, Phase 2 Strength, Phase 3 Athletic/Yoga Integration, and Week 13 Deload/Test. Seeded 5 default collections mapped to those phases with per-collection color. Workout list view now has a horizontal-scrollable chip bar to filter by collection; cards show colored collection badges. Manage > Workouts tab gains a Collections section for creating/renaming/recoloring/deleting collections and toggling workout membership via chips. Collections sync via Google Drive/localStorage using a new `workoutCollections` key
 - 1.18.6: Actually fix single-row set layout on mobile — v1.18.5 used `:nth-of-type(1..3)` on `.input-group` but `.set-label` is also a `<div>` so the indices were off by one (reps landed in the weight column, weight landed in the remove column, remove auto-placed wrong). Now uses explicit `:nth-child(2..4)` and `> .set-label` selectors. Added a headless iPhone-viewport Playwright smoke test (`scripts/iphone-smoke-test.mjs`) that seeds state, renders Pull Ups at iPhone 14 Pro size, and asserts single-row layout + visible inputs before shipping
 - 1.18.5: Restore single-row set layout on mobile — the v1.18.3 stacked layout was ugly. Set row is now a compact 4-col grid (label / reps / weight / remove) with the fill-down buttons hidden on narrow screens (still available on desktop) so the number inputs get real breathing room
 - 1.18.4: Fix unreachable close button in Manage panel on iPhone — `.management-header` had no safe-area-inset padding so on devices with Dynamic Island / notch and `viewport-fit=cover`, the close (×) button sat behind the status bar. Now respects safe-area-inset-top/left/right; tab content also respects safe-area-inset-bottom so the last row isn't hidden under the home indicator

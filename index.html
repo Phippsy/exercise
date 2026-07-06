@@ -19,7 +19,7 @@
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <link rel="apple-touch-icon" href="favicon.svg" />
     <link rel="manifest" href="manifest.webmanifest" />
-    <link rel="stylesheet" href="styles.css?v=1.18.7" />
+    <link rel="stylesheet" href="styles.css?v=1.19.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -320,6 +320,10 @@
         <!-- Workout Selection View -->
         <section id="workoutListView" class="view">
           <h3 class="workouts-section-title">Your Workouts</h3>
+          <div
+            id="collectionFilterBar"
+            class="collection-filter-bar hidden"
+            aria-label="Filter by collection"></div>
           <div class="workout-filter-bar">
             <div class="filter-row">
               <div class="filter-label">Filter workouts</div>
@@ -1398,6 +1402,60 @@
               </form>
             </details>
 
+            <details id="collectionsSection" class="management-section management-section-collapsible" open>
+              <summary class="management-section-summary">
+                <span class="summary-label">
+                  <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" />
+                  </svg>
+                  Collections
+                  <span id="collectionsManagerStats" class="list-stats"></span>
+                </span>
+                <span class="summary-chevron" aria-hidden="true">
+                  <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6" />
+                  </svg>
+                </span>
+              </summary>
+              <p class="section-subtext">
+                Group workouts into folders (like training phases). Chips on the
+                workout list let you filter to one collection with a single tap.
+              </p>
+              <div class="collection-create-form">
+                <div class="form-row">
+                  <label class="collection-form-field">
+                    <span class="collection-form-label">Name</span>
+                    <input
+                      id="newCollectionName"
+                      type="text"
+                      placeholder="e.g. Phase 1 - Capacity"
+                      autocomplete="off" />
+                  </label>
+                  <label class="collection-form-field collection-form-field-color">
+                    <span class="collection-form-label">Color</span>
+                    <input
+                      id="newCollectionColor"
+                      type="color"
+                      value="#8566b3" />
+                  </label>
+                </div>
+                <label class="collection-form-field">
+                  <span class="collection-form-label">Description (optional)</span>
+                  <input
+                    id="newCollectionDescription"
+                    type="text"
+                    placeholder="What this collection is for" />
+                </label>
+                <button
+                  type="button"
+                  id="createCollectionBtn"
+                  class="btn-primary btn-full">
+                  Add collection
+                </button>
+              </div>
+              <div id="collectionsManagerList" class="collections-manager"></div>
+            </details>
+
             <div class="management-section">
               <div class="management-list-header">
                 <h3 class="management-section-title">Your Workouts</h3>
@@ -2038,6 +2096,6 @@
       </div>
     </div>
 
-    <script src="app.js?v=1.18.7"></script>
+    <script src="app.js?v=1.19.0"></script>
   </body>
 </html>

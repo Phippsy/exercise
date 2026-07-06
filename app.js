@@ -8,6 +8,8 @@ class WorkoutTracker {
     this.sessions = [];
     this.workoutHistory = [];
     this.exerciseLibrary = []; // Master list of all available exercises
+    this.collections = []; // User-defined workout folders/tags
+    this.activeCollectionId = null; // null = All
     this.quotes = [];
     this.currentWorkout = null;
     this.currentExercise = null;
@@ -86,6 +88,9 @@ class WorkoutTracker {
     this.setupExerciseLibraryFilters();
     this.setupManagementSorts();
     this.setupWorkoutFilters();
+    this.setupCollectionFilterBar();
+    this.setupCollectionsManager();
+    this.renderCollectionFilterBar();
     this.renderWorkoutList();
     this.renderActivityOverview();
     this.renderWorkoutOverview();
@@ -179,11 +184,151 @@ class WorkoutTracker {
           this.saveExerciseLibrary();
         }
       }
+
+      // Load or seed collections (workout folders)
+      this.loadCollections(data.collections || []);
     } catch (error) {
       console.error("Error loading workouts:", error);
       this.workouts = [];
       this.exerciseLibrary = [];
+      this.collections = [];
     }
+  }
+
+  loadCollections(seedCollections = []) {
+    const storedCollections = localStorage.getItem("workoutCollections");
+    if (storedCollections) {
+      try {
+        this.collections = JSON.parse(storedCollections);
+      } catch (err) {
+        console.error("Error parsing collections:", err);
+        this.collections = [];
+      }
+
+      // Merge any new seed collections not already present locally.
+      const existingIds = new Set(this.collections.map((c) => c.id));
+      const additions = (seedCollections || []).filter(
+        (c) => !existingIds.has(c.id),
+      );
+      if (additions.length > 0) {
+        this.collections.push(...additions);
+        this.saveCollections();
+      }
+    } else {
+      this.collections = (seedCollections || []).map((c) => ({ ...c }));
+      if (this.collections.length > 0) {
+        this.saveCollections();
+      }
+    }
+
+    // Normalise: every collection needs an id, name, and workoutIds array.
+    this.collections = this.collections.map((c, index) => ({
+      id: c.id || Date.now() + index,
+      name: c.name || "Untitled collection",
+      color: c.color || "#8566b3",
+      description: c.description || "",
+      workoutIds: Array.isArray(c.workoutIds) ? c.workoutIds.slice() : [],
+    }));
+
+    // Prune workoutIds that no longer exist.
+    const validIds = new Set(this.workouts.map((w) => w.id));
+    let pruned = false;
+    this.collections.forEach((collection) => {
+      const before = collection.workoutIds.length;
+      collection.workoutIds = collection.workoutIds.filter((id) =>
+        validIds.has(id),
+      );
+      if (collection.workoutIds.length !== before) pruned = true;
+    });
+    if (pruned) this.saveCollections();
+
+    // Restore last active collection selection (if valid).
+    const stored = localStorage.getItem("activeCollectionId");
+    if (stored && stored !== "null") {
+      const id = Number(stored);
+      if (this.collections.some((c) => c.id === id)) {
+        this.activeCollectionId = id;
+      }
+    }
+  }
+
+  saveCollections() {
+    localStorage.setItem(
+      "workoutCollections",
+      JSON.stringify(this.collections),
+    );
+    this._markLocalChange();
+  }
+
+  getCollectionsForWorkout(workoutId) {
+    return this.collections.filter((c) => c.workoutIds.includes(workoutId));
+  }
+
+  setActiveCollection(id) {
+    this.activeCollectionId = id;
+    if (id === null || id === undefined) {
+      localStorage.removeItem("activeCollectionId");
+    } else {
+      localStorage.setItem("activeCollectionId", String(id));
+    }
+  }
+
+  toggleWorkoutInCollection(collectionId, workoutId) {
+    const collection = this.collections.find((c) => c.id === collectionId);
+    if (!collection) return false;
+    const idx = collection.workoutIds.indexOf(workoutId);
+    if (idx === -1) {
+      collection.workoutIds.push(workoutId);
+    } else {
+      collection.workoutIds.splice(idx, 1);
+    }
+    this.saveCollections();
+    return idx === -1;
+  }
+
+  createCollection(name, color = "#8566b3", description = "") {
+    const trimmed = (name || "").trim();
+    if (!trimmed) return null;
+    if (
+      this.collections.some(
+        (c) => c.name.toLowerCase() === trimmed.toLowerCase(),
+      )
+    ) {
+      return null;
+    }
+    const collection = {
+      id: Date.now(),
+      name: trimmed,
+      color,
+      description: (description || "").trim(),
+      workoutIds: [],
+    };
+    this.collections.push(collection);
+    this.saveCollections();
+    return collection;
+  }
+
+  updateCollection(collectionId, updates) {
+    const collection = this.collections.find((c) => c.id === collectionId);
+    if (!collection) return false;
+    if (updates.name !== undefined)
+      collection.name = (updates.name || "").trim() || collection.name;
+    if (updates.color !== undefined) collection.color = updates.color;
+    if (updates.description !== undefined)
+      collection.description = (updates.description || "").trim();
+    this.saveCollections();
+    return true;
+  }
+
+  deleteCollection(collectionId) {
+    const collection = this.collections.find((c) => c.id === collectionId);
+    if (!collection) return false;
+    this.collections = this.collections.filter((c) => c.id !== collectionId);
+    this.saveCollections();
+    if (this.activeCollectionId === collectionId) {
+      this.setActiveCollection(null);
+    }
+    return true;
   }
 
   async loadQuotes() {
@@ -961,6 +1106,253 @@ class WorkoutTracker {
     this.renderWorkoutList();
   }
 
+  // ============================================
+  // Collection filter bar (workout list view)
+  // ============================================
+
+  setupCollectionFilterBar() {
+    const bar = document.getElementById("collectionFilterBar");
+    if (!bar) return;
+
+    // Delegated click handler so we don't have to re-bind after each render.
+    bar.addEventListener("click", (event) => {
+      const chip = event.target.closest(".collection-chip");
+      if (!chip) return;
+      const value = chip.dataset.collectionId;
+      if (value === "all" || value === undefined) {
+        this.setActiveCollection(null);
+      } else {
+        const id = Number(value);
+        this.setActiveCollection(
+          this.activeCollectionId === id ? null : id,
+        );
+      }
+      this.renderCollectionFilterBar();
+      this.renderWorkoutList();
+    });
+  }
+
+  renderCollectionFilterBar() {
+    const bar = document.getElementById("collectionFilterBar");
+    if (!bar) return;
+
+    if (!this.collections || this.collections.length === 0) {
+      bar.innerHTML = "";
+      bar.classList.add("hidden");
+      return;
+    }
+
+    bar.classList.remove("hidden");
+
+    const chips = [];
+    chips.push(
+      `<button type="button" class="collection-chip collection-chip-all${
+        this.activeCollectionId === null ? " active" : ""
+      }" data-collection-id="all">All <span class="collection-chip-count">${this.workouts.length}</span></button>`,
+    );
+
+    this.collections.forEach((col) => {
+      const count = col.workoutIds.filter((id) =>
+        this.workouts.some((w) => w.id === id),
+      ).length;
+      const active = this.activeCollectionId === col.id ? " active" : "";
+      chips.push(
+        `<button type="button" class="collection-chip${active}" data-collection-id="${col.id}" style="--collection-color: ${col.color};" title="${this.escapeHtml(col.description || col.name)}"><span class="collection-chip-dot" aria-hidden="true"></span>${this.escapeHtml(col.name)} <span class="collection-chip-count">${count}</span></button>`,
+      );
+    });
+
+    bar.innerHTML = `
+      <div class="collection-filter-label">Collections</div>
+      <div class="collection-chip-row">${chips.join("")}</div>
+    `;
+  }
+
+  // ============================================
+  // Collections manager (Manage > Workouts tab)
+  // ============================================
+
+  setupCollectionsManager() {
+    const createBtn = document.getElementById("createCollectionBtn");
+    const nameInput = document.getElementById("newCollectionName");
+    const colorInput = document.getElementById("newCollectionColor");
+    const descInput = document.getElementById("newCollectionDescription");
+
+    if (createBtn && nameInput) {
+      createBtn.addEventListener("click", () => {
+        const name = nameInput.value.trim();
+        if (!name) {
+          this.showSuccessMessage("Give your collection a name");
+          return;
+        }
+        const created = this.createCollection(
+          name,
+          colorInput?.value || "#8566b3",
+          descInput?.value || "",
+        );
+        if (!created) {
+          this.showSuccessMessage("A collection with that name already exists");
+          return;
+        }
+        nameInput.value = "";
+        if (descInput) descInput.value = "";
+        this.renderCollectionsManager();
+        this.renderCollectionFilterBar();
+        this.showSuccessMessage(`Collection "${created.name}" created`);
+      });
+
+      nameInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          createBtn.click();
+        }
+      });
+    }
+
+    // Delegated actions inside the manager list.
+    const list = document.getElementById("collectionsManagerList");
+    if (list) {
+      list.addEventListener("click", (event) => {
+        const action = event.target.closest("[data-collection-action]");
+        if (!action) return;
+        const item = action.closest(".collection-manager-item");
+        const id = Number(item?.dataset.collectionId);
+        const collection = this.collections.find((c) => c.id === id);
+        if (!collection) return;
+
+        const type = action.dataset.collectionAction;
+        if (type === "rename") {
+          const newName = prompt("Rename collection", collection.name);
+          if (newName && newName.trim()) {
+            this.updateCollection(id, { name: newName.trim() });
+            this.renderCollectionsManager();
+            this.renderCollectionFilterBar();
+            this.renderWorkoutManager();
+            this.renderWorkoutList();
+          }
+        } else if (type === "color") {
+          // A native color input inside the action doubles as the picker.
+          // No-op; handled by the "input" listener attached at render time.
+        } else if (type === "delete") {
+          if (
+            confirm(
+              `Delete collection "${collection.name}"? Workouts inside it are kept.`,
+            )
+          ) {
+            this.deleteCollection(id);
+            this.renderCollectionsManager();
+            this.renderCollectionFilterBar();
+            this.renderWorkoutManager();
+            this.renderWorkoutList();
+            this.showSuccessMessage(`Collection "${collection.name}" deleted`);
+          }
+        } else if (type === "toggle-workout") {
+          const workoutId = Number(action.dataset.workoutId);
+          const added = this.toggleWorkoutInCollection(id, workoutId);
+          action.classList.toggle("active", added);
+          this.renderCollectionFilterBar();
+          this.renderWorkoutManager();
+          this.renderWorkoutList();
+        }
+      });
+
+      // Color pickers use "input" event, wire on demand at render time.
+    }
+  }
+
+  renderCollectionsManager() {
+    const list = document.getElementById("collectionsManagerList");
+    const statsEl = document.getElementById("collectionsManagerStats");
+    if (!list) return;
+
+    if (statsEl) {
+      const total = this.collections.length;
+      statsEl.textContent = total
+        ? `${total} collection${total === 1 ? "" : "s"}`
+        : "";
+    }
+
+    if (!this.collections.length) {
+      list.innerHTML = `
+        <div class="management-empty">
+          <p class="management-empty-title">No collections yet</p>
+          <p class="management-empty-body">Collections are folders for grouping workouts (like training phases). Create one above.</p>
+        </div>`;
+      return;
+    }
+
+    list.innerHTML = "";
+
+    this.collections.forEach((collection) => {
+      const item = document.createElement("div");
+      item.className = "collection-manager-item";
+      item.dataset.collectionId = collection.id;
+      item.style.setProperty("--collection-color", collection.color);
+
+      const memberIds = new Set(collection.workoutIds);
+      const memberCount = collection.workoutIds.filter((id) =>
+        this.workouts.some((w) => w.id === id),
+      ).length;
+
+      const header = document.createElement("div");
+      header.className = "collection-manager-header";
+
+      const swatch = document.createElement("input");
+      swatch.type = "color";
+      swatch.className = "collection-color-picker";
+      swatch.value = collection.color;
+      swatch.setAttribute("aria-label", "Collection color");
+      swatch.addEventListener("input", (event) => {
+        const newColor = event.target.value;
+        this.updateCollection(collection.id, { color: newColor });
+        item.style.setProperty("--collection-color", newColor);
+        this.renderCollectionFilterBar();
+        this.renderWorkoutList();
+      });
+
+      const title = document.createElement("div");
+      title.className = "collection-manager-title";
+      title.innerHTML = `<span class="collection-manager-name">${this.escapeHtml(collection.name)}</span><span class="collection-manager-count">${memberCount} workout${memberCount === 1 ? "" : "s"}</span>`;
+
+      const actions = document.createElement("div");
+      actions.className = "collection-manager-actions";
+      actions.innerHTML = `
+        <button type="button" class="btn-secondary btn-sm" data-collection-action="rename">Rename</button>
+        <button type="button" class="btn-delete" data-collection-action="delete">Delete</button>
+      `;
+
+      header.appendChild(swatch);
+      header.appendChild(title);
+      header.appendChild(actions);
+      item.appendChild(header);
+
+      if (collection.description) {
+        const desc = document.createElement("p");
+        desc.className = "collection-manager-description";
+        desc.textContent = collection.description;
+        item.appendChild(desc);
+      }
+
+      const workoutRow = document.createElement("div");
+      workoutRow.className = "collection-workout-toggles";
+      if (this.workouts.length === 0) {
+        workoutRow.innerHTML = `<p class="collection-empty-hint">Create a workout first, then assign it here.</p>`;
+      } else {
+        this.workouts.forEach((workout) => {
+          const chip = document.createElement("button");
+          chip.type = "button";
+          chip.className = `collection-workout-chip${memberIds.has(workout.id) ? " active" : ""}`;
+          chip.dataset.collectionAction = "toggle-workout";
+          chip.dataset.workoutId = workout.id;
+          chip.textContent = workout.name;
+          workoutRow.appendChild(chip);
+        });
+      }
+      item.appendChild(workoutRow);
+
+      list.appendChild(item);
+    });
+  }
+
   filterExercises(searchInputId, selectorId) {
     const searchInput = document.getElementById(searchInputId);
     const selector = document.getElementById(selectorId);
@@ -1360,14 +1752,30 @@ class WorkoutTracker {
     const favoritesOnly = this.favoriteFilterOnly;
     const searchTerm = this.workoutSearchTerm?.toLowerCase() || "";
 
+    // Determine which workouts pass the active collection filter.
+    let collectionWorkoutIds = null; // null = no collection filter
+    if (this.activeCollectionId !== null) {
+      const col = this.collections.find(
+        (c) => c.id === this.activeCollectionId,
+      );
+      if (col) {
+        collectionWorkoutIds = new Set(col.workoutIds);
+      }
+    }
+
     const sortedWorkouts = [
       ...this.workouts.filter((w) => w.favorite),
       ...this.workouts.filter((w) => !w.favorite),
-    ].filter((workout) => {
-      if (activeFilters.size === 0) return true;
-      const workoutMuscles = workout.exercises.map((ex) => ex.muscle_group);
-      return workoutMuscles.some((muscle) => activeFilters.has(muscle));
-    });
+    ]
+      .filter((workout) => {
+        if (!collectionWorkoutIds) return true;
+        return collectionWorkoutIds.has(workout.id);
+      })
+      .filter((workout) => {
+        if (activeFilters.size === 0) return true;
+        const workoutMuscles = workout.exercises.map((ex) => ex.muscle_group);
+        return workoutMuscles.some((muscle) => activeFilters.has(muscle));
+      });
 
     const filteredWorkouts = sortedWorkouts
       .filter((workout) => {
@@ -1379,10 +1787,50 @@ class WorkoutTracker {
         return workout.name.toLowerCase().includes(searchTerm);
       });
 
+    // Preserve collection order when a specific collection is active.
+    if (collectionWorkoutIds && this.activeCollectionId !== null) {
+      const col = this.collections.find(
+        (c) => c.id === this.activeCollectionId,
+      );
+      if (col) {
+        const order = new Map(col.workoutIds.map((id, i) => [id, i]));
+        filteredWorkouts.sort(
+          (a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0),
+        );
+      }
+    }
+
+    if (filteredWorkouts.length === 0) {
+      const empty = document.createElement("div");
+      empty.className = "workout-empty-state";
+      if (this.activeCollectionId !== null) {
+        const col = this.collections.find(
+          (c) => c.id === this.activeCollectionId,
+        );
+        empty.innerHTML = `
+          <p class="workout-empty-title">No workouts in "${
+            col ? this.escapeHtml(col.name) : "this collection"
+          }" match the current filters.</p>
+          <p class="workout-empty-body">Try clearing the search, muscle filters, or picking a different collection.</p>`;
+      } else {
+        empty.innerHTML = `
+          <p class="workout-empty-title">No workouts match the current filters.</p>
+          <p class="workout-empty-body">Clear a filter or add a new workout in the Manage tab.</p>`;
+      }
+      container.appendChild(empty);
+      return;
+    }
+
     filteredWorkouts.forEach((workout) => {
       const card = this.createWorkoutCard(workout);
       container.appendChild(card);
     });
+  }
+
+  escapeHtml(text) {
+    const div = document.createElement("div");
+    div.textContent = text ?? "";
+    return div.innerHTML;
   }
 
   createWorkoutCard(workout) {
@@ -1448,6 +1896,21 @@ class WorkoutTracker {
 
     if (muscleBadges.childElementCount > 0) {
       card.appendChild(muscleBadges);
+    }
+
+    // Collection membership badges (colored pills matching the sidebar).
+    const workoutCollections = this.getCollectionsForWorkout(workout.id);
+    if (workoutCollections.length > 0) {
+      const collectionRow = document.createElement("div");
+      collectionRow.className = "workout-collection-badges";
+      workoutCollections.forEach((col) => {
+        const badge = document.createElement("span");
+        badge.className = "workout-collection-badge";
+        badge.style.setProperty("--collection-color", col.color);
+        badge.textContent = col.name;
+        collectionRow.appendChild(badge);
+      });
+      card.appendChild(collectionRow);
     }
 
     const actions = document.createElement("div");
@@ -1528,6 +1991,8 @@ class WorkoutTracker {
     this.saveWorkouts();
     this.renderWorkoutList();
     this.renderWorkoutManager();
+    this.renderCollectionsManager();
+    this.renderCollectionFilterBar();
     this.showSuccessMessage("Workout duplicated. Edit to customize.");
   }
 
@@ -1682,29 +2147,16 @@ class WorkoutTracker {
     }));
 
     if (persisted?.exercises?.length) {
-      // Reconcile the persisted draft with the current workout template so
-      // template edits (add/remove/reorder via Manage) are reflected, while
-      // exercises the user added or removed in this specific session are preserved.
-      const liveTemplateNames = new Set(workoutExercises.map((e) => e.name));
-      const persistedRemovedNames = persisted.removedTemplateNames || [];
-      // Drop stale removal entries for templates that no longer exist
-      // (e.g. the user later removed the exercise from the template via Manage).
-      const removedTemplateNames = persistedRemovedNames.filter((name) =>
-        liveTemplateNames.has(name),
-      );
-      const removedTemplateNameSet = new Set(removedTemplateNames);
-      const visibleTemplateExercises = workoutExercises.filter(
-        (e) => !removedTemplateNameSet.has(e.name),
-      );
-      const sessionAddedExercises = persisted.exercises.filter(
-        (e) => e.sessionAdded && !liveTemplateNames.has(e.name),
-      );
+      // Reconcile the persisted draft with the current workout definition so
+      // edits to the workout (add / remove / reorder exercises) are reflected
+      // on the detail screen. The draft itself doesn't store per-set progress
+      // (sets live in this.sessions keyed by date + exercise name), so it is
+      // safe to rebuild the exercise list from the workout.
       this.currentSession = {
         ...persisted,
         workoutId: workout.id,
         workoutName: workout.name,
-        exercises: [...visibleTemplateExercises, ...sessionAddedExercises],
-        removedTemplateNames,
+        exercises: workoutExercises,
       };
     } else {
       this.currentSession = this.createSessionFromWorkout(workout);
@@ -1722,7 +2174,6 @@ class WorkoutTracker {
       exercises: (this.currentSession.exercises || []).map((exercise) => ({
         ...exercise,
       })),
-      removedTemplateNames: [...(this.currentSession.removedTemplateNames || [])],
       updatedAt: new Date().toISOString(),
     };
 
@@ -1998,20 +2449,13 @@ class WorkoutTracker {
 
   removeExerciseFromSession(index) {
     if (!this.currentSession?.exercises) return;
-    const [removed] = this.currentSession.exercises.splice(index, 1);
-    if (removed && !removed.sessionAdded) {
-      // Persist the removal so it survives navigation away/back; otherwise
-      // setCurrentSessionForWorkout would re-add it from the template.
-      const tracked = new Set(this.currentSession.removedTemplateNames || []);
-      tracked.add(removed.name);
-      this.currentSession.removedTemplateNames = [...tracked];
-    }
+    const removed = this.currentSession.exercises.splice(index, 1);
     this.renderExerciseList();
     this.updateSessionChecklist(this.currentWorkout);
     this.persistCurrentSession();
-    if (removed) {
+    if (removed[0]) {
       this.showSuccessMessage(
-        `${removed.name} removed from this session only`,
+        `${removed[0].name} removed from this session only`,
       );
     }
   }
@@ -2110,16 +2554,7 @@ class WorkoutTracker {
       return;
     }
 
-    this.currentSession.exercises.push({ ...exercise, sessionAdded: true });
-    // If this exercise was previously removed from the template in this
-    // session, clear it from the removed-list so the template version is
-    // restored on the next reconcile (rather than being filtered out twice).
-    if (this.currentSession.removedTemplateNames?.includes(exercise.name)) {
-      this.currentSession.removedTemplateNames =
-        this.currentSession.removedTemplateNames.filter(
-          (name) => name !== exercise.name,
-        );
-    }
+    this.currentSession.exercises.push({ ...exercise });
     this.renderExerciseList();
     this.updateSessionChecklist(this.currentWorkout);
     this.persistCurrentSession();
@@ -2428,7 +2863,6 @@ class WorkoutTracker {
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v10"/>
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8 11l4 4 4-4"/>
                         </svg>
-                        <span class="fill-label">Fill reps ↓</span>
                     </button>
                 </div>
             </div>
@@ -2457,7 +2891,6 @@ class WorkoutTracker {
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v10"/>
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8 11l4 4 4-4"/>
                         </svg>
-                        <span class="fill-label">Fill weight ↓</span>
                     </button>
                 </div>
             </div>
@@ -2494,11 +2927,6 @@ class WorkoutTracker {
     row.querySelector(".btn-remove").addEventListener("click", () => {
       row.remove();
       this.renumberPairedSets(exerciseNum);
-    });
-
-    // Tap set label to mark the set done (visual only, not persisted)
-    row.querySelector(".set-label").addEventListener("click", () => {
-      row.classList.toggle("set-done");
     });
 
     // Add event listeners for fill-down buttons
@@ -2841,7 +3269,6 @@ class WorkoutTracker {
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v10"/>
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8 11l4 4 4-4"/>
                         </svg>
-                        <span class="fill-label">Fill reps ↓</span>
                     </button>
                 </div>
             </div>
@@ -2869,7 +3296,6 @@ class WorkoutTracker {
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v10"/>
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8 11l4 4 4-4"/>
                         </svg>
-                        <span class="fill-label">Fill weight ↓</span>
                     </button>
                 </div>
             </div>
@@ -2911,11 +3337,6 @@ class WorkoutTracker {
     row.querySelector(".btn-remove").addEventListener("click", () => {
       row.remove();
       this.renumberSets();
-    });
-
-    // Tap set label to mark the set done (visual only, not persisted)
-    row.querySelector(".set-label").addEventListener("click", () => {
-      row.classList.toggle("set-done");
     });
 
     // Add event listeners for fill-down buttons
@@ -4619,6 +5040,7 @@ class WorkoutTracker {
     } else if (tabName === "workouts") {
       document.getElementById("workoutsTab").classList.add("active");
       this.renderExerciseSelector();
+      this.renderCollectionsManager();
     } else if (tabName === "coach") {
       document.getElementById("coachTab").classList.add("active");
       this.updateCoachSummaryOutput();
@@ -5241,6 +5663,8 @@ class WorkoutTracker {
     // Refresh displays
     this.renderWorkoutManager();
     this.renderWorkoutList();
+    this.renderCollectionsManager();
+    this.renderCollectionFilterBar();
 
     this.showSuccessMessage(
       `Workout "${name}" created with ${exercises.length} exercises!`,
@@ -5257,6 +5681,17 @@ class WorkoutTracker {
 
     this.workouts = this.workouts.filter((w) => w.id !== workoutId);
     this.saveWorkouts();
+
+    // Prune this workout from any collections.
+    let pruned = false;
+    this.collections.forEach((collection) => {
+      const before = collection.workoutIds.length;
+      collection.workoutIds = collection.workoutIds.filter(
+        (id) => id !== workoutId,
+      );
+      if (collection.workoutIds.length !== before) pruned = true;
+    });
+    if (pruned) this.saveCollections();
 
     this.clearPersistedSession(workoutId);
 
@@ -5276,6 +5711,8 @@ class WorkoutTracker {
 
     this.renderWorkoutManager();
     this.renderWorkoutList();
+    this.renderCollectionFilterBar();
+    this.renderCollectionsManager();
     this.refreshInsights();
 
     this.showSuccessMessage(`Workout "${workout.name}" deleted`);
@@ -5701,6 +6138,21 @@ class WorkoutTracker {
         badges.appendChild(badge);
       });
       headerMain.appendChild(badges);
+    }
+
+    // Collection badges in the manager card too.
+    const workoutCollections = this.getCollectionsForWorkout(workout.id);
+    if (workoutCollections.length > 0) {
+      const row = document.createElement("div");
+      row.className = "workout-collection-badges workout-collection-badges-manager";
+      workoutCollections.forEach((col) => {
+        const badge = document.createElement("span");
+        badge.className = "workout-collection-badge";
+        badge.style.setProperty("--collection-color", col.color);
+        badge.textContent = col.name;
+        row.appendChild(badge);
+      });
+      headerMain.appendChild(row);
     }
 
     header.appendChild(headerMain);
