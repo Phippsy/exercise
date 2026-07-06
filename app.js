@@ -1162,7 +1162,7 @@ class WorkoutTracker {
     });
 
     bar.innerHTML = `
-      <div class="collection-filter-label">Collections</div>
+      <div class="collection-filter-label">Training phase</div>
       <div class="collection-chip-row">${chips.join("")}</div>
     `;
   }
@@ -1763,29 +1763,58 @@ class WorkoutTracker {
       }
     }
 
+    // Detect the "no muscle filter" state. Muscle-group chips are a subset
+    // (e.g. "Serratus Anterior" and "Quads/Glutes" have no chip) so
+    // activeFilters.size doesn't line up cleanly with musclesInApp. We use
+    // the DOM: the "All" chip's `active` class means the user hasn't
+    // narrowed the muscle filter.
+    const allMuscleChip = document.querySelector(
+      '#workoutFilters .muscle-filter-btn[data-muscle="all"]',
+    );
+    const muscleFilterInactive = allMuscleChip?.classList.contains("active");
+
+    const passesMuscleFilter = (workout) => {
+      if (muscleFilterInactive) return true;
+      const workoutMuscles = workout.exercises.map((ex) => ex.muscle_group);
+      return workoutMuscles.some((muscle) => activeFilters.has(muscle));
+    };
+
+    const passesTextFilter = (workout) => {
+      if (!searchTerm) return true;
+      return workout.name.toLowerCase().includes(searchTerm);
+    };
+
+    const passesFavoriteFilter = (workout) => {
+      if (!favoritesOnly) return true;
+      return workout.favorite;
+    };
+
+    const passesAll = (workout) =>
+      (!collectionWorkoutIds || collectionWorkoutIds.has(workout.id)) &&
+      passesMuscleFilter(workout) &&
+      passesTextFilter(workout) &&
+      passesFavoriteFilter(workout);
+
+    // ---- Grouped mode: All chip selected, no other filters, and there ARE
+    // collections. This is the default view and makes phases immediately
+    // discoverable at a glance.
+    const groupedMode =
+      this.activeCollectionId === null &&
+      muscleFilterInactive &&
+      !searchTerm &&
+      !favoritesOnly &&
+      this.collections.length > 0;
+
+    if (groupedMode) {
+      this.renderGroupedWorkoutList(container);
+      return;
+    }
+
+    // ---- Flat mode (a collection or filter is active).
     const sortedWorkouts = [
       ...this.workouts.filter((w) => w.favorite),
       ...this.workouts.filter((w) => !w.favorite),
-    ]
-      .filter((workout) => {
-        if (!collectionWorkoutIds) return true;
-        return collectionWorkoutIds.has(workout.id);
-      })
-      .filter((workout) => {
-        if (activeFilters.size === 0) return true;
-        const workoutMuscles = workout.exercises.map((ex) => ex.muscle_group);
-        return workoutMuscles.some((muscle) => activeFilters.has(muscle));
-      });
-
-    const filteredWorkouts = sortedWorkouts
-      .filter((workout) => {
-        if (!favoritesOnly) return true;
-        return workout.favorite;
-      })
-      .filter((workout) => {
-        if (!searchTerm) return true;
-        return workout.name.toLowerCase().includes(searchTerm);
-      });
+    ].filter(passesAll);
 
     // Preserve collection order when a specific collection is active.
     if (collectionWorkoutIds && this.activeCollectionId !== null) {
@@ -1794,13 +1823,13 @@ class WorkoutTracker {
       );
       if (col) {
         const order = new Map(col.workoutIds.map((id, i) => [id, i]));
-        filteredWorkouts.sort(
+        sortedWorkouts.sort(
           (a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0),
         );
       }
     }
 
-    if (filteredWorkouts.length === 0) {
+    if (sortedWorkouts.length === 0) {
       const empty = document.createElement("div");
       empty.className = "workout-empty-state";
       if (this.activeCollectionId !== null) {
@@ -1811,7 +1840,7 @@ class WorkoutTracker {
           <p class="workout-empty-title">No workouts in "${
             col ? this.escapeHtml(col.name) : "this collection"
           }" match the current filters.</p>
-          <p class="workout-empty-body">Try clearing the search, muscle filters, or picking a different collection.</p>`;
+          <p class="workout-empty-body">Clear the search, muscle filters, or pick a different collection.</p>`;
       } else {
         empty.innerHTML = `
           <p class="workout-empty-title">No workouts match the current filters.</p>
@@ -1821,10 +1850,107 @@ class WorkoutTracker {
       return;
     }
 
-    filteredWorkouts.forEach((workout) => {
-      const card = this.createWorkoutCard(workout);
-      container.appendChild(card);
+    // Header for the flat list (context lets user know what they're viewing).
+    if (this.activeCollectionId !== null) {
+      const col = this.collections.find(
+        (c) => c.id === this.activeCollectionId,
+      );
+      if (col) {
+        container.appendChild(
+          this.createCollectionSectionHeader(col, sortedWorkouts.length),
+        );
+      }
+    }
+
+    const grid = document.createElement("div");
+    grid.className = "workout-grid workout-grid-flat";
+    sortedWorkouts.forEach((workout) => {
+      grid.appendChild(this.createWorkoutCard(workout));
     });
+    container.appendChild(grid);
+  }
+
+  renderGroupedWorkoutList(container) {
+    // Introductory line the very first time the user lands here.
+    const intro = document.createElement("p");
+    intro.className = "workout-list-intro";
+    intro.textContent =
+      "Pick a training phase, then a workout. Tap a chip above to filter to a single phase.";
+    container.appendChild(intro);
+
+    // Sort collections in their defined order.
+    const orderedCollections = [...this.collections];
+
+    // Track which workouts land in at least one collection.
+    const assignedWorkoutIds = new Set();
+    orderedCollections.forEach((col) =>
+      col.workoutIds.forEach((id) => assignedWorkoutIds.add(id)),
+    );
+
+    orderedCollections.forEach((col) => {
+      const workouts = col.workoutIds
+        .map((id) => this.workouts.find((w) => w.id === id))
+        .filter(Boolean);
+      if (workouts.length === 0) return;
+
+      container.appendChild(
+        this.createCollectionSectionHeader(col, workouts.length),
+      );
+
+      const grid = document.createElement("div");
+      grid.className = "workout-grid workout-grid-grouped";
+      workouts.forEach((workout) =>
+        grid.appendChild(this.createWorkoutCard(workout, { showCollectionBadges: false })),
+      );
+      container.appendChild(grid);
+    });
+
+    // Uncategorized workouts fall into an "Other workouts" section.
+    const orphaned = this.workouts.filter((w) => !assignedWorkoutIds.has(w.id));
+    if (orphaned.length > 0) {
+      const header = document.createElement("div");
+      header.className = "collection-section-header collection-section-header-other";
+      header.innerHTML = `
+        <div class="collection-section-heading">
+          <span class="collection-section-dot" style="--collection-color: var(--text-muted)"></span>
+          <h3 class="collection-section-title">Other workouts</h3>
+          <span class="collection-section-count">${orphaned.length}</span>
+        </div>
+        <p class="collection-section-description">Not assigned to a training phase. Manage in Settings > Manage > Workouts > Collections.</p>
+      `;
+      container.appendChild(header);
+
+      const grid = document.createElement("div");
+      grid.className = "workout-grid workout-grid-grouped";
+      // Favourites first within Other, then A-Z.
+      orphaned
+        .sort((a, b) => {
+          if (!!b.favorite !== !!a.favorite) return b.favorite ? 1 : -1;
+          return a.name.localeCompare(b.name);
+        })
+        .forEach((workout) =>
+          grid.appendChild(this.createWorkoutCard(workout)),
+        );
+      container.appendChild(grid);
+    }
+  }
+
+  createCollectionSectionHeader(collection, count) {
+    const header = document.createElement("div");
+    header.className = "collection-section-header";
+    header.style.setProperty("--collection-color", collection.color);
+    const desc = collection.description
+      ? `<p class="collection-section-description">${this.escapeHtml(collection.description)}</p>`
+      : "";
+    header.innerHTML = `
+      <div class="collection-section-heading">
+        <span class="collection-section-dot" aria-hidden="true"></span>
+        <h3 class="collection-section-title">${this.escapeHtml(collection.name)}</h3>
+        <span class="collection-section-count">${count}</span>
+      </div>
+      ${desc}
+    `;
+    return header;
   }
 
   escapeHtml(text) {
@@ -1833,7 +1959,8 @@ class WorkoutTracker {
     return div.innerHTML;
   }
 
-  createWorkoutCard(workout) {
+  createWorkoutCard(workout, options = {}) {
+    const { showCollectionBadges = true } = options;
     const card = document.createElement("div");
     card.className = "workout-card";
     card.setAttribute("tabindex", "0");
@@ -1899,18 +2026,21 @@ class WorkoutTracker {
     }
 
     // Collection membership badges (colored pills matching the sidebar).
-    const workoutCollections = this.getCollectionsForWorkout(workout.id);
-    if (workoutCollections.length > 0) {
-      const collectionRow = document.createElement("div");
-      collectionRow.className = "workout-collection-badges";
-      workoutCollections.forEach((col) => {
-        const badge = document.createElement("span");
-        badge.className = "workout-collection-badge";
-        badge.style.setProperty("--collection-color", col.color);
-        badge.textContent = col.name;
-        collectionRow.appendChild(badge);
-      });
-      card.appendChild(collectionRow);
+    // Skip when the card is already grouped visually under a collection header.
+    if (showCollectionBadges) {
+      const workoutCollections = this.getCollectionsForWorkout(workout.id);
+      if (workoutCollections.length > 0) {
+        const collectionRow = document.createElement("div");
+        collectionRow.className = "workout-collection-badges";
+        workoutCollections.forEach((col) => {
+          const badge = document.createElement("span");
+          badge.className = "workout-collection-badge";
+          badge.style.setProperty("--collection-color", col.color);
+          badge.textContent = col.name;
+          collectionRow.appendChild(badge);
+        });
+        card.appendChild(collectionRow);
+      }
     }
 
     const actions = document.createElement("div");
@@ -3070,7 +3200,7 @@ class WorkoutTracker {
     this.renderExerciseList();
     this.persistCurrentSession();
 
-    this.showSuccessMessage("Both sessions saved successfully!");
+    this.showSuccessMessage("Both sessions saved");
 
     // Refresh the paired view
     this.showPairedExerciseDetail(
@@ -3456,7 +3586,7 @@ class WorkoutTracker {
     this.scrollToTop();
 
     // Show success feedback
-    this.showSuccessMessage("Session saved successfully!");
+    this.showSuccessMessage("Session saved");
   }
 
   calculateVolume(sets) {
@@ -3684,10 +3814,10 @@ class WorkoutTracker {
     }
 
     if (summary.totalSets > 0) {
-      return `${summary.totalSets} sets logged — momentum rising`;
+      return `${summary.totalSets} sets logged. Momentum rising.`;
     }
 
-    return "Logged a check-in — the streak counts";
+    return "Logged a check-in. The streak counts.";
   }
 
   openHistoryView(selectedId = null) {
@@ -3901,7 +4031,7 @@ class WorkoutTracker {
     if (quoteEl) {
       const quote = this.getRandomQuote();
       if (quote) {
-        quoteEl.innerHTML = `“${quote.text}” <span>— ${quote.author}</span>`;
+        quoteEl.innerHTML = `<span class="quote-mark">&ldquo;</span>${quote.text}<span class="quote-mark">&rdquo;</span> <span class="quote-attribution">${quote.author}</span>`;
       } else {
         quoteEl.textContent = "";
       }
@@ -3911,7 +4041,7 @@ class WorkoutTracker {
       exerciseGrid.innerHTML = "";
       if (exercises.length === 0) {
         exerciseGrid.innerHTML =
-          '<p class="history-empty-body">No sets logged today — count it as a recovery check-in.</p>';
+          '<p class="history-empty-body">No sets logged today. Count it as a recovery check-in.</p>';
       } else {
         const sorted = exercises
           .slice()
@@ -4664,7 +4794,7 @@ class WorkoutTracker {
     }
 
     if (previousTotal === 0) {
-      return "Great start — keep going!";
+      return "Great start. Keep going.";
     }
 
     const delta = recentTotal - previousTotal;
@@ -5105,7 +5235,7 @@ class WorkoutTracker {
     this.renderExerciseLibrary();
     this.renderExerciseSelector();
 
-    this.showSuccessMessage(`Exercise "${name}" created!`);
+    this.showSuccessMessage(`Exercise "${name}" created`);
   }
 
   openEditExercise(exerciseName) {
@@ -5667,7 +5797,7 @@ class WorkoutTracker {
     this.renderCollectionFilterBar();
 
     this.showSuccessMessage(
-      `Workout "${name}" created with ${exercises.length} exercises!`,
+      `Workout "${name}" created with ${exercises.length} exercises`,
     );
   }
 
@@ -6040,7 +6170,7 @@ class WorkoutTracker {
     this.renderWorkoutManager();
     this.renderWorkoutList();
 
-    this.showSuccessMessage(`Workout "${name}" updated!`);
+    this.showSuccessMessage(`Workout "${name}" updated`);
   }
 
   renderWorkoutManager() {
@@ -6528,7 +6658,7 @@ class WorkoutTracker {
       .map((item) => {
         const pct =
           totalVolume > 0 ? Math.round((item.volume / totalVolume) * 100) : 0;
-        return `- ${item.muscle}: ${item.sets} sets (${pct}% volume) across ${item.sessions} sessions — ${item.status}`;
+        return `- ${item.muscle}: ${item.sets} sets (${pct}% volume) across ${item.sessions} sessions. ${item.status}`;
       });
 
     if (includeWindowLabel) {
@@ -6730,7 +6860,7 @@ class WorkoutTracker {
 
     return [
       `- Lower-body frequency flag: ${warning}`,
-      `- Upper vs lower volume ratio (28d): ${ratio.ratio} — ${ratio.label}`,
+      `- Upper vs lower volume ratio (28d): ${ratio.ratio} (${ratio.label})`,
     ].join("\n");
   }
 
@@ -7517,7 +7647,7 @@ class WorkoutTracker {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
 
-    this.showSuccessMessage(`Workout "${workout.name}" exported!`);
+    this.showSuccessMessage(`Workout "${workout.name}" exported`);
   }
 
   importData(event) {
@@ -7576,7 +7706,7 @@ class WorkoutTracker {
             this.saveWorkouts();
             this.renderWorkoutManager();
             this.renderWorkoutList();
-            this.showSuccessMessage(`Workout "${workout.name}" imported!`);
+            this.showSuccessMessage(`Workout "${workout.name}" imported`);
           } else {
             this.showSuccessMessage(
               `Workout "${workout.name}" already exists (same name). Import skipped.`,
@@ -8031,12 +8161,12 @@ class WorkoutTracker {
     }
     const ready = await this._waitForGis();
     if (!ready) {
-      this.showSuccessMessage("Google Sign-In unavailable — check connection");
+      this.showSuccessMessage("Google Sign-In unavailable. Check connection");
       return false;
     }
     if (!this.driveTokenClient) this._driveInitTokenClient();
     if (!this.driveTokenClient) {
-      this.showSuccessMessage("Invalid Client ID — check the value you pasted");
+      this.showSuccessMessage("Invalid Client ID. Check the value you pasted");
       return false;
     }
     return new Promise((resolve) => {
@@ -8095,7 +8225,7 @@ class WorkoutTracker {
     if (resp.status === 401) {
       this.driveAccessToken = null;
       sessionStorage.removeItem("driveAccessToken");
-      throw new Error("Session expired — sign in again");
+      throw new Error("Session expired. Sign in again.");
     }
     if (!resp.ok) {
       const text = await resp.text().catch(() => "");
@@ -8342,7 +8472,7 @@ class WorkoutTracker {
         const remoteDevice = this.driveRemoteInfo.appProperties?.deviceId;
         if (remoteT > pushT + 2000 && remoteDevice !== this.driveDeviceId) {
           this._driveStatus(
-            "Drive has newer changes from another device — use Merge or Pull",
+            "Drive has newer changes from another device. Use Merge or Pull.",
             "error",
           );
           this.driveIsBusy = false;
@@ -8370,8 +8500,8 @@ class WorkoutTracker {
       return { ok: true };
     } catch (e) {
       console.error("drivePush:", e);
-      this._driveStatus("Push failed — " + e.message, "error");
-      this.showSuccessMessage("Drive push failed — " + e.message);
+      this._driveStatus("Push failed: " + e.message, "error");
+      this.showSuccessMessage("Drive push failed: " + e.message);
       return { ok: false };
     } finally {
       this.driveIsBusy = false;
@@ -8419,8 +8549,8 @@ class WorkoutTracker {
       return { ok: true };
     } catch (e) {
       console.error("drivePull:", e);
-      this._driveStatus("Pull failed — " + e.message, "error");
-      this.showSuccessMessage("Drive pull failed — " + e.message);
+      this._driveStatus("Pull failed: " + e.message, "error");
+      this.showSuccessMessage("Drive pull failed: " + e.message);
       return { ok: false };
     } finally {
       this.driveIsBusy = false;
@@ -8453,8 +8583,8 @@ class WorkoutTracker {
       return pushed;
     } catch (e) {
       console.error("driveMerge:", e);
-      this._driveStatus("Merge failed — " + e.message, "error");
-      this.showSuccessMessage("Drive merge failed — " + e.message);
+      this._driveStatus("Merge failed: " + e.message, "error");
+      this.showSuccessMessage("Drive merge failed: " + e.message);
       this.driveIsBusy = false;
       this.renderDriveSyncUI();
       return { ok: false };
@@ -8500,7 +8630,7 @@ class WorkoutTracker {
     if (s.kind === "signed-out") {
       const ok = await this.driveSignIn(true);
       if (ok) {
-        // After sign-in we know the state — if nothing remote, push; if remote is newer with no local change, pull.
+        // After sign-in we know the state. If nothing remote, push; if remote is newer with no local change, pull.
         const after = this.computeSyncState();
         if (after.primary === "push") await this.drivePush();
         else if (after.primary === "pull") await this.drivePull({ confirm: false });
@@ -8685,7 +8815,7 @@ class WorkoutTracker {
           synced: "Up to date",
           push: "Local changes pending",
           pull: "Drive has new data",
-          conflict: "Diverged — needs merge",
+          conflict: "Diverged, needs merge",
         }[state.kind] || "";
       badge.dataset.state = state.kind;
     }
@@ -8756,7 +8886,7 @@ class WorkoutTracker {
           pull:
             "Drive has newer changes from another device. Sync will pull them in.",
           conflict:
-            "Both this device and Drive have changes. Sync will merge them — nothing is lost.",
+            "Both this device and Drive have changes. Sync will merge them. Nothing is lost.",
         }[state.kind] || "";
     }
 
@@ -8936,7 +9066,7 @@ class WorkoutTracker {
       const resp = await fetch(url);
       const data = await resp.json();
       if (data.ok) {
-        this.showSuccessMessage("Connected to Google Sheets!");
+        this.showSuccessMessage("Connected to Google Sheets");
         return true;
       } else {
         this.showSuccessMessage(
@@ -8947,7 +9077,7 @@ class WorkoutTracker {
     } catch (err) {
       if (err.message === "Failed to fetch" || err.message === "Load failed") {
         this.showSuccessMessage(
-          'Connection blocked — check Apps Script is deployed with access set to "Anyone"',
+          'Connection blocked. Check Apps Script is deployed with access set to "Anyone".',
         );
       } else {
         this.showSuccessMessage("Connection error: " + err.message);
@@ -8976,11 +9106,11 @@ class WorkoutTracker {
         );
       } else {
         console.error("Sheets sync error:", data.error);
-        this.showSuccessMessage("Sheets sync failed — " + data.error);
+        this.showSuccessMessage("Sheets sync failed: " + data.error);
       }
     } catch (err) {
       console.error("Sheets sync error:", err);
-      this.showSuccessMessage("Sheets sync error — " + err.message);
+      this.showSuccessMessage("Sheets sync error: " + err.message);
     } finally {
       this.sheetsIsSyncing = false;
     }
@@ -9020,7 +9150,7 @@ class WorkoutTracker {
 
       if (totalRows === 0) {
         updateStatus("No session data to sync.", "");
-        this.showSuccessMessage("Nothing to sync — no sessions found");
+        this.showSuccessMessage("Nothing to sync. No sessions found");
         return;
       }
 
@@ -9048,11 +9178,11 @@ class WorkoutTracker {
       }
 
       updateStatus(`Done! ${written} sets synced.`, "success");
-      this.showSuccessMessage(`Bulk sync complete — ${written} sets synced`);
+      this.showSuccessMessage(`Bulk sync complete: ${written} sets synced`);
     } catch (err) {
       console.error("Bulk sync error:", err);
       updateStatus("Sync failed: " + err.message, "error");
-      this.showSuccessMessage("Bulk sync failed — " + err.message);
+      this.showSuccessMessage("Bulk sync failed: " + err.message);
     } finally {
       this.sheetsIsSyncing = false;
     }

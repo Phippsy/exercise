@@ -142,11 +142,11 @@
         },
         {
             "id": 3,
-            "name": "THU \u2014 Pump / Rear-Delt / Arms (\u224845 min)",
+            "name": "THU - Pump / Rear-Delt / Arms (\u224845 min)",
             "date": null,
             "exercises": [
                 {
-                    "name": "Landmine Lateral-Raise\u2192Press",
+                    "name": "Landmine Lateral-Raise-to-Press",
                     "muscle_group": "Shoulders",
                     "sets": 3,
                     "reps": null,
@@ -191,7 +191,7 @@
                     "form_video": "https://www.youtube.com/watch?v=nRiJVZDpdLg"
                 },
                 {
-                    "name": "Push-up Drop Set (feet-elevated \u2192 floor)",
+                    "name": "Push-up Drop Set (feet-elevated to floor)",
                     "muscle_group": "Chest",
                     "sets": 2,
                     "reps": 15,
@@ -212,7 +212,7 @@
         },
         {
             "id": 4,
-            "name": "WED \u2014 Landmines & Posterior (\u224845 min)",
+            "name": "WED - Landmines & Posterior (\u224845 min)",
             "date": null,
             "exercises": [
                 {
@@ -610,7 +610,7 @@
         {
             "id": 8,
             "favorite": true,
-            "name": "Key 4: Lower A \u2013 Quads/Glutes/Core (Balanced)",
+            "name": "Key 4: Lower A - Quads/Glutes/Core (Balanced)",
             "date": null,
             "exercises": [
                 {
@@ -689,7 +689,7 @@
                     "sets": 3,
                     "reps": 10,
                     "weight_kg": null,
-                    "notes": "Scapular motion only \u2014 controlled retraction (1\u20132 cm) then strong protraction. Push floor away, ribs down, glutes engaged. Pause 1s at top. Don't bend elbows or arch lower back.",
+                    "notes": "Scapular motion only - controlled retraction (1-2 cm) then strong protraction. Push floor away, ribs down, glutes engaged. Pause 1s at top. Don't bend elbows or arch lower back.",
                     "form_video": null
                 },
                 {
@@ -698,7 +698,7 @@
                     "sets": 3,
                     "reps": null,
                     "weight_kg": null,
-                    "notes": "Hold 20\u201340 seconds. Quality > duration. Stop if lower back starts arching.",
+                    "notes": "Hold 20-40 seconds. Quality > duration. Stop if lower back starts arching.",
                     "form_video": null
                 },
                 {
@@ -883,7 +883,7 @@
         },
         {
             "id": 11,
-            "name": "Phase 2 \u2014 Workout A (Upper Base + Pincha Support)",
+            "name": "Phase 2 - Workout A (Upper Base + Pincha Support)",
             "date": null,
             "exercises": [
                 {
@@ -980,7 +980,7 @@
         },
         {
             "id": 12,
-            "name": "Phase 2 \u2014 Workout B (Lower / Posterior Chain / Carry / Trunk)",
+            "name": "Phase 2 - Workout B (Lower / Posterior Chain / Carry / Trunk)",
             "date": null,
             "exercises": [
                 {
@@ -1059,11 +1059,11 @@
         },
         {
             "id": 13,
-            "name": "Phase 2 \u2014 Workout C (Shoulder Stability / Vertical Pattern / Core Integration)",
+            "name": "Phase 2 - Workout C (Shoulder Stability / Vertical Pattern / Core Integration)",
             "date": null,
             "exercises": [
                 {
-                    "name": "Landmine Lateral-Raise\u2192Press",
+                    "name": "Landmine Lateral-Raise-to-Press",
                     "muscle_group": "Shoulders",
                     "sets": 3,
                     "reps": "10-12",
@@ -1156,7 +1156,7 @@
         },
         {
             "id": 14,
-            "name": "Phase 3 \u2014 Workout A (Upper Base + Pincha Support)",
+            "name": "Phase 3 - Workout A (Upper Base + Pincha Support)",
             "date": null,
             "exercises": [
                 {
@@ -1253,7 +1253,7 @@
         },
         {
             "id": 15,
-            "name": "Phase 3 \u2014 Workout B (Lower / Posterior Chain / Carry / Trunk)",
+            "name": "Phase 3 - Workout B (Lower / Posterior Chain / Carry / Trunk)",
             "date": null,
             "exercises": [
                 {
@@ -1332,11 +1332,11 @@
         },
         {
             "id": 16,
-            "name": "Phase 3 \u2014 Workout C (Shoulder Stability / Vertical Pattern / Core Integration)",
+            "name": "Phase 3 - Workout C (Shoulder Stability / Vertical Pattern / Core Integration)",
             "date": null,
             "exercises": [
                 {
-                    "name": "Landmine Lateral-Raise\u2192Press",
+                    "name": "Landmine Lateral-Raise-to-Press",
                     "muscle_group": "Shoulders",
                     "sets": 3,
                     "reps": "10-12",
@@ -1429,7 +1429,7 @@
         },
         {
             "id": 17,
-            "name": "Consolidation A \u2014 Upper + Shoulder Quality",
+            "name": "Consolidation A - Upper + Shoulder Quality",
             "date": null,
             "notes": "Phase 0 reset. No grinding. Aim: leave the gym feeling better than you arrived.",
             "exercises": [
@@ -1509,7 +1509,7 @@
         },
         {
             "id": 18,
-            "name": "Consolidation B \u2014 Lower + Trunk",
+            "name": "Consolidation B - Lower + Trunk",
             "date": null,
             "notes": "Should leave you feeling better afterwards, not depleted.",
             "exercises": [
@@ -1580,9 +1580,9 @@
         },
         {
             "id": 19,
-            "name": "Phase 1A \u2014 Upper Quality + Pincha Support",
+            "name": "Phase 1A - Upper Quality + Pincha Support",
             "date": null,
-            "notes": "Weeks 1\u20134. RPE 7\u20138. Clean movement, moderate volume, full range, no failure.",
+            "notes": "Weeks 1-4. RPE 7-8. Clean movement, moderate volume, full range, no failure.",
             "exercises": [
                 {
                     "name": "Pull-Ups",
@@ -1590,7 +1590,7 @@
                     "sets": 3,
                     "reps": "8-10",
                     "weight_kg": null,
-                    "notes": "Leave 1\u20132 reps in reserve.",
+                    "notes": "Leave 1-2 reps in reserve.",
                     "form_video": null
                 },
                 {
@@ -1599,7 +1599,7 @@
                     "sets": 3,
                     "reps": "10-12",
                     "weight_kg": 25,
-                    "notes": "Start around 25\u201326kg.",
+                    "notes": "Start around 25-26kg.",
                     "form_video": "https://www.youtube.com/watch?v=pKZMNVbfUzQ"
                 },
                 {
@@ -1669,7 +1669,7 @@
         },
         {
             "id": 20,
-            "name": "Phase 1B \u2014 Lower Capacity + Carries",
+            "name": "Phase 1B - Lower Capacity + Carries",
             "date": null,
             "notes": "Resist adding upper-body work. Let lower day actually be lower day.",
             "exercises": [
@@ -1679,7 +1679,7 @@
                     "sets": 3,
                     "reps": "8-10",
                     "weight_kg": 75,
-                    "notes": "70\u201380kg depending on freshness. No grinding.",
+                    "notes": "70-80kg depending on freshness. No grinding.",
                     "form_video": null
                 },
                 {
@@ -1749,7 +1749,7 @@
         },
         {
             "id": 21,
-            "name": "Phase 1C \u2014 Shoulder Stability + Trunk Integration",
+            "name": "Phase 1C - Shoulder Stability + Trunk Integration",
             "date": null,
             "notes": "One arm finisher only, not three.",
             "exercises": [
@@ -1824,14 +1824,23 @@
                     "weight_kg": null,
                     "notes": "Or forearm plank scap shifts.",
                     "form_video": null
+                },
+                {
+                    "name": "Overhead Cable Triceps Extension",
+                    "muscle_group": "Triceps",
+                    "sets": 2,
+                    "reps": "10-12",
+                    "weight_kg": null,
+                    "notes": "Optional. Or cable curls. Pick ONE arm movement, not three.",
+                    "form_video": null
                 }
             ]
         },
         {
             "id": 22,
-            "name": "Phase 2A \u2014 Upper Strength",
+            "name": "Phase 2A - Upper Strength",
             "date": null,
-            "notes": "Weeks 5\u20138. RPE ~8, leave 1\u20132 reps in reserve. Longer rests. Fewer exercises. Should feel more focused.",
+            "notes": "Weeks 5-8. RPE ~8, leave 1-2 reps in reserve. Longer rests. Fewer exercises. Should feel more focused.",
             "exercises": [
                 {
                     "name": "Pull-Ups",
@@ -1909,7 +1918,7 @@
         },
         {
             "id": 23,
-            "name": "Phase 2B \u2014 Lower Strength + Carry",
+            "name": "Phase 2B - Lower Strength + Carry",
             "date": null,
             "notes": "Careful not to add pull-ups, push-ups, curls, extra chest. Let lower day be lower day.",
             "exercises": [
@@ -1919,7 +1928,7 @@
                     "sets": 4,
                     "reps": "5-8",
                     "weight_kg": 80,
-                    "notes": "75\u201385kg range. Stop before form changes.",
+                    "notes": "75-85kg range. Stop before form changes.",
                     "form_video": null
                 },
                 {
@@ -1980,7 +1989,7 @@
         },
         {
             "id": 24,
-            "name": "Phase 2C \u2014 Pull / Shoulder Density",
+            "name": "Phase 2C - Pull / Shoulder Density",
             "date": null,
             "notes": "Keeps vertical/pulling/shoulder theme, trims accessory sprawl.",
             "exercises": [
@@ -2060,9 +2069,9 @@
         },
         {
             "id": 25,
-            "name": "Phase 3A \u2014 Pincha Strength + Upper Control",
+            "name": "Phase 3A - Pincha Strength + Upper Control",
             "date": null,
-            "notes": "Weeks 9\u201312. Not a bodybuilding upper day \u2014 shoulder/trunk architecture. Moderate loads, crisp, controlled.",
+            "notes": "Weeks 9-12. Not a bodybuilding upper day - shoulder/trunk architecture. Moderate loads, crisp, controlled.",
             "exercises": [
                 {
                     "name": "Wall-Facing Forearm Hold",
@@ -2135,12 +2144,21 @@
                     "weight_kg": null,
                     "notes": null,
                     "form_video": null
+                },
+                {
+                    "name": "Reverse Pec Deck / Rear Delt Flys",
+                    "muscle_group": "Shoulders",
+                    "sets": 2,
+                    "reps": "12-15",
+                    "weight_kg": null,
+                    "notes": "Optional.",
+                    "form_video": null
                 }
             ]
         },
         {
             "id": 26,
-            "name": "Phase 3B \u2014 Mobility Strength + Lower Control",
+            "name": "Phase 3B - Mobility Strength + Lower Control",
             "date": null,
             "notes": "Goal is not to crush posterior chain. Build lower-body control, tissue tolerance, trunk integrity.",
             "exercises": [
@@ -2229,7 +2247,7 @@
         },
         {
             "id": 27,
-            "name": "Phase 3C \u2014 Athletic Trunk + Scapular Integration",
+            "name": "Phase 3C - Athletic Trunk + Scapular Integration",
             "date": null,
             "notes": "The most \u201cgym supports yoga\u201d session.",
             "exercises": [
@@ -2318,7 +2336,7 @@
         },
         {
             "id": 28,
-            "name": "Week 13 \u2014 Deload & Test Markers",
+            "name": "Week 13 - Deload & Test Markers",
             "date": null,
             "notes": "Not a max-out week. Two lighter sessions plus markers. Test quality, not maxes.",
             "exercises": [
@@ -2389,28 +2407,28 @@
         },
         {
             "id": 101,
-            "name": "Phase 1 \u2014 Capacity",
+            "name": "Phase 1 - Capacity",
             "color": "#2dd4bf",
-            "description": "Weeks 1\u20134. Clean movement, moderate volume, RPE 7\u20138. Add reps first, then small load bumps.",
+            "description": "Weeks 1-4. Clean movement, moderate volume, RPE 7-8. Add reps first, then small load bumps.",
             "workoutIds": [19, 20, 21]
         },
         {
             "id": 102,
-            "name": "Phase 2 \u2014 Strength",
+            "name": "Phase 2 - Strength",
             "color": "#f59e0b",
-            "description": "Weeks 5\u20138. Heavier work, fewer exercises, longer rests, RPE ~8.",
+            "description": "Weeks 5-8. Heavier work, fewer exercises, longer rests, RPE ~8.",
             "workoutIds": [22, 23, 24]
         },
         {
             "id": 103,
-            "name": "Phase 3 \u2014 Athletic",
+            "name": "Phase 3 - Athletic",
             "color": "#a78bfa",
-            "description": "Weeks 9\u201312. Convert strength into usable body control. Yoga/pincha/trunk integration.",
+            "description": "Weeks 9-12. Convert strength into usable body control. Yoga/pincha/trunk integration.",
             "workoutIds": [25, 26, 27]
         },
         {
             "id": 104,
-            "name": "Week 13 \u2014 Deload/Test",
+            "name": "Week 13 - Deload/Test",
             "color": "#fb7185",
             "description": "Two lighter sessions plus test markers. Check progress without maxing out.",
             "workoutIds": [28]

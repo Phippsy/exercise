@@ -1,33 +1,40 @@
 /* ============================================
-   Design System - Based on Focus Portal Guide
+   Design System - Refined (v1.20.0 taste overhaul)
+   ============================================
+   Guiding principles:
+   - Premium fonts, no Inter / Roboto
+   - Off-black + warm off-white bases (never pure #000 / #fff)
+   - One accent (soft violet). Tinted shadows in the accent hue.
+   - Generous radius scale (10 / 16 / 24), soft diffuse elevation.
+   - Single, expressive cubic-bezier easing curve.
    ============================================ */
 
 :root {
-  /* Colors - Adapted from design guide */
-  --color-primary: #633c99;
-  --color-accent: #8566b3;
-  --color-success: #7b993c;
-  --color-warning: #998b3c;
-  --color-danger: #e14b5a;
-  --color-info: #5a67cc;
+  /* Brand colors */
+  --color-primary: #6a4aa3;
+  --color-accent: #8f6dbf;
+  --color-success: #7fa348;
+  --color-warning: #b28e35;
+  --color-danger: #d6485a;
+  --color-info: #6675cc;
 
-  /* Dark Mode (default) */
-  --dark-bg-page: #0a0a0a;
-  --dark-bg-surface: #141417;
-  --dark-bg-surface-subtle: #1a1a1f;
-  --dark-border-subtle: #44444d;
-  --dark-border-strong: #76767e;
-  --dark-text-primary: #f6f6fa;
-  --dark-text-muted: #76767e;
+  /* Dark canvas (warm off-black, tuned for comfort) */
+  --dark-bg-page: #0d0c11;
+  --dark-bg-surface: #17161c;
+  --dark-bg-surface-subtle: #1e1c25;
+  --dark-border-subtle: #2c2932;
+  --dark-border-strong: #4d4956;
+  --dark-text-primary: #f3f0f7;
+  --dark-text-muted: #8f8b98;
 
-  /* Light Mode */
-  --light-bg-page: #ffffff;
-  --light-bg-surface: #f8f8f9;
-  --light-bg-surface-subtle: #f0f0f2;
-  --light-border-subtle: #d4d4d8;
-  --light-border-strong: #a1a1aa;
-  --light-text-primary: #18181b;
-  --light-text-muted: #71717a;
+  /* Light canvas (warm bone, not pure white) */
+  --light-bg-page: #faf8f5;
+  --light-bg-surface: #ffffff;
+  --light-bg-surface-subtle: #f2efea;
+  --light-border-subtle: #e6e1da;
+  --light-border-strong: #b7b0a6;
+  --light-text-primary: #1a1520;
+  --light-text-muted: #6b6572;
 
   /* Active theme colors (default to dark) */
   --bg-page: var(--dark-bg-page);
@@ -37,48 +44,55 @@
   --border-subtle: var(--dark-border-subtle);
   --border-strong: var(--dark-border-strong);
   --text-primary: var(--dark-text-primary);
-  --text-secondary: #c7c7cc;
+  --text-secondary: #c9c4d1;
   --text-muted: var(--dark-text-muted);
-  --color-error: #e14b5a;
-  --radius-xs: 2px;
+  --color-error: #d6485a;
+  --radius-xs: 4px;
   --spacing-xxs: 2px;
 
-  /* Neutrals */
-  --neutral-0: #050509;
-  --neutral-1: #1a1a1f;
-  --neutral-2: #2f2f36;
-  --neutral-3: #44444d;
-  --neutral-4: #595964;
-  --neutral-5: #76767e;
-  --neutral-6: #939399;
-  --neutral-7: #b0b0b4;
-  --neutral-8: #cdcdd0;
-  --neutral-9: #f6f6fa;
+  /* Neutrals (warm, tinted with accent hue) */
+  --neutral-0: #0a0910;
+  --neutral-1: #1e1c25;
+  --neutral-2: #2c2932;
+  --neutral-3: #4d4956;
+  --neutral-4: #64606d;
+  --neutral-5: #8f8b98;
+  --neutral-6: #a8a4b0;
+  --neutral-7: #c9c4d1;
+  --neutral-8: #e0dbe7;
+  --neutral-9: #f3f0f7;
 
-  /* Interactive States */
-  --state-hover: #44444d;
-  --state-focus: #8566b3;
-  --state-selected: #57308a;
-  --state-disabled-bg: #2f2f36;
+  /* Interactive states */
+  --state-hover: rgba(143, 109, 191, 0.10);
+  --state-focus: #8f6dbf;
+  --state-selected: rgba(143, 109, 191, 0.16);
+  --state-disabled-bg: rgba(255, 255, 255, 0.04);
 
-  /* Typography */
-  --font-family:
-    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-size-xs: 10px;
+  /* Typography — Geist for UI, Instrument Serif for display, Geist Mono for numbers */
+  --font-sans:
+    "Geist", "Geist Fallback", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  --font-serif:
+    "Instrument Serif", "Iowan Old Style", "Palatino", Georgia, serif;
+  --font-mono:
+    "Geist Mono", "SF Mono", "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --font-family: var(--font-sans);
+
+  --font-size-xs: 11px;
   --font-size-sm: 12px;
   --font-size-base: 14px;
   --font-size-md: 16px;
-  --font-size-lg: 18px;
-  --font-size-xl: 24px;
-  --font-size-2xl: 32px;
+  --font-size-lg: 19px;
+  --font-size-xl: 26px;
+  --font-size-2xl: 34px;
 
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
 
-  --line-height-tight: 1.2;
-  --line-height-normal: 1.5;
+  --line-height-tight: 1.15;
+  --line-height-normal: 1.55;
   --line-height-relaxed: 1.75;
 
   /* Spacing */
@@ -89,23 +103,41 @@
   --spacing-xl: 32px;
   --gutter-md: 16px;
 
-  /* Border Radius */
-  --radius-sm: 3px;
-  --radius-md: 5px;
-  --radius-lg: 6px;
+  /* Border radius — softer, more expressive scale */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
   --radius-pill: 9999px;
 
-  /* Icon Sizes */
+  /* Icon sizes */
   --icon-size-xs: 12px;
   --icon-size-sm: 16px;
   --icon-size-md: 20px;
   --icon-size-lg: 24px;
   --icon-size-xl: 32px;
 
-  /* Elevation */
-  --elevation-low: 0 2px 8px rgba(0, 0, 0, 0.08);
-  --elevation-medium: 0 8px 24px rgba(0, 0, 0, 0.12);
-  --elevation-high: 0 16px 48px rgba(0, 0, 0, 0.16);
+  /* Elevation — soft diffuse shadows tinted with the accent hue.
+     Two-part shadow: crisp near-shadow + broad ambient bloom. */
+  --elevation-low:
+    0 1px 2px rgba(20, 15, 40, 0.10),
+    0 6px 16px rgba(72, 45, 120, 0.10);
+  --elevation-medium:
+    0 2px 4px rgba(20, 15, 40, 0.12),
+    0 12px 32px rgba(72, 45, 120, 0.16);
+  --elevation-high:
+    0 4px 8px rgba(20, 15, 40, 0.16),
+    0 24px 64px rgba(72, 45, 120, 0.24);
+  --elevation-accent-glow:
+    0 10px 32px rgba(143, 109, 191, 0.28);
+
+  /* Motion — one canonical easing curve for the whole app */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-back: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --duration-fast: 160ms;
+  --duration-base: 220ms;
+  --duration-slow: 360ms;
 }
 
 /* Light mode overrides */
@@ -117,10 +149,22 @@ body.light-mode {
   --border-subtle: var(--light-border-subtle);
   --border-strong: var(--light-border-strong);
   --text-primary: var(--light-text-primary);
-  --text-secondary: #3f3f46;
+  --text-secondary: #3d3448;
   --text-muted: var(--light-text-muted);
-  --state-hover: #e4e4e7;
-  --state-disabled-bg: #f4f4f5;
+  --state-hover: rgba(106, 74, 163, 0.08);
+  --state-selected: rgba(106, 74, 163, 0.14);
+  --state-disabled-bg: rgba(20, 15, 40, 0.04);
+  --elevation-low:
+    0 1px 2px rgba(20, 15, 40, 0.05),
+    0 6px 20px rgba(106, 74, 163, 0.06);
+  --elevation-medium:
+    0 2px 4px rgba(20, 15, 40, 0.06),
+    0 16px 40px rgba(106, 74, 163, 0.10);
+  --elevation-high:
+    0 4px 8px rgba(20, 15, 40, 0.08),
+    0 28px 72px rgba(106, 74, 163, 0.14);
+  --elevation-accent-glow:
+    0 14px 40px rgba(106, 74, 163, 0.20);
 }
 
 /* ============================================
@@ -165,19 +209,19 @@ body::before {
   background-color: var(--bg-page);
   background-image:
     radial-gradient(
-      1000px circle at 10% 10%,
-      rgba(133, 102, 179, 0.18),
-      transparent 45%
+      1100px circle at 8% 6%,
+      rgba(143, 109, 191, 0.14),
+      transparent 55%
     ),
     radial-gradient(
-      800px circle at 80% 0%,
-      rgba(99, 60, 153, 0.16),
-      transparent 40%
-    ),
-    radial-gradient(
-      700px circle at 20% 60%,
-      rgba(90, 103, 204, 0.12),
+      900px circle at 92% -4%,
+      rgba(106, 74, 163, 0.10),
       transparent 50%
+    ),
+    radial-gradient(
+      750px circle at 18% 65%,
+      rgba(102, 117, 204, 0.06),
+      transparent 60%
     );
   /* iOS Safari hint to promote to its own compositor layer */
   transform: translateZ(0);
@@ -187,19 +231,19 @@ body::before {
 body.light-mode::before {
   background-image:
     radial-gradient(
-      1000px circle at 10% 10%,
-      rgba(133, 102, 179, 0.08),
-      transparent 45%
+      1100px circle at 8% 6%,
+      rgba(143, 109, 191, 0.10),
+      transparent 55%
     ),
     radial-gradient(
-      800px circle at 80% 0%,
-      rgba(99, 60, 153, 0.06),
-      transparent 40%
-    ),
-    radial-gradient(
-      700px circle at 20% 60%,
-      rgba(90, 103, 204, 0.05),
+      900px circle at 92% -4%,
+      rgba(106, 74, 163, 0.06),
       transparent 50%
+    ),
+    radial-gradient(
+      750px circle at 18% 65%,
+      rgba(102, 117, 204, 0.04),
+      transparent 60%
     );
 }
 
@@ -315,12 +359,16 @@ input[type="checkbox"],
 }
 
 .header-context-title {
-  color: #9b59d0;
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
+  color: var(--color-accent);
+  font-family: var(--font-serif);
+  font-size: 30px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
   flex: 1;
   min-width: 0;
   overflow-wrap: anywhere;
+  text-wrap: balance;
 }
 
 .header-context-title-editable {
@@ -350,7 +398,7 @@ input[type="checkbox"],
   border-radius: var(--radius-sm);
   padding: 2px 4px;
   margin: -2px -4px;
-  transition: all 0.15s ease;
+  transition: all 0.15s var(--ease-standard);
   cursor: text;
   border-bottom: 1px dashed transparent;
 }
@@ -387,12 +435,14 @@ input[type="checkbox"],
   border-radius: var(--radius-sm);
   padding: 2px 4px;
   margin: -2px -4px;
-  transition: all 0.15s ease;
+  transition: all 0.15s var(--ease-standard);
   cursor: text;
   border-bottom: 1px dashed transparent;
-  color: #9b59d0;
+  color: var(--color-accent);
+  font-family: var(--font-serif);
   font-size: 1.1em;
-  font-weight: var(--font-weight-bold);
+  font-weight: 400;
+  letter-spacing: -0.02em;
 }
 
 .workout-name-editable:not(:focus) {
@@ -420,7 +470,7 @@ input[type="checkbox"],
   align-items: center;
   justify-content: center;
   gap: var(--spacing-sm);
-  transition: all 0.2s ease;
+  transition: all 0.2s var(--ease-standard);
   width: 100%;
   border-radius: var(--radius-md);
 }
@@ -454,11 +504,14 @@ input[type="checkbox"],
 }
 
 .workouts-section-title {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-serif);
+  font-size: 30px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
   color: var(--text-primary);
   margin-bottom: var(--spacing-md);
   margin-top: var(--spacing-xl);
+  line-height: 1.05;
 }
 
 .workout-grid {
@@ -481,7 +534,7 @@ input[type="checkbox"],
    ============================================ */
 
 .view {
-  animation: fadeIn 0.2s ease-in;
+  animation: fadeIn 0.2s var(--ease-standard);
 }
 
 .view.hidden,
@@ -521,9 +574,11 @@ input[type="checkbox"],
 }
 
 .section-title {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-semibold);
-  line-height: var(--line-height-tight);
+  font-family: var(--font-serif);
+  font-size: 32px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
   margin-bottom: var(--spacing-sm);
 }
 
@@ -546,7 +601,7 @@ input[type="checkbox"],
   color: var(--text-secondary);
   border: none;
   border-radius: var(--radius-sm);
-  transition: all 0.2s ease;
+  transition: all 0.2s var(--ease-standard);
   cursor: pointer;
 }
 
@@ -610,56 +665,73 @@ button {
   font-family: var(--font-family);
   cursor: pointer;
   border: none;
-  transition: all 0.15s ease;
+  transition: all 0.15s var(--ease-standard);
 }
 
 .btn-primary {
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-xs);
-  padding: var(--spacing-md) var(--spacing-lg);
+  padding: 10px var(--spacing-lg);
   background-color: var(--color-primary);
   color: #ffffff;
   font-size: var(--font-size-base);
-  font-weight: var(--font-weight-medium);
-  border-radius: var(--radius-sm);
-  min-height: 40px;
-  box-shadow: 0 8px 20px rgba(99, 60, 153, 0.25);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.005em;
+  border-radius: var(--radius-md);
+  min-height: 42px;
+  box-shadow: var(--elevation-accent-glow);
+  cursor: pointer;
 }
 
 .btn-primary:hover {
   background-color: var(--color-accent);
+  transform: translateY(-1px);
+  box-shadow:
+    0 1px 2px rgba(20, 15, 40, 0.15),
+    0 16px 40px rgba(143, 109, 191, 0.36);
 }
 
-.btn-primary:focus {
+.btn-primary:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: var(--elevation-low);
+}
+
+.btn-primary:focus-visible {
   outline: 2px solid var(--state-focus);
-  outline-offset: 2px;
+  outline-offset: 3px;
 }
 
 .btn-secondary {
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-xs);
-  padding: 6px var(--spacing-md);
-  background-color: var(--bg-surface-subtle);
+  padding: 8px var(--spacing-md);
+  background-color: var(--bg-surface);
   color: var(--text-primary);
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-medium);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  min-height: 28px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  border-radius: var(--radius-md);
+  min-height: 34px;
+  box-shadow: var(--elevation-low);
+  cursor: pointer;
 }
 
 .btn-secondary:hover {
-  background-color: var(--state-hover);
+  background-color: var(--bg-surface-subtle);
   border-color: var(--border-strong);
-  box-shadow: var(--elevation-low);
+  transform: translateY(-1px);
+  box-shadow: var(--elevation-medium);
 }
 
-.btn-secondary:focus {
+.btn-secondary:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.btn-secondary:focus-visible {
   outline: 2px solid var(--state-focus);
-  outline-offset: 2px;
+  outline-offset: 3px;
 }
 
 .btn-icon {
@@ -709,7 +781,7 @@ button {
   border-radius: var(--radius-lg);
   margin-top: var(--spacing-lg);
   margin-bottom: var(--spacing-lg);
-  transition: all 0.2s ease;
+  transition: all 0.2s var(--ease-standard);
 }
 
 .section-back-btn {
@@ -761,7 +833,7 @@ button {
   font-weight: var(--font-weight-semibold);
   border: 2px solid var(--color-accent);
   border-radius: var(--radius-md);
-  transition: all 0.2s ease;
+  transition: all 0.2s var(--ease-standard);
   flex: 1;
   justify-content: center;
 }
@@ -777,7 +849,7 @@ button {
   font-weight: var(--font-weight-semibold);
   border: 2px solid var(--color-accent);
   border-radius: var(--radius-md);
-  transition: all 0.2s ease;
+  transition: all 0.2s var(--ease-standard);
   flex: 1;
   justify-content: center;
 }
@@ -849,34 +921,58 @@ button {
     var(--bg-surface-subtle)
   );
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   padding: var(--spacing-lg);
   margin-bottom: var(--spacing-lg);
   box-shadow: var(--elevation-low);
 }
 
 .card-title {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-weight: 400;
+  letter-spacing: -0.015em;
   margin-bottom: var(--spacing-md);
+  line-height: 1.15;
 }
 
 .card-title-sm {
   font-size: var(--font-size-md);
   font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.005em;
   margin-bottom: var(--spacing-md);
 }
 
 .quote-card {
   background: linear-gradient(
-    135deg,
-    rgba(99, 102, 241, 0.08),
-    rgba(79, 70, 229, 0.12)
+    140deg,
+    color-mix(in oklab, var(--color-accent) 10%, var(--bg-surface)),
+    color-mix(in oklab, var(--color-primary) 8%, var(--bg-surface))
   );
-  border-color: rgba(99, 102, 241, 0.35);
-  padding: var(--spacing-lg);
+  border-color: color-mix(in oklab, var(--color-accent) 30%, transparent);
+  padding: var(--spacing-xl) var(--spacing-lg);
   margin-bottom: var(--spacing-md);
-  box-shadow: 0 10px 30px rgba(79, 70, 229, 0.12);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--elevation-medium);
+  position: relative;
+  overflow: hidden;
+}
+
+.quote-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    600px circle at 0% 0%,
+    color-mix(in oklab, var(--color-accent) 24%, transparent),
+    transparent 55%
+  );
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.quote-card > * {
+  position: relative;
 }
 
 .quote-card-top {
@@ -888,11 +984,35 @@ button {
 }
 
 .quote-text {
-  font-size: 1.1rem;
-  line-height: 1.7;
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-style: italic;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
   margin: 0 0 var(--spacing-sm);
   color: var(--text-primary);
-  font-style: italic;
+  text-wrap: balance;
+}
+
+.quote-mark {
+  color: color-mix(in oklab, var(--color-accent) 65%, var(--text-muted));
+  font-family: var(--font-serif);
+  font-size: 1.15em;
+  padding: 0 2px;
+  font-style: normal;
+  font-weight: 400;
+}
+
+.quote-attribution {
+  display: block;
+  margin-top: 8px;
+  font-family: var(--font-sans);
+  font-style: normal;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
 .quote-author {
@@ -1021,31 +1141,48 @@ button {
 }
 
 .workout-card {
-  background-color: var(--bg-surface);
+  background: linear-gradient(
+    160deg,
+    var(--bg-surface),
+    color-mix(in oklab, var(--bg-surface) 90%, var(--bg-surface-subtle))
+  );
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   padding: var(--spacing-lg);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition:
+    transform var(--duration-base) var(--ease-out-soft),
+    box-shadow var(--duration-base) var(--ease-out-soft),
+    border-color var(--duration-fast) var(--ease-standard);
   position: relative;
+  box-shadow: var(--elevation-low);
 }
 
 .workout-card:hover {
-  border-color: var(--color-accent);
-  box-shadow: var(--elevation-low);
-  transform: translateY(-2px);
+  border-color: color-mix(in oklab, var(--color-accent) 55%, transparent);
+  box-shadow: var(--elevation-medium);
+  transform: translateY(-3px);
 }
 
-.workout-card:focus {
+.workout-card:active {
+  transform: translateY(-1px) scale(0.995);
+  box-shadow: var(--elevation-low);
+}
+
+.workout-card:focus-visible {
   outline: 2px solid var(--state-focus);
-  outline-offset: 2px;
+  outline-offset: 3px;
 }
 
 .workout-card-title {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-serif);
+  font-size: var(--font-size-xl);
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
   margin-bottom: var(--spacing-sm);
   color: var(--text-primary);
+  text-wrap: balance;
 }
 
 .workout-card-meta {
@@ -1101,7 +1238,7 @@ button {
   flex-shrink: 0;
   min-width: 32px;
   min-height: 32px;
-  transition: all 0.15s ease;
+  transition: all 0.15s var(--ease-standard);
 }
 
 .workout-card .favorite-toggle.active {
@@ -1200,7 +1337,7 @@ button {
   color: var(--text-primary);
   font-weight: var(--font-weight-medium);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.15s var(--ease-standard);
 }
 
 .favorite-filter-btn svg {
@@ -1238,11 +1375,16 @@ button {
   border-radius: var(--radius-md);
   padding: var(--spacing-md) var(--spacing-lg);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition:
+    transform var(--duration-base) var(--ease-out-soft),
+    box-shadow var(--duration-base) var(--ease-out-soft),
+    border-color var(--duration-fast) var(--ease-standard),
+    background-color var(--duration-fast) var(--ease-standard);
   display: flex;
   justify-content: space-between;
   align-items: center;
   position: relative;
+  box-shadow: var(--elevation-low);
 }
 
 .exercise-item.pair-mode {
@@ -1251,17 +1393,24 @@ button {
 
 .exercise-item.selected {
   border-color: var(--color-accent);
-  background-color: var(--bg-surface-subtle);
+  background-color: color-mix(in oklab, var(--color-accent) 8%, var(--bg-surface));
 }
 
 .exercise-item:hover {
-  border-color: var(--color-accent);
+  border-color: color-mix(in oklab, var(--color-accent) 55%, transparent);
   background-color: var(--bg-surface-subtle);
+  transform: translateY(-2px);
+  box-shadow: var(--elevation-medium);
 }
 
-.exercise-item:focus {
+.exercise-item:active {
+  transform: translateY(0);
+  box-shadow: var(--elevation-low);
+}
+
+.exercise-item:focus-visible {
   outline: 2px solid var(--state-focus);
-  outline-offset: 2px;
+  outline-offset: 3px;
 }
 
 .exercise-item-checkbox {
@@ -1363,9 +1512,9 @@ button {
   padding: 4px;
   color: var(--text-secondary);
   transition:
-    background-color 0.15s ease,
-    border-color 0.15s ease,
-    color 0.15s ease;
+    background-color 0.15s var(--ease-standard),
+    border-color 0.15s var(--ease-standard),
+    color 0.15s var(--ease-standard);
 }
 
 .reorder-btn:hover {
@@ -1493,7 +1642,7 @@ button {
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(4px);
-  animation: fadeIn 0.2s ease;
+  animation: fadeIn 0.2s var(--ease-standard);
   z-index: 1;
 }
 
@@ -1507,7 +1656,7 @@ button {
   border-left: 1px solid var(--border-subtle);
   display: flex;
   flex-direction: column;
-  animation: slideInRight 0.3s ease;
+  animation: slideInRight 0.3s var(--ease-standard);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
@@ -1562,7 +1711,7 @@ button {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.15s var(--ease-standard);
 }
 
 .btn-close:hover {
@@ -1588,7 +1737,7 @@ button {
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-medium);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.15s var(--ease-standard);
 }
 
 .management-tab:hover {
@@ -1739,7 +1888,7 @@ button {
 .sync-status.syncing {
   color: var(--color-primary);
   border-color: var(--color-primary);
-  animation: pulse 1.5s ease-in-out infinite;
+  animation: pulse 1.5s var(--ease-standard) infinite;
 }
 
 .sync-status.success {
@@ -1850,7 +1999,7 @@ button {
   color: var(--text-muted);
   border: 1px solid var(--border-subtle);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.15s var(--ease-standard);
   white-space: nowrap;
 }
 
@@ -1874,6 +2023,89 @@ button {
 /* ============================================
    Collections (workout folders)
    ============================================ */
+
+.workout-list-intro {
+  margin: 0 4px 14px;
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  line-height: 1.5;
+  max-width: 62ch;
+}
+
+.collection-section-header {
+  --collection-color: var(--color-accent);
+  margin: 28px 0 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  background: linear-gradient(
+    140deg,
+    color-mix(in oklab, var(--collection-color) 12%, var(--bg-surface)),
+    var(--bg-surface)
+  );
+  border-left: 3px solid var(--collection-color);
+  box-shadow: var(--elevation-low);
+}
+
+.collection-section-header:first-of-type {
+  margin-top: 4px;
+}
+
+.collection-section-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.collection-section-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--collection-color);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--collection-color) 25%, transparent);
+  flex-shrink: 0;
+  translate: 0 -1px;
+}
+
+.collection-section-title {
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+.collection-section-count {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  background: color-mix(in oklab, var(--collection-color) 18%, transparent);
+  color: var(--text-primary);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.01em;
+}
+
+.collection-section-description {
+  margin: 6px 0 0 20px;
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  line-height: 1.5;
+  max-width: 62ch;
+}
+
+.workout-grid-grouped {
+  margin-bottom: 4px;
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.workout-grid-flat {
+  margin-top: 4px;
+}
 
 .collection-filter-bar {
   display: flex;
@@ -1922,7 +2154,7 @@ button {
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-semibold);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.15s var(--ease-standard);
   white-space: nowrap;
   min-height: 32px;
 }
@@ -2178,7 +2410,7 @@ button {
   font-size: 12px;
   font-weight: var(--font-weight-medium);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.15s var(--ease-standard);
   min-height: 30px;
   text-align: left;
 }
@@ -2219,7 +2451,7 @@ button {
   gap: var(--spacing-sm);
   padding: var(--spacing-sm);
   border-radius: var(--radius-sm);
-  transition: background-color 0.15s ease;
+  transition: background-color 0.15s var(--ease-standard);
 }
 
 .exercise-selector-item.hidden {
@@ -2275,7 +2507,7 @@ button {
   border-radius: var(--radius-sm);
   margin-bottom: var(--spacing-xs);
   cursor: grab;
-  transition: all 0.2s ease;
+  transition: all 0.2s var(--ease-standard);
 }
 
 .selected-exercise-item:last-child {
@@ -2324,7 +2556,7 @@ button {
   background-color: transparent;
   color: var(--text-muted);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s var(--ease-standard);
 }
 
 .selected-exercise-remove:hover {
@@ -2511,7 +2743,7 @@ button {
 .management-section-summary .summary-chevron {
   display: inline-flex;
   color: var(--text-muted);
-  transition: transform 0.2s ease;
+  transition: transform 0.2s var(--ease-standard);
 }
 
 .management-section-collapsible[open] .summary-chevron {
@@ -2559,7 +2791,7 @@ button {
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-medium);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.15s var(--ease-standard);
 }
 
 .btn-delete:hover {
@@ -2575,14 +2807,25 @@ button {
 
 .workout-manager-item {
   padding: var(--spacing-md);
-  background-color: var(--bg-surface-subtle);
+  background-color: var(--bg-surface);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
+  box-shadow: var(--elevation-low);
+  transition:
+    transform var(--duration-base) var(--ease-out-soft),
+    box-shadow var(--duration-base) var(--ease-out-soft),
+    border-color var(--duration-fast) var(--ease-standard);
+}
+
+.workout-manager-item:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--elevation-medium);
+  border-color: color-mix(in oklab, var(--color-accent) 30%, var(--border-subtle));
 }
 
 .workout-manager-item.is-favorite {
-  border-color: rgba(133, 102, 179, 0.45);
-  box-shadow: 0 0 0 1px rgba(133, 102, 179, 0.2) inset;
+  border-color: color-mix(in oklab, var(--color-accent) 60%, transparent);
+  box-shadow: var(--elevation-low), inset 3px 0 0 var(--color-accent);
 }
 
 .workout-manager-header {
@@ -2773,7 +3016,7 @@ button {
   height: 100%;
   background: linear-gradient(90deg, var(--color-accent), #8b5cf6);
   width: 0;
-  transition: width 0.3s ease;
+  transition: width 0.3s var(--ease-standard);
 }
 
 .sets-container {
@@ -2816,15 +3059,23 @@ button {
   gap: var(--spacing-md);
   align-items: start;
   padding: var(--spacing-md);
-  background-color: var(--bg-surface-subtle);
+  background: linear-gradient(
+    180deg,
+    var(--bg-surface),
+    var(--bg-surface-subtle)
+  );
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
+  box-shadow: var(--elevation-low);
 }
 
 .set-label {
+  font-family: var(--font-mono);
   font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-semibold);
   color: var(--text-muted);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
 .input-group {
@@ -2866,9 +3117,20 @@ select {
   font-size: var(--font-size-base);
   font-feature-settings: "tnum";
   font-variant-numeric: tabular-nums;
-  padding: var(--spacing-sm);
-  border-radius: var(--radius-sm);
-  min-height: 40px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  min-height: 42px;
+  transition:
+    border-color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+/* Numeric inputs read as tactile data. Slightly larger, mono-typed. */
+input[type="number"] {
+  font-family: var(--font-mono);
+  font-feature-settings: "tnum", "ss01";
+  font-weight: var(--font-weight-medium);
+  letter-spacing: -0.01em;
 }
 
 textarea {
@@ -2883,9 +3145,9 @@ input[type="text"]:focus,
 input[type="url"]:focus,
 textarea:focus,
 select:focus {
-  outline: 2px solid var(--state-focus);
-  outline-offset: 0;
+  outline: none;
   border-color: var(--state-focus);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--state-focus) 22%, transparent);
 }
 
 input[type="number"]::-webkit-inner-spin-button,
@@ -3894,9 +4156,9 @@ input[type="number"]::-webkit-outer-spin-button {
   padding: var(--spacing-sm) var(--spacing-md);
   cursor: pointer;
   transition:
-    border 0.2s ease,
-    box-shadow 0.2s ease,
-    transform 0.1s ease;
+    border 0.2s var(--ease-standard),
+    box-shadow 0.2s var(--ease-standard),
+    transform 0.1s var(--ease-standard);
 }
 
 .history-list-item:hover {
@@ -4111,10 +4373,10 @@ input[type="number"]::-webkit-outer-spin-button {
   background: var(--bg-surface-subtle);
   color: var(--text-muted);
   transition:
-    background 0.2s ease,
-    color 0.2s ease,
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+    background 0.2s var(--ease-standard),
+    color 0.2s var(--ease-standard),
+    border-color 0.2s var(--ease-standard),
+    box-shadow 0.2s var(--ease-standard);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
@@ -4152,7 +4414,7 @@ input[type="number"]::-webkit-outer-spin-button {
   height: 10px;
   border-radius: 50%;
   background: var(--border-subtle);
-  transition: background 0.2s ease;
+  transition: background 0.2s var(--ease-standard);
 }
 
 .onboarding-dot.active {
@@ -4162,7 +4424,7 @@ input[type="number"]::-webkit-outer-spin-button {
 .tour-highlight {
   position: relative;
   box-shadow: 0 0 0 4px rgba(133, 102, 179, 0.35);
-  transition: box-shadow 0.2s ease;
+  transition: box-shadow 0.2s var(--ease-standard);
 }
 
 .onboarding-actions {
@@ -4178,6 +4440,21 @@ input[type="number"]::-webkit-outer-spin-button {
 :focus-visible {
   outline: 2px solid var(--state-focus);
   outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Utility: mono-typed numbers for data displays. */
+.mono-num {
+  font-family: var(--font-mono);
+  font-feature-settings: "tnum", "ss01";
+  letter-spacing: -0.01em;
+}
+
+/* Utility: editorial serif accent for headings that want more presence. */
+.font-serif {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  letter-spacing: -0.015em;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -4187,6 +4464,7 @@ input[type="number"]::-webkit-outer-spin-button {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
