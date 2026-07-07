@@ -84,8 +84,12 @@ Examples:
 
 ### Current Version
 
-**Current Version: 1.22.0** (as of 2026-07-06)
+**Current Version: 1.22.1** (as of 2026-07-07)
 
+- 1.22.1: Regressions fix.
+  Session-level add / remove exercise now persists across navigation. `setCurrentSessionForWorkout` was rebuilding `currentSession.exercises` from the workout template on every re-entry, silently discarding the user's session-only add/remove. Now the persisted draft is the source of truth for the exercise list; template exercises the draft didn't know about are appended so nothing goes missing.
+  Fill-down buttons for reps and weight are back on mobile (they were hidden in v1.18.5 to make room for the number inputs). Now a compact 30x38 icon-only button lives inside the input stepper cluster so users can copy a value down to every following set with one tap.
+  Toast (success-message) simplified for iOS Safari: dropped `backdrop-filter`, `color-mix` background, and `border-radius: pill` (which combined into a rendering bug on some iOS versions where the toast rendered as a giant dark circle). Now uses a plain surface background, `radius-md`, plain box-shadow, and separate `from`+`to` in the leave animation.
 - 1.22.0: Quality-of-life pass.
   Compact filter bar on the workout list: search + Favourites now sit on a single row (star-only on narrow screens) and the 13-chip muscle filter collapses behind a disclosure with a live "All" / "n/12" count. Frees roughly 250px of above-the-fold real estate so the phase chips and workout cards get the attention.
   Subtle card entry stagger (cardEnter keyframe + inline --stagger-index cap of 8) applied to workout cards and phase section headers so the list resolves gracefully on load. Gated by prefers-reduced-motion.
