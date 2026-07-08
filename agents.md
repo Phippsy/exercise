@@ -84,8 +84,12 @@ Examples:
 
 ### Current Version
 
-**Current Version: 1.22.1** (as of 2026-07-07)
+**Current Version: 1.23.0** (as of 2026-07-08)
 
+- 1.23.0: New workout + Ben Sessions collection.
+  Added "On the Rack with Ben" (id=29): 19-exercise rack + TRX + bar session from ben-session.md covering warm-up, pull/push supersets (pull-ups + dips, TRX row + pike push-up), shoulder-health round, direct arms via TRX curls + triceps press, and a core round. Each exercise carries the block / cue context in its notes.
+  Seeded a new "Ben Sessions" collection (id=105, sky-blue) grouping the new workout with the existing "Ben loves the gym" (id=6) so both show up under a single phase-style chip on the workout list.
+  Adds seven new exercises to the library on first load: Scapular Pull-Up, Incline Push-Up, TRX Y-Raise, Dips, Pike Push-Up, TRX Face Pull, TRX Body Saw.
 - 1.22.1: Regressions fix.
   Session-level add / remove exercise now persists across navigation. `setCurrentSessionForWorkout` was rebuilding `currentSession.exercises` from the workout template on every re-entry, silently discarding the user's session-only add/remove. Now the persisted draft is the source of truth for the exercise list; template exercises the draft didn't know about are appended so nothing goes missing.
   Fill-down buttons for reps and weight are back on mobile (they were hidden in v1.18.5 to make room for the number inputs). Now a compact 30x38 icon-only button lives inside the input stepper cluster so users can copy a value down to every following set with one tap.

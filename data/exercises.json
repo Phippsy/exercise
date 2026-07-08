@@ -2395,6 +2395,185 @@
                     "form_video": null
                 }
             ]
+        },
+        {
+            "id": 29,
+            "name": "On the Rack with Ben",
+            "date": null,
+            "notes": "Rack + TRX + bar session designed for training with Ben. Progresses through warm-up, pull/push supersets, shoulder-health work, direct arms, and a core finisher. Clean reps, no death marches.",
+            "exercises": [
+                {
+                    "name": "Scapular Pull-Up",
+                    "muscle_group": "Back",
+                    "sets": 2,
+                    "reps": "6-8",
+                    "weight_kg": null,
+                    "notes": "Warm-up. Hang from bar, arms straight, pull shoulders down away from ears then relax.",
+                    "form_video": null
+                },
+                {
+                    "name": "TRX Low Row",
+                    "muscle_group": "Back",
+                    "sets": 2,
+                    "reps": "10-12",
+                    "weight_kg": null,
+                    "notes": "Warm-up. Easy angle. Wake up lats, rear delts, mid-back.",
+                    "form_video": null
+                },
+                {
+                    "name": "Incline Push-Up",
+                    "muscle_group": "Chest",
+                    "sets": 2,
+                    "reps": 10,
+                    "weight_kg": null,
+                    "notes": "Warm-up. Hands on bar or rack upright. Controlled.",
+                    "form_video": null
+                },
+                {
+                    "name": "TRX Y-Raise",
+                    "muscle_group": "Shoulders",
+                    "sets": 2,
+                    "reps": "8-10",
+                    "weight_kg": null,
+                    "notes": "Warm-up. Light angle. Move shoulder blades cleanly, don't force range.",
+                    "form_video": null
+                },
+                {
+                    "name": "Hollow Body Hold",
+                    "muscle_group": "Core",
+                    "sets": 2,
+                    "reps": "20-30 sec",
+                    "weight_kg": null,
+                    "notes": "Warm-up round finisher.",
+                    "form_video": null
+                },
+                {
+                    "name": "Pull-Ups",
+                    "muscle_group": "Back",
+                    "sets": 4,
+                    "reps": "5-10",
+                    "weight_kg": null,
+                    "notes": "Superset A1 with dips. Ben: band-assisted, jumping negatives, or TRX-assisted if bodyweight is too hard.",
+                    "form_video": null
+                },
+                {
+                    "name": "Dips",
+                    "muscle_group": "Chest",
+                    "sets": 4,
+                    "reps": "6-12",
+                    "weight_kg": null,
+                    "notes": "Superset A2 with pull-ups. Rest 60-90s between supersets. If shoulder-aggressive: feet-assisted, slow eccentric, or TRX push-ups instead.",
+                    "form_video": null
+                },
+                {
+                    "name": "TRX Low Row",
+                    "muscle_group": "Back",
+                    "sets": 4,
+                    "reps": "10-15",
+                    "weight_kg": null,
+                    "notes": "Superset B1 with pike push-ups. Feet-forward for harder angle. Chest to handles, elbows tucked, shoulder blades back and down, no hip sag.",
+                    "form_video": null
+                },
+                {
+                    "name": "Pike Push-Up",
+                    "muscle_group": "Shoulders",
+                    "sets": 4,
+                    "reps": "6-10",
+                    "weight_kg": null,
+                    "notes": "Superset B2. Rack-supported for easier version, feet elevated for harder. Slow 3s eccentric option is very controlled.",
+                    "form_video": null
+                },
+                {
+                    "name": "TRX Face Pull",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "12-15",
+                    "weight_kg": null,
+                    "notes": "Shoulder-health round. Pull handles toward forehead. Elbows high. Slight rotation at the end.",
+                    "form_video": null
+                },
+                {
+                    "name": "TRX Y-Raise",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "8-12",
+                    "weight_kg": null,
+                    "notes": "Shoulder-health round. Light, controlled. Don't turn it into a lower-back extension.",
+                    "form_video": null
+                },
+                {
+                    "name": "Dolphin Scap Push-Ups",
+                    "muscle_group": "Serratus Anterior",
+                    "sets": 3,
+                    "reps": "10-12",
+                    "weight_kg": null,
+                    "notes": "Shoulder-health round. Very pincha-relevant. Forearms down, hips slightly up, push floor away then allow blades to move back.",
+                    "form_video": null
+                },
+                {
+                    "name": "Wall-Facing Forearm Hold",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "20-40 sec",
+                    "weight_kg": null,
+                    "notes": "Shoulder-health round finisher. Only if surface + space are genuinely safe. Otherwise: forearm plank with active scap protraction.",
+                    "form_video": null
+                },
+                {
+                    "name": "TRX Biceps Curl",
+                    "muscle_group": "Biceps",
+                    "sets": 4,
+                    "reps": "10-15",
+                    "weight_kg": null,
+                    "notes": "Superset D1. Lean back, arms straight, palms up, curl handles toward forehead. Harder by walking feet forward.",
+                    "form_video": null
+                },
+                {
+                    "name": "TRX Triceps Press",
+                    "muscle_group": "Triceps",
+                    "sets": 4,
+                    "reps": "10-15",
+                    "weight_kg": null,
+                    "notes": "Superset D2. Face away from anchor, elbows high, bend then extend. Ribs down, glutes on, elbows fixed. Don't turn into a press.",
+                    "form_video": null
+                },
+                {
+                    "name": "Hanging Leg Raise",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "8-12",
+                    "weight_kg": null,
+                    "notes": "Core round. Hanging knee raise if straight-leg too much. Or captain's chair variant if grip fades.",
+                    "form_video": null
+                },
+                {
+                    "name": "TRX Fallout",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "8-12",
+                    "weight_kg": null,
+                    "notes": "Core round. Ab-wheel pattern. Ribs down, glutes on, don't let lower back sag.",
+                    "form_video": null
+                },
+                {
+                    "name": "TRX Body Saw",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "10-15",
+                    "weight_kg": null,
+                    "notes": "Core round. Forearms on ground, feet in TRX if possible. Otherwise plank saw on forearms.",
+                    "form_video": null
+                },
+                {
+                    "name": "Side Plank",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "30-45 sec each side",
+                    "weight_kg": null,
+                    "notes": "Core round finisher. Anti-extension + anterior core + obliques.",
+                    "form_video": null
+                }
+            ]
         }
     ],
     "collections": [
@@ -2432,6 +2611,13 @@
             "color": "#fb7185",
             "description": "Two lighter sessions plus test markers. Check progress without maxing out.",
             "workoutIds": [28]
+        },
+        {
+            "id": 105,
+            "name": "Ben Sessions",
+            "color": "#38bdf8",
+            "description": "Sessions built for training with Ben. Rack + TRX + bodyweight focus.",
+            "workoutIds": [6, 29]
         }
     ]
 }
