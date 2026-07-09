@@ -288,13 +288,9 @@ input[type="checkbox"],
   padding: calc(10px + env(safe-area-inset-top))
     calc(14px + env(safe-area-inset-right)) 10px
     calc(14px + env(safe-area-inset-left));
-  background: color-mix(in oklab, var(--bg-surface) 92%, transparent);
+  background: var(--bg-surface);
   border-bottom: 1px solid var(--border-subtle);
-  backdrop-filter: blur(20px) saturate(140%);
-  -webkit-backdrop-filter: blur(20px) saturate(140%);
-  box-shadow:
-    0 1px 0 color-mix(in oklab, var(--color-accent) 6%, transparent),
-    0 6px 24px rgba(20, 15, 40, 0.10);
+  box-shadow: 0 6px 24px rgba(20, 15, 40, 0.10);
 }
 
 .header-top {
@@ -311,8 +307,7 @@ input[type="checkbox"],
   padding: 6px;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.02);
-  backdrop-filter: blur(6px);
+  background: var(--bg-surface-subtle);
   box-shadow: var(--elevation-low);
   flex-wrap: wrap;
 }
@@ -915,14 +910,10 @@ button {
   left: 0;
   right: 0;
   padding: 10px 14px;
-  background: color-mix(in oklab, var(--bg-surface) 92%, transparent);
+  background: var(--bg-surface);
   border-top: 1px solid var(--border-subtle);
-  backdrop-filter: blur(20px) saturate(140%);
-  -webkit-backdrop-filter: blur(20px) saturate(140%);
   z-index: 19;
-  box-shadow:
-    0 -1px 0 color-mix(in oklab, var(--color-accent) 6%, transparent),
-    0 -6px 24px rgba(20, 15, 40, 0.12);
+  box-shadow: 0 -6px 24px rgba(20, 15, 40, 0.12);
 }
 
 .bottom-back-bar-content {
@@ -1900,8 +1891,7 @@ button {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(4px);
+  background-color: rgba(0, 0, 0, 0.55);
   animation: fadeIn 0.2s var(--ease-standard);
   z-index: 1;
 }
@@ -1913,12 +1903,6 @@ button {
   height: 100dvh;
   height: 100vh;
   background: var(--bg-page);
-  background-image:
-    radial-gradient(
-      900px circle at 100% 0%,
-      color-mix(in oklab, var(--color-accent) 10%, transparent),
-      transparent 55%
-    );
   border-left: 1px solid var(--border-subtle);
   display: flex;
   flex-direction: column;
@@ -4107,14 +4091,10 @@ input[type="number"]::-webkit-outer-spin-button {
       calc(12px + env(safe-area-inset-bottom))
       calc(14px + env(safe-area-inset-left));
     justify-content: space-between;
-    background: color-mix(in oklab, var(--bg-surface) 92%, transparent);
+    background: var(--bg-surface);
     border-top: 1px solid var(--border-subtle);
-    backdrop-filter: blur(20px) saturate(140%);
-    -webkit-backdrop-filter: blur(20px) saturate(140%);
     z-index: 20;
-    box-shadow:
-      0 -1px 0 color-mix(in oklab, var(--color-accent) 6%, transparent),
-      0 -6px 28px rgba(20, 15, 40, 0.24);
+    box-shadow: 0 -6px 28px rgba(20, 15, 40, 0.24);
   }
 
   .mobile-nav-btn {

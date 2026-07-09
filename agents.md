@@ -84,8 +84,10 @@ Examples:
 
 ### Current Version
 
-**Current Version: 1.23.0** (as of 2026-07-08)
+**Current Version: 1.23.1** (as of 2026-07-09)
 
+- 1.23.1: Kill remaining iOS Safari overlay artefacts.
+  Every `position: fixed` element still using `backdrop-filter: blur(20px) saturate(140%)` combined with a `color-mix(in oklab, ...)` translucent background got stripped down to a solid `var(--bg-surface)`. This is the same iOS Safari compositor bug that produced the giant dark circle on save in v1.22.0 - it also produced the giant dark rectangle behind the Manage panel when the Google OAuth popup opened. Elements changed: `.app-header`, `.header-actions`, `.bottom-back-bar`, `.mobile-bottom-nav`, `.management-overlay`, and the `radial-gradient(color-mix(...))` background on `.management-panel`. Slight cosmetic loss (frosted-glass header is now plain surface) accepted in exchange for reliability.
 - 1.23.0: New workout + Ben Sessions collection.
   Added "On the Rack with Ben" (id=29): 19-exercise rack + TRX + bar session from ben-session.md covering warm-up, pull/push supersets (pull-ups + dips, TRX row + pike push-up), shoulder-health round, direct arms via TRX curls + triceps press, and a core round. Each exercise carries the block / cue context in its notes.
   Seeded a new "Ben Sessions" collection (id=105, sky-blue) grouping the new workout with the existing "Ben loves the gym" (id=6) so both show up under a single phase-style chip on the workout list.
