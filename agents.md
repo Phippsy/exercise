@@ -84,8 +84,14 @@ Examples:
 
 ### Current Version
 
-**Current Version: 1.23.1** (as of 2026-07-09)
+**Current Version: 1.23.2** (as of 2026-07-09)
 
+- 1.23.2: Cross-device sync: workout edits (reorders, removed exercises) made on one device now surface on the other after pulling from Google Drive.
+  Root cause: v1.22.1 made the active session draft the source of truth for the exercise-list screen so that session-level removes (red X) survived navigation. Unfortunately that meant any edit to the workout template (via the Manage panel OR pulled in via Drive sync) was masked by the stale draft that this device still remembered - the Edit modal read directly from the template so it showed the new order, but tapping the workout card from Your Workouts reused the draft and showed the old order.
+  Fix: introduce a `userModifiedExercises` flag on each session draft. It only flips to `true` when the user actively edits the session via the red X, the Add exercise panel, or a reorder. `setCurrentSessionForWorkout` now:
+    - preserves the draft's exercise list verbatim when the flag is `true` (session removes/adds still stick across nav)
+    - rebuilds from the current workout template when the flag is `false` (template edits made elsewhere flow through cleanly)
+  Also: `_rerenderAllAfterSync` (fires after every Drive push/pull/merge) resets every draft's `userModifiedExercises` flag back to `false`, so a pulled workout template always wins on the next open.
 - 1.23.1: Kill remaining iOS Safari overlay artefacts.
   Every `position: fixed` element still using `backdrop-filter: blur(20px) saturate(140%)` combined with a `color-mix(in oklab, ...)` translucent background got stripped down to a solid `var(--bg-surface)`. This is the same iOS Safari compositor bug that produced the giant dark circle on save in v1.22.0 - it also produced the giant dark rectangle behind the Manage panel when the Google OAuth popup opened. Elements changed: `.app-header`, `.header-actions`, `.bottom-back-bar`, `.mobile-bottom-nav`, `.management-overlay`, and the `radial-gradient(color-mix(...))` background on `.management-panel`. Slight cosmetic loss (frosted-glass header is now plain surface) accepted in exchange for reliability.
 - 1.23.0: New workout + Ben Sessions collection.

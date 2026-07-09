@@ -2332,21 +2332,26 @@ class WorkoutTracker {
       workoutId: workout.id,
       workoutName: workout.name,
       exercises: (workout.exercises || []).map((exercise) => ({ ...exercise })),
+      // Only set to true when the user actively edits this session's
+      // exercise list (add / remove / reorder). Until then, we always
+      // rebuild from the workout template so edits made elsewhere (Manage
+      // panel, Google Drive sync from another device) surface here.
+      userModifiedExercises: false,
     };
   }
 
   setCurrentSessionForWorkout(workout) {
     const persisted = this.activeSessionDrafts?.[workout.id];
+    const templateExercises = (workout.exercises || []).map((exercise) => ({
+      ...exercise,
+    }));
 
-    if (persisted?.exercises?.length) {
-      // Trust the persisted draft's exercise list. Session-level add / remove /
-      // reorder (via the red X and the "Add exercise" panel) needs to survive
-      // navigation, so we do NOT rebuild from the workout template here — that
-      // would silently re-add any exercise the user removed from the session.
-      //
-      // If the workout template itself is later edited via Manage > Workouts,
-      // those changes only surface next time the user starts a fresh session
-      // (or after `clearPersistedSession(workoutId)` runs).
+    // If the user has actively edited this session's exercise list (via the
+    // red X or the "Add exercise" panel), preserve their edits verbatim.
+    // Otherwise always take the current workout template — this keeps the
+    // exercise-list screen in sync with edits made in the Manage panel or
+    // pulled in from another device via Google Drive.
+    if (persisted?.exercises?.length && persisted.userModifiedExercises) {
       this.currentSession = {
         ...persisted,
         workoutId: workout.id,
@@ -2354,12 +2359,24 @@ class WorkoutTracker {
         exercises: (persisted.exercises || []).map((exercise) => ({
           ...exercise,
         })),
+        userModifiedExercises: true,
       };
     } else {
-      this.currentSession = this.createSessionFromWorkout(workout);
+      this.currentSession = {
+        ...(persisted || {}),
+        workoutId: workout.id,
+        workoutName: workout.name,
+        exercises: templateExercises,
+        userModifiedExercises: false,
+      };
     }
 
     this.persistCurrentSession();
+  }
+
+  markSessionUserModified() {
+    if (!this.currentSession) return;
+    this.currentSession.userModifiedExercises = true;
   }
 
   persistCurrentSession() {
@@ -2371,6 +2388,7 @@ class WorkoutTracker {
       exercises: (this.currentSession.exercises || []).map((exercise) => ({
         ...exercise,
       })),
+      userModifiedExercises: !!this.currentSession.userModifiedExercises,
       updatedAt: new Date().toISOString(),
     };
 
@@ -2625,6 +2643,10 @@ class WorkoutTracker {
     exercises.splice(toIndex, 0, moved);
     if (!this.currentSession) {
       this.saveWorkouts();
+    } else {
+      // Session-level reorder counts as a user modification, so the draft
+      // wins next time this workout is opened.
+      this.markSessionUserModified();
     }
     this.renderExerciseList();
 
@@ -2647,6 +2669,7 @@ class WorkoutTracker {
   removeExerciseFromSession(index) {
     if (!this.currentSession?.exercises) return;
     const removed = this.currentSession.exercises.splice(index, 1);
+    this.markSessionUserModified();
     this.renderExerciseList();
     this.updateSessionChecklist(this.currentWorkout);
     this.persistCurrentSession();
@@ -2752,6 +2775,7 @@ class WorkoutTracker {
     }
 
     this.currentSession.exercises.push({ ...exercise });
+    this.markSessionUserModified();
     this.renderExerciseList();
     this.updateSessionChecklist(this.currentWorkout);
     this.persistCurrentSession();
@@ -8810,6 +8834,12 @@ class WorkoutTracker {
 
   _rerenderAllAfterSync() {
     try {
+      // Drop the userModifiedExercises flag on every draft so a subsequent
+      // open of any workout rebuilds its exercise list from the freshly
+      // pulled/merged template. Without this, edits made on another device
+      // (reorders, removed exercises) would be masked by the local draft
+      // that this device still remembers.
+      this._resetSessionDraftFlags();
       this.renderWorkoutList();
       this.renderActivityOverview();
       this.renderWorkoutOverview();
@@ -8825,6 +8855,18 @@ class WorkoutTracker {
     } catch (e) {
       console.error("_rerenderAllAfterSync:", e);
     }
+  }
+
+  _resetSessionDraftFlags() {
+    if (!this.activeSessionDrafts) return;
+    let changed = false;
+    Object.values(this.activeSessionDrafts).forEach((draft) => {
+      if (draft?.userModifiedExercises) {
+        draft.userModifiedExercises = false;
+        changed = true;
+      }
+    });
+    if (changed) this.saveActiveSessionDrafts();
   }
 
   _relTime(iso) {
