@@ -84,8 +84,12 @@ Examples:
 
 ### Current Version
 
-**Current Version: 1.23.2** (as of 2026-07-09)
+**Current Version: 1.24.0** (as of 2026-08-01)
 
+- 1.24.0: Kill the giant black overlay on Save Session for real this time.
+  Root cause: a stale mobile media-query rule on `.success-message` was forcing `top: 10px !important; left: 10px !important; right: 10px !important; width: auto !important` on the toast. My newer base rule set `bottom: calc(96px + safe-area)`. Those don't override each other - they combine. Setting BOTH `top: 10px` and `bottom: 130px` on a `position: fixed` element stretches it to fill the entire viewport height. Then the `transform: translate(-50%, 0)` shifted that giant stretched element half its own width to the left, producing the huge dark rectangle covering the left side of the screen. v1.22.1 and v1.23.1 (dropping backdrop-filter / color-mix) didn't touch this rule so the bug survived.
+  Fix: deleted the stale mobile override entirely and rebuilt the toast without `transform`-for-centring. Now centred via `left:0 + right:0 + margin: 0 auto + width: max-content`, with a simple `opacity` transition instead of a `transform` animation. Verified via Playwright at iPhone 14 Pro viewport: toast measures 131x44px near the bottom (was previously stretching to the full 393x660 viewport).
+  Also stripped `will-change: transform` + `transform: translateZ(0)` from `body::before` while I was in there. Those flags promoted the fixed background gradient into its own iOS Safari compositor layer which then confused the compositor when a new fixed element (toast, modal) got appended to body. Neither flag was needed.
 - 1.23.2: Cross-device sync: workout edits (reorders, removed exercises) made on one device now surface on the other after pulling from Google Drive.
   Root cause: v1.22.1 made the active session draft the source of truth for the exercise-list screen so that session-level removes (red X) survived navigation. Unfortunately that meant any edit to the workout template (via the Manage panel OR pulled in via Drive sync) was masked by the stale draft that this device still remembered - the Edit modal read directly from the template so it showed the new order, but tapping the workout card from Your Workouts reused the draft and showed the old order.
   Fix: introduce a `userModifiedExercises` flag on each session draft. It only flips to `true` when the user actively edits the session via the red X, the Add exercise panel, or a reorder. `setCurrentSessionForWorkout` now:

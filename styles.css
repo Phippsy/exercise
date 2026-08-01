@@ -202,7 +202,13 @@ body {
 }
 
 /* Background gradients pinned as a fixed layer behind content —
-   avoids the iOS scroll-jank caused by background-attachment: fixed. */
+/* Background gradients pinned as a fixed layer behind content —
+   avoids the iOS scroll-jank caused by background-attachment: fixed.
+   Note: no will-change / no translateZ here. Both were promoting
+   this pseudo-element into its own iOS Safari compositor layer,
+   which then confused the compositor when a new fixed element (toast,
+   modal) got appended to body. Kept the gradients but let the
+   browser decide the layer boundaries. */
 body::before {
   content: "";
   position: fixed;
@@ -226,9 +232,6 @@ body::before {
       rgba(102, 117, 204, 0.06),
       transparent 60%
     );
-  /* iOS Safari hint to promote to its own compositor layer */
-  transform: translateZ(0);
-  will-change: transform;
 }
 
 body.light-mode::before {
@@ -570,38 +573,20 @@ input[type="checkbox"],
   }
 }
 
-/* Toast notification (success-message). Bottom-centred so the user's
-   thumb doesn't cover it on mobile, and safe-area-aware.
-   Kept intentionally simple — no backdrop-filter, no color-mix — because
-   iOS Safari has rendering bugs with backdrop-filter + large border-radius
-   that can produce a giant circular blur behind the element. */
-@keyframes toastEnter {
-  from {
-    opacity: 0;
-    transform: translate(-50%, 16px);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
-}
+/* Toast notification (success-message). Bottom-anchored, no transform
+   (transform + top/bottom + a stale mobile override was stretching the
+   toast to fill the whole viewport on iOS Safari and then translating
+   the giant element off-screen — the "big black overlay" bug).
 
-@keyframes toastLeave {
-  from {
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
-  to {
-    opacity: 0;
-    transform: translate(-50%, 8px);
-  }
-}
-
+   Centred via left:0 + right:0 + margin: 0 auto + width: max-content.
+   Kept intentionally free of animation, backdrop-filter, and color-mix
+   for iOS Safari compatibility. */
 .success-message {
   position: fixed;
-  left: 50%;
+  left: 0;
+  right: 0;
   bottom: calc(96px + env(safe-area-inset-bottom));
-  transform: translate(-50%, 0);
+  margin: 0 auto;
   z-index: 10001;
   padding: 10px 18px;
   background: var(--bg-surface);
@@ -613,27 +598,18 @@ input[type="checkbox"],
   font-weight: var(--font-weight-medium);
   letter-spacing: -0.005em;
   box-shadow: var(--elevation-medium);
-  animation: toastEnter var(--duration-base) var(--ease-out-soft) both;
-  max-width: calc(100% - 40px);
   width: max-content;
+  max-width: calc(100% - 40px);
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  opacity: 1;
+  transition: opacity var(--duration-base) var(--ease-standard);
 }
 
 .success-message.is-leaving {
-  animation: toastLeave var(--duration-base) var(--ease-standard) forwards;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .success-message {
-    animation: none;
-  }
-  .success-message.is-leaving {
-    opacity: 0;
-    animation: none;
-  }
+  opacity: 0;
 }
 
 /* Subtle staggered entry for workout cards + collection sections.
@@ -4536,14 +4512,10 @@ input[type="number"]::-webkit-outer-spin-button {
     height: 44px;
   }
 
-  /* Success message - better positioning on mobile */
-  .success-message {
-    top: 10px !important;
-    right: 10px !important;
-    left: 10px !important;
-    width: auto !important;
-    max-width: none !important;
-  }
+  /* NOTE: no `.success-message` override here. The base rule handles mobile
+     positioning via left:0 + right:0 + margin:auto — attempting to force
+     top/left/right/width with !important here previously produced the giant
+     dark rectangle bug on Save Session. See v1.24.0 changelog. */
 }
 
 /* Tablet optimizations */
