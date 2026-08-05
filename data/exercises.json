@@ -2574,6 +2574,618 @@
                     "form_video": null
                 }
             ]
+        },
+        {
+            "id": 30,
+            "name": "Yoga: Compression / Float Strength",
+            "date": null,
+            "notes": "Block A. 2-3 rounds. Compression and float prep for arm balances and jump-throughs.",
+            "exercises": [
+                {
+                    "name": "Seated Pike Leg Lifts",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "8-12",
+                    "weight_kg": null,
+                    "notes": "Sit with legs straight, hands beside hips, lift legs off floor.",
+                    "form_video": null
+                },
+                {
+                    "name": "Seated Straddle Leg Lifts",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "8-12",
+                    "weight_kg": null,
+                    "notes": "Straddle position. Lift each side or both legs.",
+                    "form_video": null
+                },
+                {
+                    "name": "Tuck L-Sit Hold",
+                    "muscle_group": "Core",
+                    "sets": 5,
+                    "reps": "5-10s",
+                    "weight_kg": null,
+                    "notes": "On blocks or parallettes. Knees tucked, hips lifted.",
+                    "form_video": null
+                },
+                {
+                    "name": "Hollow Body Hold",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "20-40s",
+                    "weight_kg": null,
+                    "notes": "Lower back pressed into floor. Arms overhead or by sides.",
+                    "form_video": null
+                },
+                {
+                    "name": "Hollow Rocks",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "20-40s",
+                    "weight_kg": null,
+                    "notes": "Maintain hollow shape while rocking. No break in position.",
+                    "form_video": null
+                }
+            ]
+        },
+        {
+            "id": 31,
+            "name": "Yoga: Dolphin / Pincha / Overhead Control",
+            "date": null,
+            "notes": "Block B. 2-3 rounds. Build forearm stand strength and overhead stability.",
+            "exercises": [
+                {
+                    "name": "Dolphin Scap Push-Ups",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "8-12",
+                    "weight_kg": null,
+                    "notes": "Forearms down, push floor away protracting scapulae, then relax.",
+                    "form_video": null
+                },
+                {
+                    "name": "Dolphin Rock-Backs",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "6-10",
+                    "weight_kg": null,
+                    "notes": "From dolphin, rock shoulders past wrists then back.",
+                    "form_video": null
+                },
+                {
+                    "name": "Dolphin Walks",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "6-10",
+                    "weight_kg": null,
+                    "notes": "Walk feet toward elbows in dolphin, loading shoulders.",
+                    "form_video": null
+                },
+                {
+                    "name": "Wall-Facing Forearm Hold",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "20-40s",
+                    "weight_kg": null,
+                    "notes": "Forearms on floor, walk feet up wall. Hold straight body.",
+                    "form_video": null
+                },
+                {
+                    "name": "Forearm Plank Protraction Hold",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "20-30s",
+                    "weight_kg": null,
+                    "notes": "Push floor away in forearm plank. Round upper back slightly.",
+                    "form_video": null
+                }
+            ]
+        },
+        {
+            "id": 32,
+            "name": "Yoga: Active Mobility Finisher",
+            "date": null,
+            "notes": "Block C. 2-3 rounds. Hamstring and hip flexor mobility with active engagement.",
+            "exercises": [
+                {
+                    "name": "Weighted Forward Fold",
+                    "muscle_group": "Hamstrings",
+                    "sets": 3,
+                    "reps": "2-3",
+                    "weight_kg": null,
+                    "notes": "Hold light weight, fold slowly. Let gravity assist.",
+                    "form_video": null
+                },
+                {
+                    "name": "Active Pike Lift from Seated",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "8-10",
+                    "weight_kg": null,
+                    "notes": "Seated, legs straight. Actively lift legs using hip flexors.",
+                    "form_video": null
+                },
+                {
+                    "name": "Half-Split Hamstring Pulses",
+                    "muscle_group": "Hamstrings",
+                    "sets": 3,
+                    "reps": "8-10",
+                    "weight_kg": null,
+                    "notes": "Each side. Small active pulses at end range.",
+                    "form_video": null
+                },
+                {
+                    "name": "Low Lunge Hip Flexor Work",
+                    "muscle_group": "Hip Flexors",
+                    "sets": 3,
+                    "reps": "30-45s",
+                    "weight_kg": null,
+                    "notes": "Each side. Posterior tilt, squeeze glute of back leg.",
+                    "form_video": null
+                }
+            ]
+        },
+        {
+            "id": 33,
+            "name": "Yoga: Additional Compression / Float",
+            "date": null,
+            "notes": "Extra compression and float drills. Mix and match with Block A.",
+            "exercises": [
+                {
+                    "name": "Hanging Knee Raises",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "8-12",
+                    "weight_kg": null,
+                    "notes": "Controlled. Avoid swinging.",
+                    "form_video": null
+                },
+                {
+                    "name": "Hanging Straight-Leg Raises",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "6-10",
+                    "weight_kg": null,
+                    "notes": "Full range. Slow negative.",
+                    "form_video": null
+                },
+                {
+                    "name": "Pike Holds with Feet on Sliders",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "20-30s",
+                    "weight_kg": null,
+                    "notes": "Hands on floor, feet on sliders, hips piked up.",
+                    "form_video": null
+                },
+                {
+                    "name": "Crow-to-Compression Transitions",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "3-6",
+                    "weight_kg": null,
+                    "notes": "From crow, pull knees tight into tuck compression. Controlled.",
+                    "form_video": null
+                },
+                {
+                    "name": "Jump-Through Drills",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "5-8",
+                    "weight_kg": null,
+                    "notes": "With sliders or socks on smooth floor. Lift, compress, slide through.",
+                    "form_video": null
+                }
+            ]
+        },
+        {
+            "id": 34,
+            "name": "Yoga: Active Hamstring / Hip Mobility",
+            "date": null,
+            "notes": "Active flexibility for hamstrings and hips. Complement Block C.",
+            "exercises": [
+                {
+                    "name": "Active Pike Holds",
+                    "muscle_group": "Hamstrings",
+                    "sets": 3,
+                    "reps": "10-20s",
+                    "weight_kg": null,
+                    "notes": "Seated, actively pull chest toward legs using hip flexors.",
+                    "form_video": null
+                },
+                {
+                    "name": "Jefferson Curls",
+                    "muscle_group": "Hamstrings",
+                    "sets": 3,
+                    "reps": "6-10",
+                    "weight_kg": null,
+                    "notes": "Light load. Slow segmental roll-down from standing.",
+                    "form_video": null
+                },
+                {
+                    "name": "Half-Split Active Lifts",
+                    "muscle_group": "Hamstrings",
+                    "sets": 3,
+                    "reps": "8-10",
+                    "weight_kg": null,
+                    "notes": "Each side. Actively lift front leg from half-split.",
+                    "form_video": null
+                },
+                {
+                    "name": "Seated Good Mornings",
+                    "muscle_group": "Hamstrings",
+                    "sets": 3,
+                    "reps": "8-12",
+                    "weight_kg": null,
+                    "notes": "Slow. Hinge from hips while seated on floor.",
+                    "form_video": null
+                },
+                {
+                    "name": "Straddle Compression Drills",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "8-12",
+                    "weight_kg": null,
+                    "notes": "Straddle, compress chest toward floor using active strength.",
+                    "form_video": null
+                },
+                {
+                    "name": "Pancake / Straddle Mobility Work",
+                    "muscle_group": "Hamstrings",
+                    "sets": 3,
+                    "reps": "30-60s",
+                    "weight_kg": null,
+                    "notes": "Relaxed holds or gentle active pulses in wide straddle.",
+                    "form_video": null
+                }
+            ]
+        },
+        {
+            "id": 35,
+            "name": "Yoga: Straight-Arm Strength / Handstand Prep",
+            "date": null,
+            "notes": "Handstand and planche prep. Wrists and shoulders under load with straight arms.",
+            "exercises": [
+                {
+                    "name": "Plank Leans",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "10-20s",
+                    "weight_kg": null,
+                    "notes": "Plank position, lean shoulders past wrists. Keep arms locked.",
+                    "form_video": null
+                },
+                {
+                    "name": "Crow Pose",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "10-30s",
+                    "weight_kg": null,
+                    "notes": "Knees on triceps or outer arms. Round upper back.",
+                    "form_video": null
+                },
+                {
+                    "name": "Tuck Planche Lean Variations",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "8-15s",
+                    "weight_kg": null,
+                    "notes": "Lean forward in tuck, lift feet. Build toward planche angle.",
+                    "form_video": null
+                },
+                {
+                    "name": "Pike Shoulder Taps",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "6-10",
+                    "weight_kg": null,
+                    "notes": "Each side. Pike position, tap shoulder without shifting hips.",
+                    "form_video": null
+                },
+                {
+                    "name": "Elevated Pike Holds",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "20-40s",
+                    "weight_kg": null,
+                    "notes": "Feet on box, hips stacked over shoulders. Push floor away.",
+                    "form_video": null
+                },
+                {
+                    "name": "Straight-Arm Scapular Protraction Work",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "8-12",
+                    "weight_kg": null,
+                    "notes": "Plank or support hold. Push floor away, round upper back.",
+                    "form_video": null
+                },
+                {
+                    "name": "Handstand Line Drills",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "20-40s",
+                    "weight_kg": null,
+                    "notes": "Supine on floor, replicate handstand line. Squeeze everything.",
+                    "form_video": null
+                },
+                {
+                    "name": "Wall-Facing Handstand Holds",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "20-40s",
+                    "weight_kg": null,
+                    "notes": "Belly to wall. Focus on stacking and pushing tall.",
+                    "form_video": null
+                },
+                {
+                    "name": "Handstand Shrugs",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "6-12",
+                    "weight_kg": null,
+                    "notes": "In handstand, lower then push shoulders up. Active traps.",
+                    "form_video": null
+                },
+                {
+                    "name": "Pike Handstand Holds with Feet on Box",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "20-40s",
+                    "weight_kg": null,
+                    "notes": "Feet on box, lean until hips over shoulders.",
+                    "form_video": null
+                },
+                {
+                    "name": "Straddle Press Negatives Against Wall",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "3-5",
+                    "weight_kg": null,
+                    "notes": "Slow controlled descent from handstand in straddle.",
+                    "form_video": null
+                },
+                {
+                    "name": "Elevated Feet Press Drills",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "3-6",
+                    "weight_kg": null,
+                    "notes": "Feet elevated, press hips up toward handstand. Controlled.",
+                    "form_video": null
+                },
+                {
+                    "name": "Tuck Press Drills on Parallettes",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "3-6",
+                    "weight_kg": null,
+                    "notes": "On parallettes or blocks. Tuck and press up. Control the negative.",
+                    "form_video": null
+                }
+            ]
+        },
+        {
+            "id": 36,
+            "name": "Yoga: Wrist Prep",
+            "date": null,
+            "notes": "Wrist conditioning for handstands, crow, and weight-bearing on hands.",
+            "exercises": [
+                {
+                    "name": "Wrist Rocks",
+                    "muscle_group": "Forearms",
+                    "sets": 2,
+                    "reps": "10-20",
+                    "weight_kg": null,
+                    "notes": "Quadruped, rock forward and back over wrists.",
+                    "form_video": null
+                },
+                {
+                    "name": "Fingertip Pulses",
+                    "muscle_group": "Forearms",
+                    "sets": 2,
+                    "reps": "10-20",
+                    "weight_kg": null,
+                    "notes": "Quadruped, lift palms keeping fingertips down, pulse.",
+                    "form_video": null
+                },
+                {
+                    "name": "Palm Lifts",
+                    "muscle_group": "Forearms",
+                    "sets": 2,
+                    "reps": "10-20",
+                    "weight_kg": null,
+                    "notes": "Hands flat, actively lift palms while fingers stay down.",
+                    "form_video": null
+                },
+                {
+                    "name": "Quadruped Wrist Prep",
+                    "muscle_group": "Forearms",
+                    "sets": 2,
+                    "reps": "30-60s",
+                    "weight_kg": null,
+                    "notes": "Rotate through various wrist positions on all fours.",
+                    "form_video": null
+                },
+                {
+                    "name": "Reverse Wrist Stretches",
+                    "muscle_group": "Forearms",
+                    "sets": 2,
+                    "reps": "20-40s",
+                    "weight_kg": null,
+                    "notes": "Backs of hands on floor, gently load.",
+                    "form_video": null
+                },
+                {
+                    "name": "Gradual Handstand Loading",
+                    "muscle_group": "Forearms",
+                    "sets": 2,
+                    "reps": "10-30s",
+                    "weight_kg": null,
+                    "notes": "Partial weight on hands, build tolerance gradually.",
+                    "form_video": null
+                },
+                {
+                    "name": "Gradual Crow Loading",
+                    "muscle_group": "Forearms",
+                    "sets": 2,
+                    "reps": "10-30s",
+                    "weight_kg": null,
+                    "notes": "Shift weight forward into crow position, partial load on wrists.",
+                    "form_video": null
+                }
+            ]
+        },
+        {
+            "id": 37,
+            "name": "Yoga: Floating Forward Progressions",
+            "date": null,
+            "notes": "Drills for floating forward in vinyasa. Compression, control, and confidence.",
+            "exercises": [
+                {
+                    "name": "Downward Dog to Tiptoe with Shoulders Forward",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "5-8",
+                    "weight_kg": null,
+                    "notes": "From down dog, shift shoulders past wrists onto tiptoes.",
+                    "form_video": null
+                },
+                {
+                    "name": "Small Controlled Hops with Bent Knees",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "5-10",
+                    "weight_kg": null,
+                    "notes": "From forward fold, small hops engaging hip flexors.",
+                    "form_video": null
+                },
+                {
+                    "name": "Crow Pose",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "10-30s",
+                    "weight_kg": null,
+                    "notes": "Hold and build endurance for arm balance transitions.",
+                    "form_video": null
+                },
+                {
+                    "name": "Crow to Toe-Tap Forward",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "3-6",
+                    "weight_kg": null,
+                    "notes": "From crow, extend one foot forward to tap. Control the shift.",
+                    "form_video": null
+                },
+                {
+                    "name": "Blocks-Under-Hands Float Drills",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "5-8",
+                    "weight_kg": null,
+                    "notes": "Hands on blocks for extra clearance. Practice lifting and floating through.",
+                    "form_video": null
+                },
+                {
+                    "name": "Jump-Through Drills",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "5-8",
+                    "weight_kg": null,
+                    "notes": "Sliders or socks. Cross legs or pike, slide through arms.",
+                    "form_video": null
+                },
+                {
+                    "name": "Tuck Compression Holds",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "10-20s",
+                    "weight_kg": null,
+                    "notes": "Hands on floor, pull knees tight to chest, lift feet.",
+                    "form_video": null
+                }
+            ]
+        },
+        {
+            "id": 38,
+            "name": "Yoga: Pincha / Dolphin Refinement",
+            "date": null,
+            "notes": "Dedicated pincha prep. Forearm balance stability plus supporting pulling strength.",
+            "exercises": [
+                {
+                    "name": "Wall-Facing Forearm Hold",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "20-40s",
+                    "weight_kg": null,
+                    "notes": "Forearms down, walk feet up wall. Straight body, push floor away.",
+                    "form_video": null
+                },
+                {
+                    "name": "Dolphin Scap Push-Ups",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "8-12",
+                    "weight_kg": null,
+                    "notes": "Controlled protraction and retraction in dolphin.",
+                    "form_video": null
+                },
+                {
+                    "name": "Hollow Body Hold",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "20-40s",
+                    "weight_kg": null,
+                    "notes": "Build the core tension needed for freestanding pincha.",
+                    "form_video": null
+                },
+                {
+                    "name": "Landmine Pressing",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "6-10",
+                    "weight_kg": null,
+                    "notes": "Each side. Overhead angle trains similar pattern to pincha.",
+                    "form_video": null
+                },
+                {
+                    "name": "Face Pulls",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "10-15",
+                    "weight_kg": null,
+                    "notes": "External rotation focus. Balances all the pressing.",
+                    "form_video": null
+                },
+                {
+                    "name": "Rear Delt Work",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "10-15",
+                    "weight_kg": null,
+                    "notes": "Reverse flies or band pull-aparts.",
+                    "form_video": null
+                },
+                {
+                    "name": "Rows",
+                    "muscle_group": "Back",
+                    "sets": 3,
+                    "reps": "6-12",
+                    "weight_kg": null,
+                    "notes": "Any row variation. Supports shoulder stability for inversions.",
+                    "form_video": null
+                },
+                {
+                    "name": "Pulldowns",
+                    "muscle_group": "Back",
+                    "sets": 3,
+                    "reps": "8-12",
+                    "weight_kg": null,
+                    "notes": "Overhead pulling strength for forearm stand control.",
+                    "form_video": null
+                }
+            ]
         }
     ],
     "collections": [
@@ -2618,6 +3230,13 @@
             "color": "#38bdf8",
             "description": "Sessions built for training with Ben. Rack + TRX + bodyweight focus.",
             "workoutIds": [6, 29]
+        },
+        {
+            "id": 106,
+            "name": "Yoga",
+            "color": "#34d399",
+            "description": "Compression, float strength, handstand prep, active mobility, and pincha work for yoga practice.",
+            "workoutIds": [30, 31, 32, 33, 34, 35, 36, 37, 38]
         }
     ]
 }
