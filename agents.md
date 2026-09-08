@@ -84,8 +84,9 @@ Examples:
 
 ### Current Version
 
-**Current Version: 1.25.0** (as of 2026-08-05)
+**Current Version: 1.26.0** (as of 2026-09-08)
 
+- 1.26.0: Added 3 running support workouts (Running A - Full-Body Strength, Running B - Pull + Lower Control, Running C - Scapular + Mobility Strength) grouped under a new "running" collection (green, id=107). IDs 39-41. Bodyweight defaults in these workouts use 0kg as requested; range/alternative loading guidance is preserved in exercise notes.
 - 1.25.0: Added 9 yoga workouts (Compression/Float Strength, Dolphin/Pincha/Overhead Control, Active Mobility Finisher, Additional Compression/Float, Active Hamstring/Hip Mobility, Straight-Arm Strength/Handstand Prep, Wrist Prep, Floating Forward Progressions, Pincha/Dolphin Refinement) grouped under a new "Yoga" collection (green, id=106). IDs 30-38.
 - 1.24.0: Kill the giant black overlay on Save Session for real this time.
   Root cause: a stale mobile media-query rule on `.success-message` was forcing `top: 10px !important; left: 10px !important; right: 10px !important; width: auto !important` on the toast. My newer base rule set `bottom: calc(96px + safe-area)`. Those don't override each other - they combine. Setting BOTH `top: 10px` and `bottom: 130px` on a `position: fixed` element stretches it to fill the entire viewport height. Then the `transform: translate(-50%, 0)` shifted that giant stretched element half its own width to the left, producing the huge dark rectangle covering the left side of the screen. v1.22.1 and v1.23.1 (dropping backdrop-filter / color-mix) didn't touch this rule so the bug survived.

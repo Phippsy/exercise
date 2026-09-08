@@ -3186,6 +3186,273 @@
                     "form_video": null
                 }
             ]
+        },
+        {
+            "id": 39,
+            "name": "Running A - Full-Body Strength",
+            "date": null,
+            "notes": "Running support session A. Full-body strength with unilateral legs, shoulder pressing, trunk anti-rotation, calves, and scapular control.",
+            "exercises": [
+                {
+                    "name": "Pull-Ups",
+                    "muscle_group": "Back",
+                    "sets": 3,
+                    "reps": "6-8",
+                    "weight_kg": 0,
+                    "notes": "Bodyweight.",
+                    "form_video": null
+                },
+                {
+                    "name": "Landmine Shoulder Press",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "8-10 each side",
+                    "weight_kg": 30,
+                    "notes": "Target load: 30-32.5kg.",
+                    "form_video": null
+                },
+                {
+                    "name": "Reverse Lunge / RFESS",
+                    "muscle_group": "Quads/Glutes",
+                    "sets": 3,
+                    "reps": "8-10 each leg",
+                    "weight_kg": 14,
+                    "notes": "Use 14kg kettlebells or 12-16kg dumbbells.",
+                    "form_video": null
+                },
+                {
+                    "name": "Stiff-Leg Deadlift / RDL",
+                    "muscle_group": "Hamstrings",
+                    "sets": 3,
+                    "reps": "6-8",
+                    "weight_kg": 70,
+                    "notes": "Target load: 70-75kg.",
+                    "form_video": null
+                },
+                {
+                    "name": "Dumbbell Chest Press",
+                    "muscle_group": "Chest",
+                    "sets": 2,
+                    "reps": "8-10",
+                    "weight_kg": 22.5,
+                    "notes": "Use 22.5-25kg dumbbells.",
+                    "form_video": null
+                },
+                {
+                    "name": "Cable Pallof Press",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "10-12 each side",
+                    "weight_kg": 17.5,
+                    "notes": "Target load: 17.5-20kg.",
+                    "form_video": null
+                },
+                {
+                    "name": "Serratus Wall Slides",
+                    "muscle_group": "Serratus Anterior",
+                    "sets": 3,
+                    "reps": "10-12",
+                    "weight_kg": 0,
+                    "notes": "Bodyweight. Prescribed as 2-3 sets.",
+                    "form_video": null
+                },
+                {
+                    "name": "Dolphin Scap Push-Ups",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "8-12",
+                    "weight_kg": 0,
+                    "notes": "Bodyweight. Prescribed as 2-3 sets.",
+                    "form_video": null
+                },
+                {
+                    "name": "Standing Calf Raise",
+                    "muscle_group": "Calves",
+                    "sets": 3,
+                    "reps": "10-15",
+                    "weight_kg": 40,
+                    "notes": "Use 40-60kg machine or 20-24kg single-leg DB/KB.",
+                    "form_video": null
+                }
+            ]
+        },
+        {
+            "id": 40,
+            "name": "Running B - Pull + Lower Control",
+            "date": null,
+            "notes": "Running support session B. Rows, leg press, single-leg hinge work, shoulder accessories, calves, tibialis, and trunk stability.",
+            "exercises": [
+                {
+                    "name": "Seated Cable Row",
+                    "muscle_group": "Back",
+                    "sets": 3,
+                    "reps": "8-10",
+                    "weight_kg": 70,
+                    "notes": "Target load: 70-75kg.",
+                    "form_video": null
+                },
+                {
+                    "name": "Leg Press",
+                    "muscle_group": "Legs",
+                    "sets": 2,
+                    "reps": "10",
+                    "weight_kg": 110,
+                    "notes": "Target load: 110-115kg.",
+                    "form_video": null
+                },
+                {
+                    "name": "Single-Leg Romanian Deadlift",
+                    "muscle_group": "Hamstrings",
+                    "sets": 3,
+                    "reps": "8 each leg",
+                    "weight_kg": 16,
+                    "notes": "Use 16-22kg DB/KB.",
+                    "form_video": null
+                },
+                {
+                    "name": "Landmine Lateral-Raise-to-Press",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "8 each side",
+                    "weight_kg": 17.5,
+                    "notes": "Target load: 17.5-20kg.",
+                    "form_video": null
+                },
+                {
+                    "name": "Straight-Arm Lat Pulldown",
+                    "muscle_group": "Back",
+                    "sets": 3,
+                    "reps": "10-12",
+                    "weight_kg": 40,
+                    "notes": "Target load: 40-45kg. Prescribed as 2-3 sets.",
+                    "form_video": null
+                },
+                {
+                    "name": "Face Pull / Rear-Delt Fly",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "12-15",
+                    "weight_kg": 15,
+                    "notes": "Use 15-17kg face pull or 15-20kg reverse pec deck.",
+                    "form_video": null
+                },
+                {
+                    "name": "Bent-Knee Soleus Raise",
+                    "muscle_group": "Calves",
+                    "sets": 3,
+                    "reps": "12-20",
+                    "weight_kg": 25,
+                    "notes": "Target load: 25-40kg.",
+                    "form_video": null
+                },
+                {
+                    "name": "Tibialis Raises",
+                    "muscle_group": "Calves",
+                    "sets": 3,
+                    "reps": "15-20",
+                    "weight_kg": 0,
+                    "notes": "Bodyweight or light tib bar. Prescribed as 2-3 sets.",
+                    "form_video": null
+                },
+                {
+                    "name": "Dead Bug",
+                    "muscle_group": "Core",
+                    "sets": 3,
+                    "reps": "8-12 each side",
+                    "weight_kg": 0,
+                    "notes": "Bodyweight.",
+                    "form_video": null
+                },
+                {
+                    "name": "Side Plank",
+                    "muscle_group": "Core",
+                    "sets": 2,
+                    "reps": "30-45 sec each side",
+                    "weight_kg": 0,
+                    "notes": "Bodyweight.",
+                    "form_video": null
+                }
+            ]
+        },
+        {
+            "id": 41,
+            "name": "Running C - Scapular + Mobility Strength",
+            "date": null,
+            "notes": "Running support session C. Forearm hold practice, scapular strength, pike pressing, adductors, step-down control, trunk tension, and hamstring mobility.",
+            "exercises": [
+                {
+                    "name": "Wall-Facing Forearm Hold",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "20-35 sec",
+                    "weight_kg": 0,
+                    "notes": "Bodyweight.",
+                    "form_video": null
+                },
+                {
+                    "name": "Scapular Pull-Ups",
+                    "muscle_group": "Back",
+                    "sets": 3,
+                    "reps": "8-12",
+                    "weight_kg": 0,
+                    "notes": "Bodyweight.",
+                    "form_video": null
+                },
+                {
+                    "name": "Pike Push-Up / Elevated Pike Push-Up",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "6-10",
+                    "weight_kg": 0,
+                    "notes": "Bodyweight.",
+                    "form_video": null
+                },
+                {
+                    "name": "TRX Y-Raise / Cable Y-Raise",
+                    "muscle_group": "Shoulders",
+                    "sets": 3,
+                    "reps": "10-12",
+                    "weight_kg": 0,
+                    "notes": "Bodyweight or very light cable. Prescribed as 2-3 sets.",
+                    "form_video": null
+                },
+                {
+                    "name": "Copenhagen Side Plank - Short Lever",
+                    "muscle_group": "Core",
+                    "sets": 2,
+                    "reps": "15-25 sec each side",
+                    "weight_kg": 0,
+                    "notes": "Bodyweight.",
+                    "form_video": null
+                },
+                {
+                    "name": "Step-Downs / Lateral Step-Downs",
+                    "muscle_group": "Quads/Glutes",
+                    "sets": 3,
+                    "reps": "8 each leg",
+                    "weight_kg": 0,
+                    "notes": "Bodyweight or 6-10kg dumbbells.",
+                    "form_video": null
+                },
+                {
+                    "name": "Hollow Body Hold",
+                    "muscle_group": "Core",
+                    "sets": 2,
+                    "reps": "30-45 sec",
+                    "weight_kg": 0,
+                    "notes": "Bodyweight.",
+                    "form_video": null
+                },
+                {
+                    "name": "Weighted Wide-Leg Forward Fold",
+                    "muscle_group": "Hamstrings",
+                    "sets": 2,
+                    "reps": "6-8 slow reps",
+                    "weight_kg": 5,
+                    "notes": "Target load: 5-10kg.",
+                    "form_video": null
+                }
+            ]
         }
     ],
     "collections": [
@@ -3237,6 +3504,13 @@
             "color": "#34d399",
             "description": "Compression, float strength, handstand prep, active mobility, and pincha work for yoga practice.",
             "workoutIds": [30, 31, 32, 33, 34, 35, 36, 37, 38]
+        },
+        {
+            "id": 107,
+            "name": "running",
+            "color": "#22c55e",
+            "description": "Running support sessions for strength, calves, trunk control, scapular stability, and mobility.",
+            "workoutIds": [39, 40, 41]
         }
     ]
 }
