@@ -84,7 +84,9 @@ Examples:
 
 ### Current Version
 
-**Current Version: 1.26.0** (as of 2026-09-08)
+**Current Version: 1.27.0** (as of 2026-10-06)
+
+- 1.27.0: Replaced Running A/B/C with the updated pull/press/lunge/arms, row/legs/shoulders/arms/lower-leg, and optional upper/pincha/athletic-support programs. Added one-time seed revisions for workout IDs 39-41 so existing installs receive the new templates while retaining favorites; updated session drafts and added any new exercises to the local library.
 
 - 1.26.0: Added 3 running support workouts (Running A - Full-Body Strength, Running B - Pull + Lower Control, Running C - Scapular + Mobility Strength) grouped under a new "running" collection (green, id=107). IDs 39-41. Bodyweight defaults in these workouts use 0kg as requested; range/alternative loading guidance is preserved in exercise notes.
 - 1.25.0: Added 9 yoga workouts (Compression/Float Strength, Dolphin/Pincha/Overhead Control, Active Mobility Finisher, Additional Compression/Float, Active Hamstring/Hip Mobility, Straight-Arm Strength/Handstand Prep, Wrist Prep, Floating Forward Progressions, Pincha/Dolphin Refinement) grouped under a new "Yoga" collection (green, id=106). IDs 30-38.

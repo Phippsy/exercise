@@ -3189,9 +3189,10 @@
         },
         {
             "id": 39,
-            "name": "Running A - Full-Body Strength",
+            "name": "Running A - Pull / Press / Lunge / Arms",
+            "seed_version": 2,
             "date": null,
-            "notes": "Running support session A. Full-body strength with unilateral legs, shoulder pressing, trunk anti-rotation, calves, and scapular control.",
+            "notes": "Running support session A. Pulling, pressing, unilateral legs, arms, trunk anti-rotation, and calves.",
             "exercises": [
                 {
                     "name": "Pull-Ups",
@@ -3232,10 +3233,28 @@
                 {
                     "name": "Dumbbell Chest Press",
                     "muscle_group": "Chest",
+                    "sets": 3,
+                    "reps": "8-10",
+                    "weight_kg": 25,
+                    "notes": "Use 25-27.5kg dumbbells.",
+                    "form_video": null
+                },
+                {
+                    "name": "Rope Triceps Pressdown",
+                    "muscle_group": "Triceps",
+                    "sets": 2,
+                    "reps": "10-12",
+                    "weight_kg": 40,
+                    "notes": "Target load: 40-45kg. Prescribed as 2-3 sets.",
+                    "form_video": null
+                },
+                {
+                    "name": "Incline Dumbbell Curl / Hammer Curl",
+                    "muscle_group": "Biceps",
                     "sets": 2,
                     "reps": "8-10",
-                    "weight_kg": 22.5,
-                    "notes": "Use 22.5-25kg dumbbells.",
+                    "weight_kg": 10,
+                    "notes": "Use 10-12.5kg dumbbells. Prescribed as 2-3 sets.",
                     "form_video": null
                 },
                 {
@@ -3250,19 +3269,10 @@
                 {
                     "name": "Serratus Wall Slides",
                     "muscle_group": "Serratus Anterior",
-                    "sets": 3,
+                    "sets": 2,
                     "reps": "10-12",
                     "weight_kg": 0,
-                    "notes": "Bodyweight. Prescribed as 2-3 sets.",
-                    "form_video": null
-                },
-                {
-                    "name": "Dolphin Scap Push-Ups",
-                    "muscle_group": "Shoulders",
-                    "sets": 3,
-                    "reps": "8-12",
-                    "weight_kg": 0,
-                    "notes": "Bodyweight. Prescribed as 2-3 sets.",
+                    "notes": "Bodyweight.",
                     "form_video": null
                 },
                 {
@@ -3278,9 +3288,10 @@
         },
         {
             "id": 40,
-            "name": "Running B - Pull + Lower Control",
+            "name": "Running B - Row / Legs / Shoulders / Arms / Lower Leg",
+            "seed_version": 2,
             "date": null,
-            "notes": "Running support session B. Rows, leg press, single-leg hinge work, shoulder accessories, calves, tibialis, and trunk stability.",
+            "notes": "Running support session B. Rows, legs, shoulder and arm accessories, lower-leg work, and trunk stability.",
             "exercises": [
                 {
                     "name": "Seated Cable Row",
@@ -3297,7 +3308,7 @@
                     "sets": 2,
                     "reps": "10",
                     "weight_kg": 110,
-                    "notes": "Target load: 110-115kg.",
+                    "notes": "Target load: 110-115kg. Prescribed as 2-3 sets.",
                     "form_video": null
                 },
                 {
@@ -3321,7 +3332,7 @@
                 {
                     "name": "Straight-Arm Lat Pulldown",
                     "muscle_group": "Back",
-                    "sets": 3,
+                    "sets": 2,
                     "reps": "10-12",
                     "weight_kg": 40,
                     "notes": "Target load: 40-45kg. Prescribed as 2-3 sets.",
@@ -3337,6 +3348,24 @@
                     "form_video": null
                 },
                 {
+                    "name": "Overhead Cable Triceps Extension",
+                    "muscle_group": "Triceps",
+                    "sets": 2,
+                    "reps": "10-12",
+                    "weight_kg": 25,
+                    "notes": "Target load: 25-35kg. Prescribed as 2-3 sets.",
+                    "form_video": null
+                },
+                {
+                    "name": "Cable Curl / Dumbbell Curl",
+                    "muscle_group": "Biceps",
+                    "sets": 2,
+                    "reps": "10-12",
+                    "weight_kg": 25,
+                    "notes": "Use 25-35kg cable or 10-12.5kg dumbbells. Prescribed as 2-3 sets.",
+                    "form_video": null
+                },
+                {
                     "name": "Bent-Knee Soleus Raise",
                     "muscle_group": "Calves",
                     "sets": 3,
@@ -3348,10 +3377,10 @@
                 {
                     "name": "Tibialis Raises",
                     "muscle_group": "Calves",
-                    "sets": 3,
+                    "sets": 2,
                     "reps": "15-20",
                     "weight_kg": 0,
-                    "notes": "Bodyweight or light tib bar. Prescribed as 2-3 sets.",
+                    "notes": "Bodyweight or light tib bar.",
                     "form_video": null
                 },
                 {
@@ -3376,9 +3405,10 @@
         },
         {
             "id": 41,
-            "name": "Running C - Scapular + Mobility Strength",
+            "name": "Running C - Optional Upper / Pincha / Athletic Support",
+            "seed_version": 2,
             "date": null,
-            "notes": "Running support session C. Forearm hold practice, scapular strength, pike pressing, adductors, step-down control, trunk tension, and hamstring mobility.",
+            "notes": "Optional upper-body, pincha, and athletic support session.",
             "exercises": [
                 {
                     "name": "Wall-Facing Forearm Hold",
@@ -3408,12 +3438,30 @@
                     "form_video": null
                 },
                 {
+                    "name": "Lat Pulldown or Assisted Pull-Up",
+                    "muscle_group": "Back",
+                    "sets": 3,
+                    "reps": "8-10",
+                    "weight_kg": null,
+                    "notes": "Moderate load. Keep reps clean.",
+                    "form_video": null
+                },
+                {
+                    "name": "Cable Chest Fly / Push-Up",
+                    "muscle_group": "Chest",
+                    "sets": 2,
+                    "reps": "10-12",
+                    "weight_kg": null,
+                    "notes": "Light to moderate load. Prescribed as 2-3 sets.",
+                    "form_video": null
+                },
+                {
                     "name": "TRX Y-Raise / Cable Y-Raise",
                     "muscle_group": "Shoulders",
-                    "sets": 3,
+                    "sets": 2,
                     "reps": "10-12",
                     "weight_kg": 0,
-                    "notes": "Bodyweight or very light cable. Prescribed as 2-3 sets.",
+                    "notes": "Bodyweight or very light cable.",
                     "form_video": null
                 },
                 {
@@ -3432,6 +3480,24 @@
                     "reps": "8 each leg",
                     "weight_kg": 0,
                     "notes": "Bodyweight or 6-10kg dumbbells.",
+                    "form_video": null
+                },
+                {
+                    "name": "Optional Triceps Pressdown",
+                    "muscle_group": "Triceps",
+                    "sets": 2,
+                    "reps": "10-12",
+                    "weight_kg": 35,
+                    "notes": "Optional. Target load: 35-45kg.",
+                    "form_video": null
+                },
+                {
+                    "name": "Optional Dumbbell Curl",
+                    "muscle_group": "Biceps",
+                    "sets": 2,
+                    "reps": "10-12",
+                    "weight_kg": 10,
+                    "notes": "Optional. Use 10-12.5kg dumbbells.",
                     "form_video": null
                 },
                 {

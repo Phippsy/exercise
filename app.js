@@ -113,6 +113,7 @@ class WorkoutTracker {
       // Load from localStorage if available
       const storedWorkouts = localStorage.getItem("workouts");
       let newWorkouts = [];
+      let updatedWorkouts = [];
       let workoutsUpdated = false;
       if (storedWorkouts) {
         this.workouts = JSON.parse(storedWorkouts);
@@ -125,6 +126,46 @@ class WorkoutTracker {
         if (newWorkouts.length > 0) {
           this.workouts.push(...newWorkouts);
           workoutsUpdated = true;
+        }
+
+        const workoutsById = new Map(
+          this.workouts.map((workout, index) => [workout.id, index]),
+        );
+        (data.workouts || []).forEach((seedWorkout) => {
+          const localIndex = workoutsById.get(seedWorkout.id);
+          if (
+            localIndex === undefined ||
+            !seedWorkout.seed_version ||
+            seedWorkout.seed_version <=
+              (this.workouts[localIndex].seed_version || 0)
+          ) {
+            return;
+          }
+
+          const localWorkout = this.workouts[localIndex];
+          this.workouts[localIndex] = {
+            ...seedWorkout,
+            favorite: localWorkout.favorite ?? seedWorkout.favorite ?? false,
+          };
+          updatedWorkouts.push(seedWorkout);
+          workoutsUpdated = true;
+        });
+
+        if (updatedWorkouts.length > 0) {
+          const storedDrafts = localStorage.getItem("activeSessionDrafts");
+          if (storedDrafts) {
+            try {
+              const drafts = JSON.parse(storedDrafts);
+              updatedWorkouts.forEach((workout) => {
+                if (drafts[workout.id]) {
+                  drafts[workout.id].userModifiedExercises = false;
+                }
+              });
+              localStorage.setItem("activeSessionDrafts", JSON.stringify(drafts));
+            } catch (error) {
+              console.error("Error updating workout session drafts:", error);
+            }
+          }
         }
 
         // NOTE: we intentionally do NOT merge seed exercises back into
@@ -157,9 +198,10 @@ class WorkoutTracker {
       }
 
       // Merge new exercises from any workouts added above
-      if (newWorkouts.length > 0) {
+      const workoutsWithNewExercises = [...newWorkouts, ...updatedWorkouts];
+      if (workoutsWithNewExercises.length > 0) {
         let libraryChanged = false;
-        newWorkouts.forEach((workout) => {
+        workoutsWithNewExercises.forEach((workout) => {
           (workout.exercises || []).forEach((exercise) => {
             if (
               !this.exerciseLibrary.some(
